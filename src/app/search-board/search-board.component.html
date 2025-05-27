@@ -1,0 +1,74 @@
+<div class="main">
+  <img src="clinica.jpeg" alt="" />
+  <h1 id="header-text">Clinica dentară potrivită pentru tine!</h1>
+  <div class="search-board">
+    <form class="form-row">
+      <!-- Locație -->
+      <div class="form-group location">
+        <label for="location" class="form-label">Locație</label>
+        <input
+          type="text"
+          class="form-control"
+          id="location"
+          placeholder="Introduceți locația"
+        />
+      </div>
+
+      <!-- Servicii -->
+      <div class="form-group services">
+        <label for="services" class="form-label">Servicii :</label>
+        <select class="form-select" id="services">
+          <option selected>Alegeți un serviciu...</option>
+          <option value="obturatii">Obturatii</option>
+          <option value="albire">Albire dentară</option>
+          <option value="detartraj">Detartraj</option>
+          <option value="implanturi">Implanturi</option>
+          <option value="aparate">Aparate dentare</option>
+          <option value="protetica">Protetică</option>
+          <option value="chirurgie">Chirurgie</option>
+          <option value="pedodontie">Pedodonție</option>
+          <option value="ortodontie">Ortodonție</option>
+          <option value="endodontie">Endodonție (tratament de canal)</option>
+          <option value="radiologie">Radiologie dentară</option>
+          <option value="profilaxie">Profilaxie</option>
+          <option value="estetica">Estetică dentară</option>
+          <option value="fatete">Fațete dentare</option>
+          <option value="coronite">Coroane dentare</option>
+          <option value="proteze">Proteze dentare</option>
+          <option value="dantura">Reconstrucție dentară completă</option>
+          <option value="bruxism">Tratament pentru bruxism</option>
+          <option value="pediatrica">Stomatologie pediatrică</option>
+          <option value="anxietate">
+            Tratamente cu sedare pentru pacienți anxioși
+          </option>
+          <option value="grefe">Grefe osoase</option>
+          <option value="sinuslift">Sinus lift</option>
+          <option value="laser">Tratamente cu laser</option>
+          <option value="analgesie">Anestezie fără ac (analgezie)</option>
+          <option value="digital">Consult digital</option>
+          <option value="altele">Altele</option>
+        </select>
+      </div>
+
+      <!-- Preț maxim -->
+      <div class="form-group max-price">
+        <label for="maxPrice" class="form-label">Preț maxim :</label>
+        <input
+          type="number"
+          class="form-control"
+          id="maxPrice"
+          placeholder="Introduceți prețul maxim"
+        />
+      </div>
+      <div class="form-group date-picker">
+        <app-calendar></app-calendar>
+      </div>
+      <!-- Buton de căutare -->
+      <div class="form-group search-button">
+        <button type="button" class="btn btn-primary" routerLink="/Inscriere">
+          Caută
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

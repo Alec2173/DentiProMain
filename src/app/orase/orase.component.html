@@ -1,0 +1,10 @@
+<p-dropdown
+  [options]="cityObjects"
+  [(ngModel)]="selectedCity"
+  optionLabel="name"
+  [filter]="true"
+  [showClear]="true"
+  placeholder="Selectează un oraș"
+  (ngModelChange)="onCityChange()"
+>
+</p-dropdown>

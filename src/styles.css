@@ -1,1 +1,23 @@
-/* You can add global styles to this file, and also import other style files */
+@import "vanilla-cookieconsent/dist/cookieconsent.css";
+
+body {
+  margin: 0 !important;
+  padding: 0 !important;
+  height: 100%;
+  width: 100%;
+  color: white !important;
+}
+.pt-serif-bold {
+  font-family: "PT Serif", serif;
+  font-weight: 700;
+  font-style: normal;
+}
+.paytone-one-regular {
+  font-family: "Paytone One", sans-serif;
+  font-weight: 800;
+  font-style: normal;
+}
+app-root {
+  min-width: 100% !important;
+  overflow-y: hidden !important;
+}

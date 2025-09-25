@@ -1,0 +1,45 @@
+<div class="iphone-wrapper">
+  <!-- carcasă -->
+  <div class="iphone-body">
+    <!-- notch -->
+    <div class="iphone-notch"></div>
+
+    <!-- zona de ecran -->
+    <div class="iphone-screen">
+      <div class="iphone-navbar">
+        <div class="mini-nav-main">
+          <h1>DentiPro</h1>
+          <img src="logo4.png" alt="" />
+        </div>
+      </div>
+      <!-- card clinică -->
+      <div class="clinic-card">
+        <div class="clinic-logo">
+          <img [src]="logoToUrl(dataForImage.logo)" alt="Logo clinica" />
+        </div>
+
+        <div class="clinic-info">
+          <h2>{{ transferData.nume }}</h2>
+
+          <div class="info-item">
+            <span class="material-symbols-outlined">mail</span>
+            <p>{{ transferData.email }}</p>
+          </div>
+
+          <div class="info-item">
+            <span class="material-symbols-outlined">call</span>
+            <p>{{ transferData.telefon }}</p>
+          </div>
+
+          <div class="info-item">
+            <span class="material-symbols-outlined">location_on</span>
+            <p>{{ transferData.oras }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- home indicator -->
+    <div class="iphone-home"></div>
+  </div>
+</div>

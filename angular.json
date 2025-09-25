@@ -28,7 +28,9 @@
             "styles": [
               "src/styles.css",
               "@angular/material/prebuilt-themes/azure-blue.css",
-              "node_modules/@fortawesome/fontawesome-free/css/all.min.css"
+              "node_modules/@fortawesome/fontawesome-free/css/all.min.css",
+              "node_modules/swiper/swiper-bundle.min.css",
+              "node_modules/devices.css/dist/devices.min.css"
             ],
 
             "scripts": []

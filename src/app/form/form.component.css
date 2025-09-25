@@ -1,23 +1,40 @@
 .main {
   min-height: 100vh;
-  width: 100%;
+  width: calc(100vw- 5rem);
+  margin-left: 5rem;
   display: flex;
   justify-content: center;
   align-items: start;
 }
-
-.clinic-form {
-  padding: 5rem;
+.flex-container {
+  display: flex;
+  height: 100%;
   width: 100%;
-  background-color: #201e43;
-  padding: 3rem;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.page-divider {
+  display: flex;
+  background: linear-gradient(270deg, #125887, #393678);
+  gap: 2rem;
+  padding: 2rem;
+}
+.clinic-form {
+  height: 100%;
+
+  width: 100%;
+
   color: #eeeeee;
   font-family: "Poppins", sans-serif;
-  box-shadow: 0 0 15px rgba(0, 0, 0, 0.4);
+
   display: flex;
   flex-direction: column;
   justify-content: start;
   align-items: space-around;
+}
+.content {
+  padding: 10rem;
 }
 
 .clinic-form h1 {
@@ -228,10 +245,43 @@ select {
   opacity: 0;
   animation: fadeIn 0.3s forwards;
 }
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  margin: 1rem auto;
+  border: 4px solid rgba(255, 255, 255, 0.3);
+  border-top: 4px solid #ffffff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
 
 @keyframes fadeIn {
   to {
     opacity: 1;
+  }
+}
+@media (min-width: 1200px) {
+  .eye-btn {
+    display: none;
+  }
+}
+@media (max-width: 1200px) {
+  .eye-btn {
+    align-self: end;
+    justify-self: start;
+    padding: 1rem;
+  }
+  app-iphone-preview {
+    display: none;
   }
 }
 @media (max-width: 768px) {
@@ -259,6 +309,9 @@ select {
 @media (max-width: 650px) {
   .checkbox-item {
     font-size: 1.2rem;
+  }
+  .clinic-form {
+    padding: 1rem !important;
   }
 }
 @media (max-width: 493px) {

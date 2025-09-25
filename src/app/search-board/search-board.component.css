@@ -1,7 +1,8 @@
 .main {
   z-index: -1;
   height: 75vh;
-  width: 100%;
+  width: calc(100vw - 5rem);
+  margin-left: 5rem;
   background-color: #201e43;
   background-size: cover;
   background-position: center center;
@@ -32,7 +33,7 @@
 }
 
 .search-board {
-  background-color: #201e43;
+  background-color: rgba(255, 255, 255, 0.05);
   color: #eeeeee;
   padding: 40px;
   border-radius: 20px;
@@ -84,9 +85,17 @@
   margin-top: 20px; /* Adaugă spațiu între câmpuri și buton */
   width: 100%;
 }
-
 .search-button .btn {
-  background-color: #134b70;
+  background: linear-gradient(
+    270deg,
+    #1a6ca3,
+    #45418d,
+    #1a6ca3,
+    rgb(49, 45, 116),
+    #1a6ca3
+  );
+  background-size: 400% 400%;
+  background-position: 0% 50%;
   border: none;
   border-radius: 12px;
   padding: 15px 50px;
@@ -94,15 +103,24 @@
   font-weight: bold;
   color: #eeeeee;
   cursor: pointer;
-  transition: background-color 0.3s ease, transform 0.2s ease;
-  width: 400px; /* Lățime mai mare pentru buton */
+  transition: transform 0.2s ease;
+  width: 400px;
   max-width: 100%;
   align-self: center;
 }
 
 .search-button .btn:hover {
-  background-color: #508c9b;
+  animation: gradientMove 6s linear infinite alternate;
   transform: translateY(-5px);
+}
+
+@keyframes gradientMove {
+  0% {
+    background-position: 0% 50%;
+  }
+  100% {
+    background-position: 100% 50%;
+  }
 }
 .date-picker {
   margin-top: 2.2rem;

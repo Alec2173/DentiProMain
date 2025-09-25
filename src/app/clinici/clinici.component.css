@@ -3,7 +3,7 @@ body {
   padding: 0 !important;
 }
 #header {
-  color: #201e43;
+  color: #393678;
   font-family: paytone one, sans-serif;
   font-size: 3rem;
   padding: 2rem;
@@ -14,12 +14,13 @@ body {
   justify-content: center;
   flex-direction: column;
   align-items: center;
-  min-width: 100vw;
-  width: 100%;
-  min-height: 100vh;
+  width: 100vw;
+  height: 100vh;
+  margin-left: 5rem;
   padding: 0 1rem;
-  background-color: #f9f9f9;
+  background-color: white;
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  overflow-y: auto !important; /* permite scroll vertical */
 }
 
 .clinic-card {
@@ -29,7 +30,7 @@ body {
   height: 250px;
   border-radius: 12px;
   margin: 4rem 0;
-  background-color: #201e43;
+  background: linear-gradient(270deg, #125887, #393678);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
   border: 2px solid white;
   padding: 0;
@@ -133,13 +134,26 @@ p {
   }
 
   h1 {
-    font-size: 2.2rem;
+    font-size: 2rem;
   }
 
   .info {
     padding: 1rem;
     justify-content: center;
     gap: 0.8rem;
+  }
+}
+@media (max-width: 722px) {
+  h1 {
+    font-size: 1.5rem;
+    margin: 2px !important;
+  }
+  .clinic-card {
+    transform: scale(0.9);
+    margin: 1.5rem 0;
+  }
+  .clinic-card:hover {
+    transform: scale(0.95);
   }
 }
 

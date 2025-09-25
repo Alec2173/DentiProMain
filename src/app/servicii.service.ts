@@ -37,7 +37,7 @@ export class ServiciiService {
   getServices() {
     return this.serviceList;
   }
-  getName() {
+  getServiciuName() {
     return this.serviceList.map((service) => service.label);
   }
 }

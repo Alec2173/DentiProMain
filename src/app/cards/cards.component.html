@@ -1,0 +1,51 @@
+<div class="main">
+  @if(isLoading) {
+  <div class="loading-spinner"><div class="spinner"></div></div>
+  } @if(!isLoading){
+
+  <div class="card-list">
+    @for(clinic of clinics; track clinic.id) { @if( clinic.city === city || city
+    === '' ) {
+
+    <button
+      class="card"
+      [routerLink]="['/descripton', clinic.id]"
+      routerLinkActive="router-link-active"
+    >
+      <div class="card-header">
+        <div class="img-container">
+          @if(clinic.logo_path) {
+          <img [src]="clinic.logo_path" />
+          } @else {
+          <img
+            src="no-img.jpg"
+            alt=""
+            id="no-img"
+            style="background-color: blue"
+          />
+          }
+        </div>
+        <div class="oras">
+          <p>{{ clinic.city }}</p>
+        </div>
+        <div class="review-container">
+          <span>4.5</span>
+        </div>
+      </div>
+      <div class="card-body">
+        @if(clinic.clinic_images_parsed.length > 0) {
+        <img [src]="clinic.clinic_images_parsed[0]" alt="clinic" />
+        } @else {
+        <img src="no-img.jpg" alt="clinic" />
+        }
+      </div>
+
+      <div class="card-footer">
+        <h2>{{ clinic.name }}</h2>
+      </div>
+    </button>
+
+    } }
+  </div>
+  }
+</div>

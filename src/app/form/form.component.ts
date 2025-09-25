@@ -5,11 +5,21 @@ import { RoCitiesService } from '../ro-cities.service';
 import { OraseComponent } from '../orase/orase.component';
 import { ServiciiService } from '../servicii.service';
 import { HttpClient } from '@angular/common/http';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
+import { JsonPipe } from '@angular/common';
+import { ViewerComponent } from './viewer/viewer.component';
+import { IphonePreviewComponent } from './iphone-preview/iphone-preview.component';
 
 @Component({
   selector: 'app-form',
-  imports: [FormsModule, CommonModule, OraseComponent],
+  imports: [
+    FormsModule,
+    CommonModule,
+    OraseComponent,
+    RouterLink,
+    ViewerComponent,
+    IphonePreviewComponent,
+  ],
   templateUrl: './form.component.html',
   styleUrl: './form.component.css',
 })
@@ -20,7 +30,7 @@ export class FormComponent implements OnInit {
     private http: HttpClient,
     private router: Router
   ) {}
-
+  isLoading: boolean = false;
   errorMessage = '';
   validMessage = '';
   showOtherService = false;
@@ -45,102 +55,128 @@ export class FormComponent implements OnInit {
     onWebAccepted: false,
     termsAccepted: false,
   };
+  clicked: boolean = false;
+  formInput: any = {
+    nume: '',
+    telefon: '',
+    email: '',
+    oras: '',
+  };
 
   ngOnInit(): void {
     this.city = this.roCitiesService.getCities();
     this.serviceObject = this.serviciiService.getServices();
-    this.serviceName = this.serviciiService.getName();
+    this.serviceName = this.serviciiService.getServiciuName();
+    console.log(this.clicked);
+  }
+  getTel(event: Event) {
+    const { value } = event.target as HTMLInputElement;
+    this.formInput.telefon = value;
+  }
+  getName(event: Event) {
+    const { value } = event.target as HTMLInputElement;
+    this.formInput.nume = value;
+  }
+  getEmail(event: Event) {
+    const { value } = event.target as HTMLInputElement;
+    this.formInput.email = value;
+  }
+
+  onClick() {
+    this.clicked = true;
+    console.log(this.clicked);
   }
 
   onSubmit() {
     this.errorMessage = '';
     this.validMessage = '';
-    setTimeout(() => {
-      const {
-        name,
-        phone,
-        email,
-        confirmEmail,
-        selectedServices,
-        city,
-        clientPhone,
-        clientEmail,
-      } = this.formData;
-      console.log(
-        'Cacacac' + this.formData.onWebAccepted + this.formData.termsAccepted
-      );
+    this.isLoading = true;
 
-      if (name.trim().length === 0) {
-        this.errorMessage = 'Numele clinicii  este obligatoriu.';
-        return;
-      }
+    const {
+      name,
+      phone,
+      email,
+      confirmEmail,
+      selectedServices,
+      city,
+      clientPhone,
+      clientEmail,
+    } = this.formData;
 
-      if (!/^\d{10}$/.test(phone)) {
-        this.errorMessage = 'Numărul de telefon  este incorect';
-        return;
-      }
-      if (email === '') {
-        this.errorMessage = 'Email-ul este obligatoriu.';
-        return;
-      }
+    if (name.trim().length === 0) {
+      this.errorMessage = 'Numele clinicii  este obligatoriu.';
+      this.isLoading = false;
 
-      if (email !== confirmEmail) {
-        this.errorMessage = 'Email-urile nu se potrivesc.';
-        return;
-      }
+      return;
+    }
 
-      if (!selectedServices || selectedServices.length === 0) {
-        this.errorMessage = 'Trebuie să selectați cel puțin un serviciu.';
-        return;
-      }
+    if (!/^\d{10}$/.test(phone)) {
+      this.errorMessage = 'Numărul de telefon  este incorect';
+      this.isLoading = false;
+      return;
+    }
+    if (email === '') {
+      this.errorMessage = 'Email-ul este obligatoriu.';
+      this.isLoading = false;
+      return;
+    }
 
-      if (!city) {
-        this.errorMessage = 'Selectarea orasului este obligatorie.';
-        return;
-      }
-      if (!this.formData.termsAccepted || !this.formData.onWebAccepted) {
-        this.errorMessage =
-          'Trebuie să acceptați termenii și condițiile și să fiți de acord cu afișarea datelor.';
-        return;
-      }
+    if (email !== confirmEmail) {
+      this.errorMessage = 'Email-urile nu se potrivesc.';
+      this.isLoading = false;
+      return;
+    }
 
-      const formDataToSend = new FormData();
-      formDataToSend.append('name', name);
-      formDataToSend.append('phone', phone);
-      formDataToSend.append('email', email);
-      formDataToSend.append('confirmEmail', confirmEmail);
-      formDataToSend.append('city', city);
-      formDataToSend.append('clientPhone', clientPhone);
-      formDataToSend.append('clientEmail', clientEmail);
+    if (!city) {
+      this.errorMessage = 'Selectarea orasului este obligatorie.';
+      this.isLoading = false;
+      return;
+    }
+    if (!this.formData.termsAccepted || !this.formData.onWebAccepted) {
+      this.errorMessage =
+        'Trebuie să acceptați termenii și condițiile și să fiți de acord cu afișarea datelor.';
+      this.isLoading = false;
+      return;
+    }
 
-      for (let s of selectedServices) {
-        formDataToSend.append('selectedServices', s);
-      }
+    const formDataToSend = new FormData();
+    formDataToSend.append('name', name);
+    formDataToSend.append('phone', phone);
+    formDataToSend.append('email', email);
+    formDataToSend.append('confirmEmail', confirmEmail);
+    formDataToSend.append('city', city);
+    formDataToSend.append('clientPhone', clientPhone);
+    formDataToSend.append('clientEmail', clientEmail);
 
-      if (this.formData.logo) {
-        formDataToSend.append('logo', this.formData.logo);
-      }
+    for (let s of selectedServices) {
+      formDataToSend.append('selectedServices', s);
+    }
 
-      if (this.formData.clinicImages && this.formData.clinicImages.length > 0) {
-        this.formData.clinicImages.forEach((img: File) => {
-          formDataToSend.append('clinicImages', img);
-        });
-      }
+    if (this.formData.logo) {
+      formDataToSend.append('logo', this.formData.logo);
+    }
 
-      this.http
-        .post('http://localhost:3000/clinics', formDataToSend)
-        .subscribe({
-          next: (res) => {
-            console.log('Trimis cu succes:', res);
-            this.validMessage = 'Formularul a fost trimis cu succes!';
-          },
-          error: (err) => {
-            console.error('Eroare la trimitere:', err);
-            this.errorMessage =
-              'A apărut o eroare la trimiterea formularului. Va rugam incercati mai tarziu';
-          },
-        });
-    }, 100);
+    if (this.formData.clinicImages && this.formData.clinicImages.length > 0) {
+      this.formData.clinicImages.forEach((img: File) => {
+        formDataToSend.append('clinicImages', img);
+      });
+    }
+
+    this.http
+      .post('https://www.dentipro.ro/api/clinics', formDataToSend)
+      .subscribe({
+        next: (res) => {
+          this.isLoading = false;
+          this.validMessage = 'Formularul a fost trimis cu succes!';
+        },
+        error: (err) => {
+          console.error('Eroare la trimitere:', err);
+          this.errorMessage =
+            'A apărut o eroare la trimiterea formularului. Va rugam incercati mai tarziu';
+
+          this.isLoading = false;
+        },
+      });
   }
 
   onServiceChange(event: any) {
@@ -161,20 +197,18 @@ export class FormComponent implements OnInit {
   }
 
   onLogoUpload(event: Event) {
-    const input = event.target as HTMLInputElement;
-    if (input.files && input.files.length > 0) {
-      this.formData.logo = input.files[0];
-      console.log('Logo:', this.formData.logo);
+    const formInput = event.target as HTMLInputElement;
+    if (formInput.files && formInput.files.length > 0) {
+      this.formData.logo = formInput.files[0];
+
       this.logoName = this.formData.logo.name;
-      console.log('Numele logo-ului:', this.logoName);
     }
   }
 
   onImagesUpload(event: Event) {
-    const input = event.target as HTMLInputElement;
-    if (input.files && input.files.length > 0) {
-      this.formData.clinicImages = Array.from(input.files);
-      console.log('Imagini:', this.formData.clinicImages);
+    const formInput = event.target as HTMLInputElement;
+    if (formInput.files && formInput.files.length > 0) {
+      this.formData.clinicImages = Array.from(formInput.files);
     }
   }
 }

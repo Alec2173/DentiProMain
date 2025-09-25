@@ -1,0 +1,128 @@
+.main {
+  min-height: 100vh;
+  height: auto;
+  width: calc(35vw);
+  display: flex;
+  justify-content: center;
+
+  background-color: #012a5b;
+}
+.card-list {
+  width: 90%;
+  height: 100%;
+  gap: 2rem;
+  margin-top: 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+button.card {
+  margin: 1rem 0;
+  width: 75%;
+  height: 400px;
+  display: flex;
+  justify-content: flex-start;
+  flex-direction: column;
+  border-radius: 12px;
+  border: none;
+  background: none;
+  color: inherit;
+  cursor: pointer;
+  transition: box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+    transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 3px solid white;
+  padding: 0;
+  outline: none;
+}
+
+button.card:hover,
+button.card:focus-visible {
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+  transform: scale(1.05);
+}
+.card-header {
+  padding: 1rem;
+  background-color: rgb(28, 37, 60);
+  height: 75px;
+  width: 100%;
+  border-radius: 12px 12px 0 0;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+
+  text-align: center;
+}
+.review-container {
+  height: 50px;
+  width: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: white;
+  color: black;
+  border-radius: 12.5px;
+}
+.card-body {
+  width: 100%;
+  height: 250px;
+}
+.card-body img {
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
+}
+
+.card-header img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+.card-header .img-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 45px;
+  min-height: 45px;
+  width: auto;
+  height: auto;
+  max-width: 60px;
+  max-height: 60px;
+  border-radius: 12.5px;
+  overflow: hidden;
+
+  z-index: 2;
+}
+.card-footer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 75px;
+  background-color: rgb(28, 37, 60);
+  border-radius: 0 0 12px 12px;
+  color: white;
+}
+.loading-spinner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 400px;
+}
+
+.spinner {
+  width: 60px;
+  height: 60px;
+  border: 6px solid #e0e0e0;
+  border-top: 6px solid #007bff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

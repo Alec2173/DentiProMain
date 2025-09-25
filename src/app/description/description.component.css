@@ -1,12 +1,16 @@
+.main {
+  width: calc(100vw - 5rem);
+  margin-left: 5rem;
+}
 .clinic-invite {
-  margin-top: 1rem;
   padding: 2rem;
-  background-color: #f9f9f9;
+  background: linear-gradient(270deg, #125887, #393678);
   border-radius: 8px;
+  margin-top: -1rem;
 }
 
 .clinic-invite h1 {
-  color: #201e43;
+  color: white;
   margin-bottom: 1rem;
   font-size: 3rem;
   font-family: Paytone One, sans-serif;
@@ -28,7 +32,7 @@
 }
 .clinic-invite p,
 li {
-  color: #134b70;
+  color: white;
   font-family: paytone one, sans-serif;
 }
 .flex-container {
@@ -45,7 +49,7 @@ li {
 button {
   all: unset;
   cursor: pointer;
-  background-color: #201e43;
+  background-color: #2a2855;
   color: white;
   height: 7.5rem;
   width: 15rem;
@@ -55,7 +59,7 @@ button {
   border-radius: 25px;
   animation: pulse 1.5s infinite;
   transition: transform 0.3s ease-in-out;
-  border: 5px solid #508c9b;
+  border: 5px solid #63a2b1;
 }
 .img-container {
   display: flex;
@@ -79,7 +83,7 @@ img {
 }
 
 .img-container h2 {
-  color: #201e43;
+  color: white;
   margin-bottom: 1rem;
   font-size: 3rem;
   font-family: Paytone One, sans-serif;
@@ -121,6 +125,5 @@ img {
     height: 5rem;
     width: 10rem;
     font-size: 1rem;
-    border: 3px solid #508c9b;
   }
 }

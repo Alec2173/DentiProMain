@@ -1,0 +1,190 @@
+/* ---- iPhone frame ---- */
+.iphone-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 16px;
+}
+
+.iphone-body {
+  position: relative;
+  width: 300px;
+  height: 600px;
+  background: black;
+  border-radius: 60px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+  overflow: hidden;
+}
+
+.iphone-notch {
+  position: relative;
+  height: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.iphone-notch::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  width: 200px;
+  height: 25px;
+  background: black;
+  border-bottom-left-radius: 12px;
+  border-bottom-right-radius: 12px;
+}
+
+.iphone-title {
+  color: gray;
+  font-size: 12px;
+  z-index: 1;
+}
+
+.iphone-screen {
+  background: white;
+  border-radius: 40px;
+  margin: 8px;
+  height: calc(100% - 100px);
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  overflow: hidden;
+}
+
+.iphone-home {
+  height: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.iphone-home::before {
+  content: "";
+  width: 130px;
+  height: 5px;
+  border-radius: 3px;
+  background: #ccc;
+}
+
+/* ---- navbar ---- */
+/* ---- navbar pentru iPhone ---- */
+.iphone-navbar {
+  background-color: #012a5b; /* păstrăm tema */
+  border-top-left-radius: 40px;
+  border-top-right-radius: 40px;
+  height: 62px; /* mai mic, ca să încapă sub notch */
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+}
+
+.mini-nav-main {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+/* titlul (similar cu h1-ul tău dar scalat pt telefon) */
+.mini-nav-main h1 {
+  font-family: "Rowdies", sans-serif;
+  font-size: 1.4rem; /* adaptat pentru 300px lățime */
+  color: white;
+  margin: 0;
+  padding: 0;
+}
+
+/* logo clinică din navbar */
+.mini-nav-main img {
+  width: 36px;
+  height: 36px;
+  object-fit: contain;
+  border-radius: 6px;
+}
+
+.nav-btn {
+  background: none;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+  color: #555;
+}
+
+.nav-btn:active {
+  color: #000;
+}
+
+.nav-title {
+  flex: 1;
+  text-align: center;
+  font-weight: bold;
+}
+
+/* ---- clinic card full screen (under navbar) ---- */
+/* ---- clinic card full screen ---- */
+.clinic-card {
+  flex: 1;
+  background: linear-gradient(180deg, #ffffff 0%, #f7f9fc 100%);
+  border-top-left-radius: 24px;
+  border-top-right-radius: 24px;
+  padding: 30px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  overflow-y: auto;
+  box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+.clinic-logo {
+  width: 120px;
+  height: 120px;
+  margin-bottom: 20px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 3px solid #ddd;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+.clinic-logo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.clinic-info h2 {
+  margin: 0 0 24px 0;
+  font-size: 22px;
+  color: #012a5b;
+  font-weight: bold;
+}
+
+.info-item {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  width: 100%;
+  max-width: 240px;
+  margin: 12px auto;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.info-item:last-child {
+  border-bottom: none;
+}
+
+.info-item span.material-symbols-outlined {
+  font-size: 20px;
+  color: #012a5b;
+  margin-right: 10px;
+}
+
+.info-item p {
+  margin: 0;
+  font-size: 15px;
+  color: #333;
+  text-align: left;
+  flex: 1;
+}

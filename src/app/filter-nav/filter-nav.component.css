@@ -1,0 +1,74 @@
+body {
+  margin: 0 !important;
+  padding: 0 !important;
+}
+.main {
+  width: 100%;
+  background-color: #012a5b;
+  height: 7.5vh;
+  border-bottom: 1px solid white;
+}
+.nav {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 0.5rem;
+  flex-direction: row;
+  height: 100%;
+}
+
+/* Dropdown pentru Preț */
+.dropdown-filter {
+  position: relative;
+  margin: 0 0.5rem;
+}
+.dropdown-btn {
+  padding: 0.3rem 1rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background: #fff;
+  font-size: 1rem;
+  cursor: pointer;
+}
+.dropdown-content {
+  display: none;
+  position: absolute;
+  top: 110%;
+  left: 0;
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 0.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  z-index: 10;
+  min-width: 140px;
+  gap: 0.5rem;
+  flex-direction: row;
+  align-items: center;
+}
+.dropdown-filter:focus-within .dropdown-content,
+.dropdown-filter:hover .dropdown-content {
+  display: flex;
+}
+.dropdown-content input[type="number"] {
+  width: 60px;
+  padding: 0.2rem 0.3rem;
+  font-size: 0.95rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background: #fff;
+}
+.apply-btn {
+  margin-left: 0.5rem;
+  padding: 0.3rem 0.8rem;
+  border: 1px solid #007bff;
+  border-radius: 4px;
+  background: #0056b3;
+  color: #fff;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.apply-btn:hover {
+  background: #2070c4;
+}

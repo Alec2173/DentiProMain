@@ -1,0 +1,10 @@
+<p-dropdown
+  [options]="serviceObjects"
+  [(ngModel)]="selectedService"
+  optionLabel="name"
+  [filter]="true"
+  [showClear]="true"
+  placeholder="Selectează un serviciu"
+  (ngModelChange)="onServiceChange()"
+>
+</p-dropdown>

@@ -1,4 +1,10 @@
-import { Component, AfterViewInit } from '@angular/core';
+import {
+  Component,
+  AfterViewInit,
+  OnInit,
+  signal,
+  HostListener,
+} from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { NavbarComponent } from './navbar/navbar.component';
 import { HomeComponent } from './home/home.component';
@@ -11,9 +17,10 @@ import {
   NavigationError,
 } from '@angular/router';
 import * as CookieConsent from 'vanilla-cookieconsent';
+import { LeftSidebarComponent } from './left-sidebar/left-sidebar.component';
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, NavbarComponent],
+  imports: [RouterOutlet, NavbarComponent, LeftSidebarComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css',
 })
@@ -48,7 +55,7 @@ export class AppComponent {
             consentModal: {
               title: 'Folosim cookie-uri',
               description: '',
-              acceptAllBtn: 'Accetpa toate ',
+              acceptAllBtn: 'Accepta toate ',
               acceptNecessaryBtn: 'Refuz',
               showPreferencesBtn: 'Vreau sa schimb setarile',
             },
@@ -84,5 +91,23 @@ export class AppComponent {
         },
       },
     });
+  }
+  isLeftSidebarCollapsed = signal<boolean>(false);
+  screenWidth = signal<number>(window.innerWidth);
+
+  @HostListener('window:resize')
+  onResize() {
+    this.screenWidth.set(window.innerWidth);
+    if (this.screenWidth() < 768) {
+      this.isLeftSidebarCollapsed.set(true);
+    }
+  }
+
+  ngOnInit(): void {
+    this.isLeftSidebarCollapsed.set(this.screenWidth() < 768);
+  }
+
+  changeIsLeftSidebarCollapsed(isLeftSidebarCollapsed: boolean): void {
+    this.isLeftSidebarCollapsed.set(isLeftSidebarCollapsed);
   }
 }

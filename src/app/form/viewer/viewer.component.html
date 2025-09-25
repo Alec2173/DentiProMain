@@ -1,0 +1,21 @@
+<div class="main">
+  <div class="text">
+    <h1>{{ transferData.nume }}</h1>
+    <h1>{{ transferData.email }}</h1>
+    <h1>{{ transferData.telefon }}</h1>
+    <h1>{{ transferData.oras }}</h1>
+  </div>
+  <div class="images">
+    <div *ngIf="dataForImage.logo">
+      <img [src]="logoToUrl(dataForImage.logo)" alt="Logo clinică" />
+    </div>
+
+    <!-- Imagini clinică -->
+    <div *ngIf="dataForImage.clinicImages?.length">
+      <div *ngFor="let img of dataForImage.clinicImages">
+        <img [src]="imageToUrl(img)" alt="Imagine clinică" />
+      </div>
+    </div>
+  </div>
+  <button (click)="onClose()">Inapoi la formular</button>
+</div>

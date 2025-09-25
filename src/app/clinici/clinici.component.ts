@@ -12,12 +12,13 @@ export class CliniciComponent implements OnInit {
   constructor(private clinicData: ClinicDataService) {}
 
   ngOnInit() {
-    this.clinicData.getClinics().subscribe({
+    this.clinicData.loadClinicsAuto().subscribe({
       next: (data) => {
         this.clinics = data;
-        console.log('Date primite în componentă:', this.clinics);
       },
-      error: (err) => console.error('Eroare la preluare:', err),
+      error: (err) => {
+        console.error('Eroare la încărcare clinici:', err);
+      },
     });
   }
   trackByClinicId(index: number, clinic: any): number {

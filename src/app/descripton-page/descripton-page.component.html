@@ -1,0 +1,53 @@
+<div class="main">
+  <div *ngIf="isLoading" class="loading-spinner">
+    <div class="spinner"></div>
+  </div>
+
+  <div class="clinic-wrapper" *ngIf="!isLoading">
+    <div class="clinic-top-section">
+      <div class="clinic-gallery-main">
+        <ng-container *ngIf="clinicImages.length > 0; else noImage">
+          <img
+            [src]="clinicImages[activeImageIndex]"
+            class="main-image"
+            alt="clinic image"
+          />
+          <div class="thumbnail-list">
+            <img
+              *ngFor="let img of clinicImages; let i = index"
+              [src]="img"
+              class="thumbnail"
+              [class.active]="i === activeImageIndex"
+              (click)="activeImageIndex = i"
+            />
+          </div>
+        </ng-container>
+        <ng-template #noImage>
+          <div class="no-image">Clinica nu are imagini momentan.</div>
+        </ng-template>
+      </div>
+
+      <div class="clinic-info-box">
+        <div class="name">
+          <img [src]="clinics.logo_path" alt="logo" class="clinic-logo" />
+          <h2>{{ clinics.name }}</h2>
+        </div>
+        <div class="city">
+          <p>📍 {{ clinics.city }}</p>
+        </div>
+        <div class="contact">
+          <p>📞 {{ clinics.phone }}</p>
+          <p>✉️ {{ clinics.email }}</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="clinic-description-section">
+      <h3>Despre clinică</h3>
+      <p *ngIf="clinics.services; else noDesc">{{ clinics.services }}</p>
+      <ng-template #noDesc>
+        <p>Clinica nu a adăugat o descriere momentan.</p>
+      </ng-template>
+    </div>
+  </div>
+</div>

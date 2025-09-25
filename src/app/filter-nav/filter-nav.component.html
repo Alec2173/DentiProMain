@@ -1,0 +1,14 @@
+<div class="main">
+  <div class="nav">
+    <app-orase (citySelected)="data.oras = $event"></app-orase>
+    <app-servicii></app-servicii>
+    <div class="dropdown-filter" tabindex="0">
+      <button class="dropdown-btn">Preț</button>
+      <div class="dropdown-content">
+        <input type="number" min="0" placeholder="Min" />
+        <input type="number" min="0" placeholder="Max" />
+      </div>
+    </div>
+    <button class="apply-btn" (click)="onSubmit()">Aplică filtre</button>
+  </div>
+</div>

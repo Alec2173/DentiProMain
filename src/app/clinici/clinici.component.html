@@ -7,7 +7,7 @@
     <div class="in-btn">
       <div class="img-container">
         @if(clinic.logo_path) {
-        <img [src]="'http://localhost:3000/' + clinic.logo_path" alt="logo" />
+        <img [src]="clinic.logo_path" />
         } @else {
         <img src="no-img.jpg" alt="" id="no-img" />
         }

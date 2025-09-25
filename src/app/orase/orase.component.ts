@@ -21,7 +21,7 @@ export class OraseComponent {
   caca: any[] = [];
   ngOnInit(): void {
     this.city = this.roCitiesService.noRepeat();
-    console.log(this.city);
+
     this.cityObjects = this.city.map((name: string, index: number) => ({
       id: index + 1,
       name: name,

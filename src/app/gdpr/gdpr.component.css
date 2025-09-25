@@ -2,7 +2,8 @@
   min-height: 100vh;
   height: 100%;
   width: 100%;
-  background-color: #201e43;
+
+  background: linear-gradient(270deg, #125887, #393678);
   display: flex;
   gap: 3rem;
   flex-direction: column;
@@ -22,4 +23,12 @@ h1 {
 
 p {
   font-size: 1.2rem;
+}
+a {
+  color: purple;
+}
+@media (max-width: 399px) {
+  h1 {
+    font-size: 1.5rem;
+  }
 }

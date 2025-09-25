@@ -1,7 +1,7 @@
 .main-nav {
   height: 10vh;
   width: 100%;
-  background-color: #134b70;
+  background-color: rgb(39, 87, 149);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -41,19 +41,41 @@ img {
   color: white;
   height: 5.5vh;
   width: 11vw;
-  background-color: #134b70;
+  background-color: rgb(39, 87, 149);
   text-align: center;
   border-radius: 25px;
   font-family: "Poppins", sans-serif !important;
   font-size: 1.2rem;
   font-weight: 600;
+  border: 2px solid rgb(39, 87, 149);
 }
 .main-nav button:hover {
-  background-color: #201e43;
+  background: linear-gradient(
+    270deg,
+    #1a6ca3,
+    #45418d,
+    #1a6ca3,
+    rgb(65, 63, 127),
+    #1a6ca3
+  );
+  background-size: 400% 400%;
+  background-position: 0% 50%;
+  animation: gradientMove 6s linear infinite alternate;
+  border: 2px solid white;
 }
-
+@keyframes gradientMove {
+  0% {
+    background-position: 0% 50%;
+  }
+  100% {
+    background-position: 100% 50%;
+  }
+}
 #Inscriere {
   width: 15rem;
+}
+.button-text {
+  font-size: 1rem;
 }
 @media (max-width: 1175px) {
   .main-nav {
@@ -90,7 +112,7 @@ img {
   }
 }
 
-@media (max-width: 576px) {
+@media (max-width: 583px) {
   .main-nav button {
     font-size: 0.7rem;
     width: 1px !important;
@@ -113,13 +135,13 @@ img {
     height: auto;
   }
 }
-@media (max-width: 356px) {
+@media (max-width: 364px) {
   .img-container {
     font-size: 0.6rem;
     gap: 0.5rem;
   }
 }
-@media (max-width: 324px) {
+@media (max-width: 338px) {
   .img-container {
     font-size: 0.5rem;
     gap: 0.3rem;

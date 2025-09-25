@@ -1,0 +1,151 @@
+.main {
+  width: calc(100vw - 5rem);
+  min-height: 100vh;
+  height: 100%;
+  margin-left: 5rem;
+
+  background-color: #012a5b;
+
+  padding: 0;
+
+  gap: 1rem;
+}
+.clinic-wrapper {
+  max-width: 1200px;
+  margin: 0 auto;
+  font-family: "Segoe UI", sans-serif;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.clinic-top-section {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+}
+
+.clinic-gallery-main {
+  flex: 2;
+  min-width: 60%;
+}
+
+.main-image {
+  width: 100%;
+  height: 400px;
+  object-fit: cover;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+}
+
+.thumbnail-list {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  overflow-x: auto;
+}
+
+.thumbnail {
+  width: 80px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 5px;
+  cursor: pointer;
+  opacity: 0.6;
+  border: 2px solid transparent;
+  transition: 0.3s;
+}
+
+.thumbnail.active,
+.thumbnail:hover {
+  opacity: 1;
+  border-color: #007bff;
+}
+
+.no-image {
+  width: 100%;
+  height: 400px;
+  background: #f0f0f0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-style: italic;
+  color: #888;
+  border-radius: 10px;
+}
+
+.clinic-info-box {
+  width: 400px;
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  padding: 1.5rem;
+  border-radius: 10px;
+  border: 1px solid #ddd;
+  min-width: 280px;
+  text-align: center;
+}
+.name {
+  grid-area: 1/1/2/3;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+}
+
+.clinic-logo {
+  width: 250px;
+  height: auto;
+}
+
+.clinic-info-box h2 {
+  margin: 0;
+  font-size: 1.5rem;
+  color: white;
+}
+
+.clinic-info-box p {
+  margin: 0.3rem 0;
+  color: white;
+}
+
+.clinic-description-section {
+  background: #fff;
+  border: 1px solid #eee;
+  padding: 2rem;
+  border-radius: 10px;
+}
+
+.clinic-description-section h3 {
+  margin-top: 0;
+  font-size: 1.4rem;
+}
+
+.clinic-description-section p {
+  color: #444;
+  line-height: 1.6;
+}
+
+.loading-spinner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 400px;
+}
+
+.spinner {
+  width: 60px;
+  height: 60px;
+  border: 6px solid #e0e0e0;
+  border-top: 6px solid #007bff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

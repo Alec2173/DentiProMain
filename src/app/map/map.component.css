@@ -1,0 +1,11 @@
+.wrap-map {
+  width: calc(65vw - 5rem);
+  height: 92.5vh;
+  position: relative;
+}
+
+.map {
+  width: 100%;
+  height: 100%;
+  position: relative; /* asigură-te că e așa */
+}

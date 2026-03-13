@@ -1,14 +1,53 @@
 <div class="main">
   <div class="nav">
-    <app-orase (citySelected)="data.oras = $event"></app-orase>
-    <app-servicii></app-servicii>
-    <div class="dropdown-filter" tabindex="0">
-      <button class="dropdown-btn">Preț</button>
-      <div class="dropdown-content">
-        <input type="number" min="0" placeholder="Min" />
-        <input type="number" min="0" placeholder="Max" />
+    <div class="nav-left">
+      <div class="filter-item">
+        <svg class="icon" viewBox="0 0 24 24">
+          <path d="M12 21s-6-5.4-6-10a6 6 0 1112 0c0 4.6-6 10-6 10z" />
+        </svg>
+
+        <app-orase (citySelected)="data.oras = $event"></app-orase>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="filter-item">
+        <svg class="icon" viewBox="0 0 24 24">
+          <path d="M17 3H7a2 2 0 00-2 2v14l7-3 7 3V5a2 2 0 00-2-2z" />
+        </svg>
+
+        <app-servicii></app-servicii>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="dropdown-filter" tabindex="0">
+        <button class="dropdown-btn">
+          <svg class="icon" viewBox="0 0 24 24">
+            <path d="M12 1v22M1 12h22" />
+          </svg>
+
+          Preț
+
+          <svg class="arrow" viewBox="0 0 24 24">
+            <path d="M6 9l6 6 6-6" />
+          </svg>
+        </button>
+
+        <div class="dropdown-content">
+          <input type="number" min="0" placeholder="Min" />
+
+          <input type="number" min="0" placeholder="Max" />
+        </div>
       </div>
     </div>
-    <button class="apply-btn" (click)="onSubmit()">Aplică filtre</button>
+
+    <button class="apply-btn" (click)="onSubmit()">
+      <svg class="apply-icon" viewBox="0 0 24 24">
+        <path d="M10 18a8 8 0 1 1 5.3-14l4.4 4.4M21 21l-4.3-4.3" />
+      </svg>
+
+      Aplică filtre
+    </button>
   </div>
 </div>

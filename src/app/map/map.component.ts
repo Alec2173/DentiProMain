@@ -34,8 +34,8 @@ export class MapComponent implements OnInit, OnDestroy {
       container: this.mapElement().nativeElement,
       style:
         'https://api.maptiler.com/maps/streets-v2/style.json?key=cwyGOMCDF8zwmBEDJrCr',
-      center: [0.11, 51.49],
-      zoom: 16,
+      center: [26, 44],
+      zoom: 9,
     });
 
     this.mapSignal.set(map);

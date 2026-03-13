@@ -1,0 +1,30 @@
+<div class="search-wrapper">
+  <input
+    id="searchBox"
+    type="text"
+    placeholder="Caută locație..."
+    class="search-box"
+  />
+  <button class="clear-btn" (click)="clearSearch()">✖</button>
+</div>
+<google-map
+  height="400px"
+  width="100%"
+  [center]="center"
+  [zoom]="zoom"
+  [options]="options"
+  (mapClick)="placeMarker($event)"
+>
+  <!-- forțăm non-null pentru că *ngIf garantează că există -->
+  @if(markerPosition){
+  <map-marker [position]="markerPosition!"></map-marker>
+  }
+</google-map>
+
+<!-- aici doar ca să vezi coordonatele -->
+@if(markerPosition) {
+<div class="mt-2">
+  <p><strong>Latitudine:</strong> {{ markerPosition.lat }}</p>
+  <p><strong>Longitudine:</strong> {{ markerPosition.lng }}</p>
+</div>
+}

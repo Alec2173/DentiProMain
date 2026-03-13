@@ -9,6 +9,8 @@ import { Router, RouterLink } from '@angular/router';
 import { JsonPipe } from '@angular/common';
 import { ViewerComponent } from './viewer/viewer.component';
 import { IphonePreviewComponent } from './iphone-preview/iphone-preview.component';
+import { GoogleMapsModule } from '@angular/google-maps';
+import { GoogleMapsComponent } from '../google-maps/google-maps.component';
 
 @Component({
   selector: 'app-form',
@@ -19,6 +21,14 @@ import { IphonePreviewComponent } from './iphone-preview/iphone-preview.componen
     RouterLink,
     ViewerComponent,
     IphonePreviewComponent,
+    FormsModule,
+    CommonModule,
+    OraseComponent,
+    RouterLink,
+    ViewerComponent,
+    IphonePreviewComponent,
+    GoogleMapsComponent,
+    GoogleMapsModule,
   ],
   templateUrl: './form.component.html',
   styleUrl: './form.component.css',
@@ -52,9 +62,14 @@ export class FormComponent implements OnInit {
     clinicImages: [],
     clientPhone: '',
     clientEmail: '',
+    showPrices: null, // <=== adaugă
+    managerPhone: '', // <=== adaugă
+    additionalNotes: '', // <=== adaugă
+    location: { lat: null, lng: null }, // <=== adaugă
     onWebAccepted: false,
     termsAccepted: false,
   };
+
   clicked: boolean = false;
   formInput: any = {
     nume: '',
@@ -101,21 +116,26 @@ export class FormComponent implements OnInit {
       city,
       clientPhone,
       clientEmail,
+      showPrices,
+      managerPhone,
+      additionalNotes,
     } = this.formData;
 
-    if (name.trim().length === 0) {
-      this.errorMessage = 'Numele clinicii  este obligatoriu.';
-      this.isLoading = false;
+    const { lat, lng } = this.formData.location;
 
+    if (name.trim().length === 0) {
+      this.errorMessage = 'Numele clinicii este obligatoriu.';
+      this.isLoading = false;
       return;
     }
 
     if (!/^\d{10}$/.test(phone)) {
-      this.errorMessage = 'Numărul de telefon  este incorect';
+      this.errorMessage = 'Numărul de telefon este incorect.';
       this.isLoading = false;
       return;
     }
-    if (email === '') {
+
+    if (!email) {
       this.errorMessage = 'Email-ul este obligatoriu.';
       this.isLoading = false;
       return;
@@ -128,10 +148,37 @@ export class FormComponent implements OnInit {
     }
 
     if (!city) {
-      this.errorMessage = 'Selectarea orasului este obligatorie.';
+      this.errorMessage = 'Selectarea orașului este obligatorie.';
       this.isLoading = false;
       return;
     }
+
+    if (this.formData.showPrices === null) {
+      this.errorMessage =
+        'Vă rugăm să selectați DA sau NU pentru afișarea prețurilor!';
+      this.isLoading = false;
+      return;
+    }
+
+    if (!/^\d{10}$/.test(managerPhone)) {
+      this.errorMessage =
+        'Numărul de telefon al managerului trebuie să conțină exact 10 cifre!';
+      this.isLoading = false;
+      return;
+    }
+
+    if (additionalNotes.length > 100) {
+      this.errorMessage = 'Observațiile nu pot depăși 100 de caractere!';
+      this.isLoading = false;
+      return;
+    }
+
+    if (!lat || !lng) {
+      this.errorMessage = 'Adăugați locația clinicii pe hartă!';
+      this.isLoading = false;
+      return;
+    }
+
     if (!this.formData.termsAccepted || !this.formData.onWebAccepted) {
       this.errorMessage =
         'Trebuie să acceptați termenii și condițiile și să fiți de acord cu afișarea datelor.';
@@ -147,6 +194,11 @@ export class FormComponent implements OnInit {
     formDataToSend.append('city', city);
     formDataToSend.append('clientPhone', clientPhone);
     formDataToSend.append('clientEmail', clientEmail);
+    formDataToSend.append('showPrices', showPrices);
+    formDataToSend.append('managerPhone', managerPhone);
+    formDataToSend.append('additionalNotes', additionalNotes);
+    formDataToSend.append('latitude', lat?.toString() || '');
+    formDataToSend.append('longitude', lng?.toString() || '');
 
     for (let s of selectedServices) {
       formDataToSend.append('selectedServices', s);
@@ -172,8 +224,7 @@ export class FormComponent implements OnInit {
         error: (err) => {
           console.error('Eroare la trimitere:', err);
           this.errorMessage =
-            'A apărut o eroare la trimiterea formularului. Va rugam incercati mai tarziu';
-
+            'A apărut o eroare la trimiterea formularului. Vă rugăm să încercați mai târziu.';
           this.isLoading = false;
         },
       });
@@ -194,6 +245,12 @@ export class FormComponent implements OnInit {
         (s: string) => s !== value
       );
     }
+  }
+  onLocationSelected(location: google.maps.LatLngLiteral) {
+    this.formData.location = {
+      lat: location.lat,
+      lng: location.lng,
+    };
   }
 
   onLogoUpload(event: Event) {

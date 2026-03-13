@@ -2,16 +2,15 @@ import { Routes } from '@angular/router';
 
 export const routes: Routes = [
   {
+    path: '',
+    loadComponent: () =>
+      import('./home-nd/home-nd.component').then((m) => m.HomeNdComponent),
+  },
+  {
     path: 'calendar',
     loadComponent: () =>
       import('./calendar/calendar.component').then((m) => m.CalendarComponent),
   },
-  {
-    path: '',
-    loadComponent: () =>
-      import('./home/home.component').then((m) => m.HomeComponent),
-  },
-
   {
     path: 'Inscriere',
     loadComponent: () =>
@@ -36,14 +35,14 @@ export const routes: Routes = [
     path: 'sidebar',
     loadComponent: () =>
       import('./left-sidebar/left-sidebar.component').then(
-        (m) => m.LeftSidebarComponent
+        (m) => m.LeftSidebarComponent,
       ),
   },
   {
     path: 'descripton/:id',
     loadComponent: () =>
       import('./descripton-page/descripton-page.component').then(
-        (m) => m.DescriptonPageComponent
+        (m) => m.DescriptonPageComponent,
       ),
   },
   {

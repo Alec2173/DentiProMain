@@ -1,14 +1,101 @@
-<div class="main-nav">
-  <div class="img-container">
-    <img src="logo4.png" alt="logo tooth" />
-    <h1>DentiPro</h1>
+<nav class="navbar">
+  <div class="navbar-left">
+    <!-- LOGO -->
+
+    <a routerLink="/" class="brand">
+      <img src="logo-new.png" alt="DentiPro" class="brand-logo" />
+    </a>
+
+    <!-- DESKTOP NAV -->
+
+    <div class="nav-links">
+      <a routerLink="/" routerLinkActive="active">
+        <i class="fal fa-home"></i>
+        <span>Acasă</span>
+      </a>
+
+      <a routerLink="/finder" routerLinkActive="active">
+        <i class="fal fa-search"></i>
+        <span>Caută clinici</span>
+      </a>
+
+      <a routerLink="/services" routerLinkActive="active">
+        <i class="fal fa-tooth"></i>
+        <span>Servicii</span>
+      </a>
+
+      <a routerLink="/favorites" routerLinkActive="active">
+        <i class="fal fa-heart"></i>
+        <span>Favorite</span>
+      </a>
+    </div>
   </div>
-  <div class="flex-container">
-    <button [routerLink]="['']" routerLinkActive="router-link-active">
-      <i class="fa-solid fa-house fa-sm button-text" style="color: #ffffff"></i>
+
+  <!-- SEARCH -->
+
+  <div class="navbar-center">
+    <div class="global-search">
+      <i class="fal fa-search search-icon"></i>
+
+      <input type="text" placeholder="Caută clinici sau servicii..." />
+    </div>
+  </div>
+
+  <!-- RIGHT SIDE -->
+
+  <div class="navbar-right">
+    <button class="add-clinic-btn">
+      <i class="fal fa-plus"></i>
+      <span>Adaugă clinică</span>
     </button>
-    <button routerLink="/Inscriere" id="Inscriere">
-      <span class="button-text"> Înscrie clinica </span>
+
+    <button class="icon-btn">
+      <i class="fal fa-bell"></i>
+    </button>
+
+    <button class="icon-btn">
+      <i class="fal fa-envelope"></i>
+    </button>
+
+    <div class="user-menu">
+      <div class="avatar">AC</div>
+    </div>
+
+    <!-- BURGER MENU -->
+
+    <button class="mobile-menu-btn" (click)="toggleMobileMenu()">
+      <i class="fal fa-bars"></i>
     </button>
   </div>
-</div>
+</nav>
+
+<!-- MOBILE MENU -->
+
+@if (mobileMenuOpen) {
+  <div class="mobile-menu">
+    <a routerLink="/" (click)="closeMobileMenu()">
+      <i class="fal fa-home"></i>
+      Acasă
+    </a>
+
+    <a routerLink="/finder" (click)="closeMobileMenu()">
+      <i class="fal fa-search"></i>
+      Caută clinici
+    </a>
+
+    <a routerLink="/services" (click)="closeMobileMenu()">
+      <i class="fal fa-tooth"></i>
+      Servicii
+    </a>
+
+    <a routerLink="/favorites" (click)="closeMobileMenu()">
+      <i class="fal fa-heart"></i>
+      Favorite
+    </a>
+
+    <a routerLink="/add-clinic" (click)="closeMobileMenu()">
+      <i class="fal fa-plus"></i>
+      Adaugă clinică
+    </a>
+  </div>
+}

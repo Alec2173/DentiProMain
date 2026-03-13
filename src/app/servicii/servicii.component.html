@@ -1,10 +1,19 @@
 <p-dropdown
+  class="service-dropdown"
   [options]="serviceObjects"
   [(ngModel)]="selectedService"
   optionLabel="name"
   [filter]="true"
   [showClear]="true"
-  placeholder="Selectează un serviciu"
+  placeholder="Servicii"
   (ngModelChange)="onServiceChange()"
 >
+  <!-- item template -->
+
+  <ng-template let-service pTemplate="item">
+    <div class="service-item">
+      <span class="service-icon"></span>
+      <span>{{ service.name }}</span>
+    </div>
+  </ng-template>
 </p-dropdown>

@@ -1,51 +1,64 @@
 <div class="main">
-  @if(isLoading) {
-  <div class="loading-spinner"><div class="spinner"></div></div>
-  } @if(!isLoading){
+  @if (isLoading) {
+    <div class="card-list-inner">
+      @for (i of [1, 2, 3, 4, 5, 6]; track i) {
+        <div class="card skeleton-card">
+          <div class="card-image skeleton"></div>
 
-  <div class="card-list">
-    @for(clinic of clinics; track clinic.id) { @if( clinic.city === city || city
-    === '' ) {
-
-    <button
-      class="card"
-      [routerLink]="['/descripton', clinic.id]"
-      routerLinkActive="router-link-active"
-    >
-      <div class="card-header">
-        <div class="img-container">
-          @if(clinic.logo_path) {
-          <img [src]="clinic.logo_path" />
-          } @else {
-          <img
-            src="no-img.jpg"
-            alt=""
-            id="no-img"
-            style="background-color: blue"
-          />
-          }
+          <div class="card-info skeleton-info">
+            <div class="skeleton-line skeleton"></div>
+            <div class="skeleton-line skeleton small"></div>
+            <div class="skeleton-line skeleton tiny"></div>
+          </div>
         </div>
-        <div class="oras">
-          <p>{{ clinic.city }}</p>
-        </div>
-        <div class="review-container">
-          <span>4.5</span>
-        </div>
-      </div>
-      <div class="card-body">
-        @if(clinic.clinic_images_parsed.length > 0) {
-        <img [src]="clinic.clinic_images_parsed[0]" alt="clinic" />
-        } @else {
-        <img src="no-img.jpg" alt="clinic" />
-        }
-      </div>
+      }
+    </div>
+  }
 
-      <div class="card-footer">
-        <h2>{{ clinic.name }}</h2>
-      </div>
-    </button>
+  @if (!isLoading) {
+    <cdk-virtual-scroll-viewport class="viewport" itemSize="136">
+      <div class="card-list-inner">
+        <button
+          *cdkVirtualFor="
+            let clinic of filteredClinics;
+            trackBy: trackByClinicId
+          "
+          class="card promoted"
+          [routerLink]="['/descripton', clinic.id]"
+        >
+          <div class="promo-badge">PROMOVAT</div>
 
-    } }
-  </div>
+          <div class="card-image">
+            @if (clinic.clinic_images_parsed.length > 0) {
+              <img [src]="clinic.clinic_images_parsed[0]" loading="lazy" />
+            } @else {
+              <img src="no-img.jpg" />
+            }
+          </div>
+
+          <div class="card-info">
+            <div class="card-header">
+              <div class="logo">
+                @if (clinic.logo_path) {
+                  <img [src]="clinic.logo_path" />
+                } @else {
+                  <img src="no-img.jpg" />
+                }
+              </div>
+
+              <span class="city">
+                {{ clinic.city }}
+              </span>
+            </div>
+
+            <h3 class="clinic-name">
+              {{ clinic.name }}
+            </h3>
+
+            <div class="rating">⭐ 4.5</div>
+          </div>
+        </button>
+      </div>
+    </cdk-virtual-scroll-viewport>
   }
 </div>

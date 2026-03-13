@@ -1,0 +1,175 @@
+.search-section {
+  padding: 140px 10% 120px;
+
+  background:
+    radial-gradient(circle at top, #0ea5e940, transparent 60%),
+    linear-gradient(180deg, #071a30, #061423);
+
+  display: flex;
+  justify-content: center;
+}
+
+.search-container {
+  max-width: 1100px;
+  width: 100%;
+  text-align: center;
+}
+
+/* TITLE */
+
+.search-title h1 {
+  font-size: 58px;
+
+  line-height: 1.1;
+
+  margin-bottom: 15px;
+
+  font-weight: 700;
+}
+
+.search-title span {
+  background: linear-gradient(90deg, #0ea5e9, #2563eb);
+
+  -webkit-background-clip: text;
+
+  color: transparent;
+}
+
+.search-title p {
+  color: #9fb4d4;
+
+  font-size: 18px;
+
+  margin-bottom: 50px;
+}
+
+/* SEARCH BOARD */
+
+.search-board {
+  display: flex;
+
+  align-items: center;
+
+  gap: 25px;
+
+  padding: 20px 30px;
+
+  border-radius: 20px;
+
+  background: rgba(255, 255, 255, 0.05);
+
+  backdrop-filter: blur(16px);
+
+  border: 1px solid rgba(255, 255, 255, 0.1);
+
+  box-shadow:
+    0 30px 80px rgba(0, 0, 0, 0.55),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+/* FIELD */
+
+.search-field {
+  display: flex;
+
+  flex-direction: column;
+
+  text-align: left;
+
+  flex: 1;
+}
+
+.search-field label {
+  font-size: 12px;
+
+  color: #9fb4d4;
+
+  margin-bottom: 6px;
+}
+
+/* INPUT WRAPPER */
+
+.input-wrapper {
+  display: flex;
+
+  align-items: center;
+
+  gap: 10px;
+
+  padding: 10px 14px;
+
+  border-radius: 10px;
+
+  background: #081c34;
+
+  transition: 0.2s;
+}
+
+.input-wrapper:hover {
+  background: #0b2746;
+}
+
+.input-wrapper input,
+.input-wrapper select {
+  background: none;
+
+  border: none;
+
+  outline: none;
+
+  color: white;
+
+  width: 100%;
+
+  font-size: 15px;
+}
+
+/* ICON */
+
+.material-symbols-outlined {
+  font-size: 22px;
+
+  color: #0ea5e9;
+}
+
+/* DIVIDER */
+
+.divider {
+  width: 1px;
+
+  height: 40px;
+
+  background: rgba(255, 255, 255, 0.15);
+}
+
+/* BUTTON */
+
+.search-button {
+  display: flex;
+
+  align-items: center;
+
+  gap: 8px;
+
+  padding: 14px 24px;
+
+  border: none;
+
+  border-radius: 12px;
+
+  background: linear-gradient(135deg, #0ea5e9, #2563eb);
+
+  color: white;
+
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition: 0.25s;
+}
+
+.search-button:hover {
+  transform: translateY(-2px);
+
+  box-shadow: 0 15px 40px rgba(14, 165, 233, 0.35);
+}

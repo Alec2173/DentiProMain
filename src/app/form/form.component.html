@@ -1,172 +1,194 @@
 <div class="main">
-  @if(!clicked) {
-  <div class="page-divider">
-    <form class="clinic-form" #clinicForm="ngForm">
-      <div class="eye-btn">
-        <button (click)="onClick()">
-          <i class="fa-solid fa-eye"></i>
-        </button>
-      </div>
-
-      <div class="content">
-        <div class="two">
-          <label>
-            Nume Clinica :
-            <input
-              type="text"
-              name="name"
-              [(ngModel)]="formData.name"
-              (input)="getName($event)"
-            />
-          </label>
-          <label>
-            Telefon (Pentru contact din partea DentiPro):
-            <input
-              type="tel"
-              name="phone"
-              [(ngModel)]="formData.phone"
-              required
-              (input)="getTel($event)"
-            />
-          </label>
-        </div>
-        <div class="two">
-          <label>
-            Email:
-            <input
-              type="email"
-              name="email"
-              [(ngModel)]="formData.email"
-              (input)="getEmail($event)"
-            />
-          </label>
-
-          <label>
-            Confirmare Email:
-            <input
-              type="email"
-              name="confirmEmail"
-              [(ngModel)]="formData.confirmEmail"
-            />
-          </label>
+  @if (!clicked) {
+    <div class="page-divider">
+      <form class="clinic-form glass-card" #clinicForm="ngForm">
+        <div class="form-header">
+          <h2>Înregistrează clinica</h2>
+          <p>Adaugă informațiile clinicii pentru listarea pe DentiPro</p>
         </div>
 
-        <!-- <div class="checkbox-list">
-      @for (serviciu of serviceObject; track serviciu.id) {
-      <div class="checkbox-item">
-        <input
-          type="checkbox"
-          id="{{ serviciu.id }}"
-          name="services"
-          [value]="serviciu.label"
-          [checked]="formData.selectedServices?.includes(serviciu.label)"
-          (change)="onServiceChange($event)"
-        />
-        <label for="obturatii">{{ serviciu.label }}</label>
-      </div>
-      }
-    </div> -->
+        <div class="form-section">
+          <h3>Informații clinică</h3>
 
-        <div class="city-container">
+          <div class="two">
+            <label class="input-group">
+              <span>Nume clinică</span>
+              <input
+                type="text"
+                name="name"
+                [(ngModel)]="formData.name"
+                (input)="getName($event)"
+              />
+            </label>
+
+            <label class="input-group">
+              <span>Telefon clinică</span>
+              <input
+                type="tel"
+                name="phone"
+                [(ngModel)]="formData.phone"
+                required
+                (input)="getTel($event)"
+              />
+            </label>
+          </div>
+
+          <div class="two">
+            <label class="input-group">
+              <span>Email</span>
+              <input
+                type="email"
+                name="email"
+                [(ngModel)]="formData.email"
+                (input)="getEmail($event)"
+              />
+            </label>
+
+            <label class="input-group">
+              <span>Confirmare email</span>
+              <input
+                type="email"
+                name="confirmEmail"
+                [(ngModel)]="formData.confirmEmail"
+              />
+            </label>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <h3>Media clinică</h3>
+
+          <div class="upload-grid">
+            <label class="upload-card">
+              <div class="upload-icon">⬆</div>
+              <p>Încarcă logo</p>
+
+              <input
+                type="file"
+                name="logo"
+                (change)="onLogoUpload($event)"
+                accept="image/*"
+              />
+            </label>
+
+            <label class="upload-card">
+              <div class="upload-icon">⬆</div>
+              <p>Imagini clinică</p>
+
+              <input
+                type="file"
+                name="clinicImages"
+                (change)="onImagesUpload($event)"
+                multiple
+                accept="image/*"
+              />
+            </label>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <h3>Locație clinică</h3>
+
           <app-orase
             (citySelected)="formData.city = $event"
             (citySelected)="formInput.oras = $event"
-          ></app-orase>
+          >
+          </app-orase>
+
+          <div class="map-container">
+            <p>Selectează locația pe hartă</p>
+
+            <app-google-maps (locationSelected)="onLocationSelected($event)">
+            </app-google-maps>
+          </div>
         </div>
-        <div class="two drag">
-          <label>
-            Logo clinică: (optional) @if(formData.logo) {
-            <br />
-            <p>Fisier Selectat : {{ formData.logo.name }}</p>
-            }
+
+        <div class="form-section">
+          <h3>Preferințe</h3>
+
+          <div class="radio-group">
+            <label class="radio-card">
+              <input
+                type="radio"
+                name="share-prices"
+                (change)="formData.showPrices = true"
+              />
+
+              <span>Arată prețurile</span>
+            </label>
+
+            <label class="radio-card">
+              <input
+                type="radio"
+                name="share-prices"
+                (change)="formData.showPrices = false"
+              />
+
+              <span>Nu arăta prețurile</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <label class="input-group">
+            <span>Telefon manager</span>
+
             <input
-              type="file"
-              name="logo"
-              (change)="onLogoUpload($event)"
-              accept="image/*"
+              type="tel"
+              name="managerPhone"
+              placeholder="07xxxxxxxx"
+              [(ngModel)]="formData.managerPhone"
             />
           </label>
 
-          <label>
-            Imagini cu clinica: (optional) @if(formData.clinicImages.length > 0)
-            {
-            <br />
+          <label class="input-group">
+            <span>Observații</span>
 
-            <p id="images-p">Fisiere selectate :</p>
-            <div class="clinicImages-container">
-              @for(image of formData.clinicImages; track image.name) {
-
-              <span id="clinicImages">{{ image.name }}</span>
-
-              }
-            </div>
-            }
-
-            <input
-              type="file"
-              name="clinicImages"
-              (change)="onImagesUpload($event)"
-              multiple
-              accept="image/*"
-            />
+            <textarea
+              rows="3"
+              maxlength="100"
+              [(ngModel)]="formData.additionalNotes"
+              name="additionalNotes"
+            ></textarea>
           </label>
         </div>
-        @if(errorMessage) {
-        <div class="error-message">
-          <p>{{ errorMessage }}</p>
-        </div>
-        } @if(validMessage) {
-        <div class="valid-message">
-          <p>{{ validMessage }}</p>
-        </div>
-        }
-        <div class="terms-conditions">
-          <div class="checkbox-item">
+
+        <div class="terms">
+          <label>
             <input
               type="checkbox"
-              id="terms"
-              name="termsAccepted"
               [(ngModel)]="formData.termsAccepted"
+              name="terms"
             />
-            <label for="terms">
-              Am citit si sunt de acord cu
-              <a [routerLink]="['/GDPR']">Termenii si conditiile</a>
-            </label>
-          </div>
-          <div class="checkbox-item">
+            Accept termenii
+          </label>
+
+          <label>
             <input
               type="checkbox"
-              id="onWeb"
-              name="onWebAccepted"
               [(ngModel)]="formData.onWebAccepted"
+              name="onWeb"
             />
-            <label for="onWeb">
-              Sunt de acord ca datele mele sa fie afisate pe platforma DentiPro
-            </label>
-          </div>
+            Accept publicarea datelor
+          </label>
         </div>
 
-        <button type="submit" [disabled]="isLoading" (click)="onSubmit()">
-          {{ isLoading ? "Se trimite..." : "Trimite" }}
+        <button
+          class="submit-btn"
+          type="submit"
+          [disabled]="isLoading"
+          (click)="onSubmit()"
+        >
+          {{ isLoading ? "Se trimite..." : "Trimite cererea" }}
         </button>
-        @if(isLoading) {
-        <div class="loading-spinner"></div>
-        }
-      </div>
-    </form>
-    <app-iphone-preview
-      [transferData]="formInput"
-      (closeViewer)="clicked = false"
-      [dataForImage]="formData"
-    ></app-iphone-preview>
-  </div>
+      </form>
 
-  } @else {
-  <!-- <app-viewer
-    [transferData]="formInput"
-    (closeViewer)="clicked = false"
-    [dataForImage]="formData"
-  ></app-viewer> -->
-
+      <app-iphone-preview
+        [transferData]="formInput"
+        (closeViewer)="clicked = false"
+        [dataForImage]="formData"
+      >
+      </app-iphone-preview>
+    </div>
   }
 </div>

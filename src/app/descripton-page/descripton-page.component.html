@@ -1,7 +1,31 @@
 <div class="main">
-  <div *ngIf="isLoading" class="loading-spinner">
-    <div class="spinner"></div>
+  <!-- SKELETON -->
+
+  <div *ngIf="isLoading" class="clinic-wrapper">
+    <div class="clinic-top-section">
+      <div class="clinic-gallery-main skeleton skeleton-img"></div>
+
+      <div class="clinic-info-box">
+        <div class="skeleton skeleton-line title"></div>
+
+        <div class="skeleton skeleton-line"></div>
+
+        <div class="skeleton skeleton-line small"></div>
+
+        <div class="skeleton skeleton-line small"></div>
+      </div>
+    </div>
+
+    <div class="clinic-description-section">
+      <div class="skeleton skeleton-line title"></div>
+
+      <div class="skeleton skeleton-line"></div>
+      <div class="skeleton skeleton-line"></div>
+      <div class="skeleton skeleton-line"></div>
+    </div>
   </div>
+
+  <!-- CONTENT -->
 
   <div class="clinic-wrapper" *ngIf="!isLoading">
     <div class="clinic-top-section">
@@ -12,6 +36,7 @@
             class="main-image"
             alt="clinic image"
           />
+
           <div class="thumbnail-list">
             <img
               *ngFor="let img of clinicImages; let i = index"
@@ -22,29 +47,46 @@
             />
           </div>
         </ng-container>
+
         <ng-template #noImage>
-          <div class="no-image">Clinica nu are imagini momentan.</div>
+          <div class="no-image">Clinica nu a adăugat imagini momentan</div>
         </ng-template>
       </div>
 
       <div class="clinic-info-box">
-        <div class="name">
+        <div class="clinic-header">
           <img [src]="clinics.logo_path" alt="logo" class="clinic-logo" />
-          <h2>{{ clinics.name }}</h2>
+
+          <div class="clinic-title">
+            <h1>{{ clinics.name }}</h1>
+
+            <span class="clinic-city">
+              {{ clinics.city }}
+            </span>
+          </div>
         </div>
-        <div class="city">
-          <p>📍 {{ clinics.city }}</p>
-        </div>
-        <div class="contact">
-          <p>📞 {{ clinics.phone }}</p>
-          <p>✉️ {{ clinics.email }}</p>
+
+        <div class="clinic-contact">
+          <div class="contact-item">
+            <span class="label">Telefon</span>
+            <span class="value">{{ clinics.phone }}</span>
+          </div>
+
+          <div class="contact-item">
+            <span class="label">Email</span>
+            <span class="value">{{ clinics.email }}</span>
+          </div>
         </div>
       </div>
     </div>
 
     <div class="clinic-description-section">
       <h3>Despre clinică</h3>
-      <p *ngIf="clinics.services; else noDesc">{{ clinics.services }}</p>
+
+      <p *ngIf="clinics.services; else noDesc">
+        {{ clinics.services }}
+      </p>
+
       <ng-template #noDesc>
         <p>Clinica nu a adăugat o descriere momentan.</p>
       </ng-template>

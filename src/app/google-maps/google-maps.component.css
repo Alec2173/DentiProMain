@@ -1,0 +1,37 @@
+:host {
+  display: block;
+  position: relative;
+}
+
+.search-wrapper {
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  background: white;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  z-index: 5;
+}
+
+.search-box {
+  width: 280px;
+  padding: 6px 10px;
+  border: none;
+  outline: none;
+}
+
+.clear-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  padding: 0 8px;
+  color: #666;
+}
+
+.clear-btn:hover {
+  color: #000;
+}

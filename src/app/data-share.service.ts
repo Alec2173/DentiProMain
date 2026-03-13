@@ -12,4 +12,11 @@ export class DataShareService {
   setCity(city: any) {
     this.citySubject.next(city);
   }
+
+  private filtersSubject = new BehaviorSubject<any>(null);
+  filters$ = this.filtersSubject.asObservable();
+
+  setFilters(filters: any) {
+    this.filtersSubject.next(filters);
+  }
 }

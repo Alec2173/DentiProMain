@@ -1,0 +1,84 @@
+/* container */
+
+.service-dropdown {
+  width: 180px;
+}
+
+/* main dropdown */
+
+.service-dropdown .p-dropdown {
+  background: transparent;
+
+  border: none;
+
+  border-radius: 10px;
+
+  padding: 4px 10px;
+
+  transition: all 0.2s ease;
+}
+
+/* hover */
+
+.service-dropdown .p-dropdown:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+/* label */
+
+.service-dropdown .p-dropdown-label {
+  color: white;
+
+  font-size: 14px;
+}
+
+/* arrow */
+
+.service-dropdown .p-dropdown-trigger {
+  color: #9fb4d4;
+}
+
+/* dropdown panel */
+
+.p-dropdown-panel {
+  background: #0f2f54;
+
+  border-radius: 12px;
+
+  border: 1px solid rgba(255, 255, 255, 0.05);
+
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.45);
+}
+
+/* items */
+
+.service-item {
+  display: flex;
+  align-items: center;
+
+  gap: 10px;
+}
+
+/* item hover */
+
+.p-dropdown-item:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+/* filter input */
+
+.p-dropdown-filter {
+  background: #081c34;
+
+  border: none;
+
+  border-radius: 8px;
+
+  color: white;
+}
+
+/* placeholder */
+
+.p-placeholder {
+  color: #9fb4d4;
+}

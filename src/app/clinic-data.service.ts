@@ -52,7 +52,7 @@ export class ClinicDataService {
       .pipe(tap((data) => console.log('Date primite în serviciu:', data)));
   }
 
-  loadClinicsAuto(): Observable<Clinic[]> {
+  loadClinicsAuto(filters?: any): Observable<Clinic[]> {
     return this.http
       .post<{ token: string }>('https://www.dentipro.ro/api/login', {
         username: 'Alec',
@@ -60,7 +60,7 @@ export class ClinicDataService {
       })
       .pipe(
         tap((res) => localStorage.setItem('token', res.token)),
-        switchMap(() => this.getClinics())
+        switchMap(() => this.getClinics()),
       );
   }
 }

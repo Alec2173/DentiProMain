@@ -5,7 +5,7 @@ import { FilterNavComponent } from '../filter-nav/filter-nav.component';
 
 @Component({
   selector: 'app-finder',
-  imports: [MapComponent, CardsComponent, FilterNavComponent, MapComponent],
+  imports: [MapComponent, CardsComponent, FilterNavComponent],
   templateUrl: './finder.component.html',
   styleUrl: './finder.component.css',
 })

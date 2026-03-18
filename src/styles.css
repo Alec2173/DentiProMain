@@ -1,10 +1,36 @@
 @import "vanilla-cookieconsent/dist/cookieconsent.css";
+@import "maplibre-gl/dist/maplibre-gl.css";
+:root {
+  --bg-primary: #071a30;
+  --bg-secondary: #061423;
 
+  --accent-primary: #0ea5e9;
+  --accent-secondary: #2563eb;
+
+  --glow-blue: rgba(14, 165, 233, 0.35);
+  --glow-indigo: rgba(37, 99, 235, 0.35);
+
+  --text-primary: #ffffff;
+  --text-muted: #9fb4d4;
+  --text-soft: #8aa8d0;
+
+  --surface-main: #071a30;
+
+  --border-light: rgba(255, 255, 255, 0.08);
+  --border-subtle: rgba(255, 255, 255, 0.05);
+
+  --gradient-accent: linear-gradient(135deg, #0ea5e9, #2563eb);
+
+  --radius-lg: 18px;
+  --radius-xl: 22px;
+
+  --transition-fast: 0.15s ease;
+  --transition-normal: 0.25s ease;
+}
 html,
 body {
-  width: 100vw !important;
-  max-width: 100vw !important;
-  position: relative;
+  height: 100%;
+  margin: 0;
 }
 body {
   overflow-x: hidden !important;
@@ -14,16 +40,194 @@ body {
   width: 100%;
   color: white !important;
 }
-.pt-serif-bold {
-  font-family: "PT Serif", serif;
-  font-weight: 700;
-  font-style: normal;
+/* ===============================
+   MAP POPUP CONTAINER
+================================ */
+/* ======================================
+   MAP POPUP CONTAINER
+====================================== */
+
+.maplibregl-popup-content {
+  padding: 0;
+
+  border-radius: 14px;
+
+  overflow: hidden;
+
+  background: #081c34;
+
+  border: 1px solid rgba(255, 255, 255, 0.08);
+
+  box-shadow:
+    0 16px 40px rgba(0, 0, 0, 0.45),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04);
 }
-.paytone-one-regular {
-  font-family: "Paytone One", sans-serif;
-  font-weight: 800;
-  font-style: normal;
+
+.maplibregl-popup-tip {
+  border-top-color: #081c34;
 }
-app-root {
-  min-width: 100% !important;
+
+/* ======================================
+   POPUP CARD
+====================================== */
+
+.map-popup-card {
+  width: 240px;
+
+  display: flex;
+  flex-direction: column;
+
+  color: white;
+
+  cursor: pointer;
+
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease;
+}
+
+/* hover */
+
+.map-popup-card:hover {
+  transform: translateY(-3px);
+
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.35);
+}
+
+/* ======================================
+   IMAGE
+====================================== */
+
+.popup-image {
+  width: 100%;
+
+  height: 120px;
+
+  overflow: hidden;
+
+  position: relative;
+}
+
+.popup-image img {
+  width: 100%;
+  height: 100%;
+
+  object-fit: cover;
+
+  transition: transform 0.35s ease;
+}
+
+/* zoom effect */
+
+.map-popup-card:hover .popup-image img {
+  transform: scale(1.05);
+}
+
+/* subtle gradient overlay */
+
+.popup-image::after {
+  content: "";
+
+  position: absolute;
+
+  inset: 0;
+
+  background: linear-gradient(
+    180deg,
+    rgba(8, 28, 52, 0) 40%,
+    rgba(8, 28, 52, 0.75)
+  );
+}
+
+/* ======================================
+   INFO SECTION
+====================================== */
+
+.popup-info {
+  padding: 12px 14px;
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 5px;
+}
+
+/* ======================================
+   HEADER
+====================================== */
+
+.popup-header {
+  display: flex;
+
+  align-items: center;
+
+  gap: 8px;
+}
+
+/* ======================================
+   LOGO
+====================================== */
+
+.popup-logo {
+  width: 22px;
+  height: 22px;
+
+  border-radius: 6px;
+
+  object-fit: cover;
+
+  background: rgba(255, 255, 255, 0.12);
+}
+
+/* ======================================
+   CITY
+====================================== */
+
+.popup-city {
+  font-size: 12px;
+
+  color: rgba(255, 255, 255, 0.7);
+}
+
+/* ======================================
+   CLINIC NAME
+====================================== */
+
+.popup-name {
+  font-size: 15px;
+
+  font-weight: 600;
+
+  line-height: 1.2;
+
+  letter-spacing: 0.2px;
+}
+
+/* ======================================
+   RATING
+====================================== */
+
+.popup-rating {
+  font-size: 13px;
+
+  color: #ffd166;
+
+  font-weight: 600;
+}
+
+/* ======================================
+   HOVER GLOW
+====================================== */
+
+.map-popup-card:hover .popup-name {
+  color: #38bdf8;
+}
+
+/* ======================================
+   SMALL TRANSITION SMOOTHNESS
+====================================== */
+
+.popup-name,
+.popup-image img {
+  transition: all 0.2s ease;
 }

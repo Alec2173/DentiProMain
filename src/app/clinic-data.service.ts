@@ -63,4 +63,13 @@ export class ClinicDataService {
         switchMap(() => this.getClinics()),
       );
   }
+
+  updateClinic(id: number, data: Partial<Clinic>): Observable<Clinic> {
+    const token = localStorage.getItem('token');
+    let headers = new HttpHeaders();
+    if (token) {
+      headers = headers.set('Authorization', `Bearer ${token}`);
+    }
+    return this.http.patch<Clinic>(`${this.apiUrl}/${id}`, data, { headers });
+  }
 }

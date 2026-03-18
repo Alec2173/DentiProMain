@@ -28,6 +28,8 @@
   <!-- CONTENT -->
 
   <div class="clinic-wrapper" *ngIf="!isLoading">
+    <!-- TOP SECTION (NESCHIMBAT) -->
+
     <div class="clinic-top-section">
       <div class="clinic-gallery-main">
         <ng-container *ngIf="clinicImages.length > 0; else noImage">
@@ -53,6 +55,8 @@
         </ng-template>
       </div>
 
+      <!-- INFO BOX (EXTINS) -->
+
       <div class="clinic-info-box">
         <div class="clinic-header">
           <img [src]="clinics.logo_path" alt="logo" class="clinic-logo" />
@@ -63,6 +67,10 @@
             <span class="clinic-city">
               {{ clinics.city }}
             </span>
+
+            <div class="clinic-rating">
+              ⭐ 4.8 <span class="review-count">(124 recenzii)</span>
+            </div>
           </div>
         </div>
 
@@ -77,8 +85,12 @@
             <span class="value">{{ clinics.email }}</span>
           </div>
         </div>
+
+        <button class="book-btn">Programează consultație</button>
       </div>
     </div>
+
+    <!-- DESCRIERE (NESCHIMBAT) -->
 
     <div class="clinic-description-section">
       <h3>Despre clinică</h3>
@@ -88,8 +100,76 @@
       </p>
 
       <ng-template #noDesc>
-        <p>Clinica nu a adăugat o descriere momentan.</p>
+        <p>
+          Clinica oferă servicii stomatologice moderne utilizând tehnologie
+          digitală și materiale premium. Echipa este formată din medici
+          specializați în implantologie, estetică dentară și ortodonție.
+        </p>
       </ng-template>
+    </div>
+
+    <!-- SERVICII -->
+
+    <div class="clinic-services-section">
+      <h3>Servicii populare</h3>
+
+      <div class="service-list">
+        <div class="service-item">
+          <span>Consultație stomatologică</span>
+          <span class="price">150 RON</span>
+        </div>
+
+        <div class="service-item">
+          <span>Detartraj profesional</span>
+          <span class="price">250 RON</span>
+        </div>
+
+        <div class="service-item">
+          <span>Albire dentară</span>
+          <span class="price">900 RON</span>
+        </div>
+
+        <div class="service-item">
+          <span>Implant dentar</span>
+          <span class="price">3200 RON</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- PROGRAM -->
+
+    <div class="clinic-schedule-section">
+      <h3>Program clinică</h3>
+
+      <div class="schedule-row">
+        <span>Luni - Vineri</span>
+        <span>09:00 - 19:00</span>
+      </div>
+
+      <div class="schedule-row">
+        <span>Sâmbătă</span>
+        <span>10:00 - 15:00</span>
+      </div>
+
+      <div class="schedule-row">
+        <span>Duminică</span>
+        <span>Închis</span>
+      </div>
+    </div>
+
+    <!-- DOTARI -->
+
+    <div class="clinic-features">
+      <h3>Dotări clinică</h3>
+
+      <div class="feature-list">
+        <div class="feature">Radiologie digitală</div>
+        <div class="feature">Implantologie</div>
+        <div class="feature">Ortodonție</div>
+        <div class="feature">Parcare gratuită</div>
+        <div class="feature">Microscop endodontic</div>
+        <div class="feature">Sedare conștientă</div>
+      </div>
     </div>
   </div>
 </div>

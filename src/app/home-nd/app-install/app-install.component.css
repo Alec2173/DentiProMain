@@ -1,0 +1,333 @@
+.main {
+  min-height: 100vh;
+
+  background:
+    radial-gradient(
+      1200px 800px at 10% -10%,
+      var(--glow-blue),
+      transparent 60%
+    ),
+    radial-gradient(
+      900px 700px at 90% -10%,
+      var(--glow-indigo),
+      transparent 60%
+    ),
+    linear-gradient(180deg, var(--bg-primary), var(--bg-secondary));
+
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  padding-right: 100px;
+  padding-top: 140px;
+
+  color: var(--text-primary);
+}
+
+.mobile-preview-section {
+  width: 100%;
+  max-width: 1300px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 140px;
+
+  padding: 80px 0;
+}
+
+/* LEFT CONTENT */
+
+.mobile-content {
+  flex: 1;
+
+  max-width: 520px;
+
+  display: flex;
+  justify-content: center;
+}
+
+/* RIGHT COLUMN */
+
+.mobile-preview {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  gap: 24px;
+}
+/* IPHONE */
+
+.iphone-wrapper {
+  display: flex;
+  justify-content: center;
+}
+
+.iphone-body {
+  width: 260px;
+  height: 540px;
+
+  background: black;
+
+  border-radius: 55px;
+
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6);
+
+  overflow: hidden;
+
+  position: relative;
+}
+
+.iphone-notch {
+  height: 36px;
+
+  display: flex;
+  justify-content: center;
+}
+
+.iphone-notch::before {
+  content: "";
+
+  width: 170px;
+  height: 20px;
+
+  background: black;
+
+  border-bottom-left-radius: 10px;
+  border-bottom-right-radius: 10px;
+}
+
+/* SCREEN */
+
+.iphone-screen {
+  background: #0f172a;
+
+  border-radius: 36px;
+
+  margin: 8px;
+
+  height: calc(100% - 90px);
+
+  display: flex;
+  flex-direction: column;
+
+  overflow: hidden;
+}
+
+/* NAVBAR */
+
+.phone-navbar {
+  height: 60px;
+
+  background: #071a30;
+
+  display: flex;
+  align-items: center;
+
+  gap: 10px;
+
+  padding: 0 16px;
+}
+#logo-on-iphone {
+  width: 100px;
+  height: auto;
+  margin-top: 10px;
+}
+
+.phone-navbar img {
+  width: 38px;
+}
+
+.phone-navbar h1 {
+  font-family: "Rowdies", sans-serif;
+
+  font-size: 20px;
+
+  font-weight: 700;
+
+  color: white;
+
+  margin: 0;
+}
+
+/* MAP */
+
+.phone-map {
+  flex: 1;
+
+  background:
+    radial-gradient(circle at 30% 30%, #1e3a8a 0%, transparent 40%),
+    radial-gradient(circle at 70% 60%, #0ea5e9 0%, transparent 50%), #0f172a;
+
+  position: relative;
+}
+
+.map-marker {
+  width: 14px;
+  height: 14px;
+
+  background: #0ea5e9;
+
+  border-radius: 50%;
+
+  position: absolute;
+
+  box-shadow: 0 0 10px #0ea5e9;
+}
+
+.m1 {
+  top: 40%;
+  left: 30%;
+}
+.m2 {
+  top: 60%;
+  left: 60%;
+}
+.m3 {
+  top: 30%;
+  left: 70%;
+}
+
+/* CLINIC CARD */
+
+.phone-card {
+  background: white;
+
+  border-radius: 18px;
+
+  padding: 16px;
+
+  margin: 12px;
+
+  color: #111;
+
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+}
+
+.phone-card h3 {
+  margin: 0 0 8px;
+
+  font-size: 15px;
+}
+
+.phone-info {
+  display: flex;
+  align-items: center;
+
+  gap: 6px;
+
+  font-size: 13px;
+
+  margin-bottom: 4px;
+}
+
+.phone-cta {
+  width: 100%;
+
+  margin-top: 8px;
+
+  padding: 8px;
+
+  border: none;
+
+  border-radius: 8px;
+
+  background: linear-gradient(135deg, #0ea5e9, #2563eb);
+
+  color: white;
+
+  cursor: pointer;
+
+  font-size: 13px;
+}
+
+/* HOME INDICATOR */
+
+.iphone-home {
+  height: 36px;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.iphone-home::before {
+  content: "";
+
+  width: 110px;
+  height: 4px;
+
+  background: #888;
+
+  border-radius: 3px;
+}
+
+/* STORE BUTTONS */
+
+.store-buttons {
+  display: flex;
+  flex-direction: column;
+
+  gap: 14px;
+
+  margin-top: 6px;
+}
+
+.store-badge {
+  display: block;
+
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.store-btn {
+  display: flex;
+  align-items: center;
+
+  gap: 10px;
+
+  background: white;
+
+  color: black;
+
+  padding: 10px 16px;
+
+  border-radius: 12px;
+
+  cursor: pointer;
+
+  text-decoration: none;
+
+  transition: 0.2s;
+}
+.store-badge img {
+  width: 180px;
+
+  height: auto;
+
+  display: block;
+}
+
+/* hover effect subtle */
+
+.store-badge:hover {
+  transform: translateY(-3px);
+
+  filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.5));
+}
+
+.store-btn span {
+  font-size: 10px;
+  opacity: 0.7;
+}
+
+.store-btn strong {
+  font-size: 14px;
+}
+
+.store-btn:hover {
+  transform: translateY(-2px);
+
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+}

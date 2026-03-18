@@ -1,0 +1,106 @@
+.footer {
+  padding: 100px 0 40px;
+
+  background: linear-gradient(180deg, #071423, #06121f);
+
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.footer-container {
+  max-width: 1200px;
+
+  margin: auto;
+
+  display: grid;
+
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+
+  gap: 60px;
+}
+
+/* BRAND */
+
+.footer-brand p {
+  margin-top: 14px;
+
+  font-size: 14px;
+
+  color: var(--text-muted);
+
+  line-height: 1.6;
+}
+
+.footer-logo {
+  display: flex;
+
+  align-items: center;
+
+  gap: 10px;
+}
+
+.footer-logo img {
+  width: 40px;
+}
+
+.footer-logo h3 {
+  font-size: 22px;
+}
+
+/* COLUMNS */
+
+.footer-column {
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 12px;
+}
+
+.footer-column h4 {
+  margin-bottom: 10px;
+
+  font-size: 16px;
+}
+
+.footer-column a {
+  color: var(--text-muted);
+
+  font-size: 14px;
+
+  text-decoration: none;
+
+  transition: color 0.2s ease;
+}
+
+.footer-column a:hover {
+  color: white;
+}
+
+/* BOTTOM */
+
+.footer-bottom {
+  margin-top: 70px;
+
+  padding-top: 24px;
+
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+
+  display: flex;
+
+  justify-content: space-between;
+
+  max-width: 1200px;
+
+  margin-left: auto;
+  margin-right: auto;
+
+  font-size: 13px;
+
+  color: var(--text-muted);
+}
+
+.footer-social {
+  display: flex;
+
+  gap: 14px;
+}

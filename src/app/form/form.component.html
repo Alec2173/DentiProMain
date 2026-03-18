@@ -90,8 +90,7 @@
           <h3>Locație clinică</h3>
 
           <app-orase
-            (citySelected)="formData.city = $event"
-            (citySelected)="formInput.oras = $event"
+            (citySelected)="formData.city = $event; formInput.oras = $event"
           >
           </app-orase>
 
@@ -175,7 +174,7 @@
 
         <button
           class="submit-btn"
-          type="submit"
+          type="button"
           [disabled]="isLoading"
           (click)="onSubmit()"
         >

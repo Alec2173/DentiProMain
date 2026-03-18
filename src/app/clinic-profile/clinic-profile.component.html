@@ -1,0 +1,441 @@
+<div class="profile-page">
+
+  <!-- ─── SKELETON ──────────────────────────────────────────── -->
+
+  @if (isLoading) {
+    <div class="profile-container">
+      <div class="card profile-header-card">
+        <div class="skeleton cover-skeleton"></div>
+        <div class="header-body skeleton-body">
+          <div class="skeleton logo-skeleton"></div>
+          <div class="header-text-skeleton">
+            <div class="skeleton sk-line sk-title"></div>
+            <div class="skeleton sk-line sk-short"></div>
+            <div class="sk-badges">
+              <div class="skeleton sk-badge"></div>
+              <div class="skeleton sk-badge"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="profile-grid">
+        <div class="profile-left">
+          <div class="card">
+            <div class="skeleton sk-line sk-title" style="width:40%;margin-bottom:20px;"></div>
+            <div class="skeleton" style="height:300px;border-radius:12px;margin-bottom:12px;"></div>
+            <div style="display:flex;gap:8px;">
+              @for (t of [1,2,3,4]; track t) {
+                <div class="skeleton" style="width:72px;height:72px;border-radius:10px;"></div>
+              }
+            </div>
+          </div>
+          <div class="card">
+            <div class="skeleton sk-line sk-title" style="width:50%;margin-bottom:20px;"></div>
+            <div style="display:flex;flex-wrap:wrap;gap:8px;">
+              @for (t of [1,2,3,4,5]; track t) {
+                <div class="skeleton sk-chip"></div>
+              }
+            </div>
+          </div>
+        </div>
+
+        <div class="profile-right">
+          <div class="card">
+            <div class="skeleton sk-line sk-title" style="width:55%;margin-bottom:20px;"></div>
+            @for (t of [1,2,3,4]; track t) {
+              <div class="skeleton sk-line" style="margin-bottom:18px;"></div>
+            }
+          </div>
+          <div class="card">
+            <div class="skeleton sk-line sk-title" style="width:30%;margin-bottom:20px;"></div>
+            @for (t of [1,2,3]; track t) {
+              <div class="skeleton sk-line" style="margin-bottom:14px;"></div>
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- ─── CONTENT ───────────────────────────────────────────── -->
+
+  @if (!isLoading && clinic) {
+    <input type="file" #logoInput hidden accept="image/*" (change)="onLogoFileSelected($event)" />
+    <input type="file" #galleryInput hidden accept="image/*" multiple (change)="onGalleryFilesSelected($event)" />
+
+    <div class="profile-container">
+
+      <!-- PROFILE HEADER -->
+      <div class="card profile-header-card">
+        <div class="profile-cover">
+          @if (clinicImages.length > 0) {
+            <img [src]="clinicImages[0]" class="cover-img" alt="" />
+          } @else {
+            <div class="cover-gradient"></div>
+          }
+          <div class="cover-overlay"></div>
+        </div>
+
+        <div class="header-body">
+          <div class="logo-area">
+            <div class="logo-wrapper">
+              <img [src]="clinic.logo_path" class="clinic-logo" alt="Logo" />
+              <button class="logo-edit-btn" (click)="triggerLogoInput()" title="Schimbă logo">
+                <span class="material-symbols-outlined">photo_camera</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="header-info">
+            <div class="header-name-city">
+              @if (editingField === 'name') {
+                <div class="inline-edit-wrap">
+                  <input
+                    class="edit-input heading-input"
+                    [(ngModel)]="editValue"
+                    (keydown.enter)="saveEdit()"
+                    (keydown.escape)="cancelEdit()"
+                    autofocus
+                  />
+                  <div class="edit-actions">
+                    <button class="btn-save" (click)="saveEdit()">Salvează</button>
+                    <button class="btn-cancel" (click)="cancelEdit()">Renunță</button>
+                  </div>
+                </div>
+              } @else {
+                <h1 class="clinic-name">
+                  {{ clinic.name }}
+                  <button class="icon-btn" (click)="startEdit('name', clinic.name)" title="Editează numele">
+                    <span class="material-symbols-outlined">edit</span>
+                  </button>
+                </h1>
+              }
+
+              @if (editingField === 'city') {
+                <div class="inline-edit-wrap">
+                  <input
+                    class="edit-input"
+                    [(ngModel)]="editValue"
+                    (keydown.enter)="saveEdit()"
+                    (keydown.escape)="cancelEdit()"
+                    autofocus
+                  />
+                  <div class="edit-actions">
+                    <button class="btn-save" (click)="saveEdit()">Salvează</button>
+                    <button class="btn-cancel" (click)="cancelEdit()">Renunță</button>
+                  </div>
+                </div>
+              } @else {
+                <div class="clinic-city">
+                  <span class="material-symbols-outlined city-icon">location_on</span>
+                  {{ clinic.city }}
+                  <button class="icon-btn" (click)="startEdit('city', clinic.city)" title="Editează orașul">
+                    <span class="material-symbols-outlined">edit</span>
+                  </button>
+                </div>
+              }
+            </div>
+
+            <div class="header-meta">
+              @if (servicesArray.length > 0) {
+                <div class="meta-badge">
+                  <span class="material-symbols-outlined">medical_services</span>
+                  {{ servicesArray.length }} servicii
+                </div>
+              }
+              @if (clinic.phone) {
+                <div class="meta-badge">
+                  <span class="material-symbols-outlined">phone</span>
+                  {{ clinic.phone }}
+                </div>
+              }
+              @if (clinicImages.length > 0) {
+                <div class="meta-badge">
+                  <span class="material-symbols-outlined">photo_library</span>
+                  {{ clinicImages.length }} imagini
+                </div>
+              }
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- GRID -->
+      <div class="profile-grid">
+
+        <!-- LEFT COL -->
+        <div class="profile-left">
+
+          <!-- GALERIE -->
+          <div class="card gallery-card">
+            <div class="card-header">
+              <h3 class="card-title">Galerie imagini</h3>
+              <button class="text-btn" (click)="openGalleryEdit()">
+                <span class="material-symbols-outlined">photo_library</span>
+                Gestionează
+              </button>
+            </div>
+
+            @if (clinicImages.length > 0) {
+              <div class="gallery-main-wrap">
+                <img [src]="clinicImages[activeImageIndex]" class="gallery-main-img" alt="" />
+                <div class="gallery-count-badge">{{ activeImageIndex + 1 }} / {{ clinicImages.length }}</div>
+              </div>
+              <div class="gallery-thumbs">
+                @for (img of clinicImages; track img; let i = $index) {
+                  <div class="thumb-wrap" [class.active]="i === activeImageIndex" (click)="activeImageIndex = i">
+                    <img [src]="img" class="thumb-img" alt="" />
+                  </div>
+                }
+              </div>
+            } @else {
+              <div class="gallery-empty" (click)="openGalleryEdit()">
+                <span class="material-symbols-outlined empty-icon">add_photo_alternate</span>
+                <p>Nicio imagine adăugată</p>
+                <span class="empty-hint">Click pentru a adăuga imagini</span>
+              </div>
+            }
+          </div>
+
+          <!-- SERVICII -->
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">Servicii oferite</h3>
+              <button class="icon-btn" (click)="startEdit('services', clinic.services)" title="Editează serviciile">
+                <span class="material-symbols-outlined">edit</span>
+              </button>
+            </div>
+
+            @if (editingField === 'services') {
+              <div class="inline-edit-wrap">
+                <p class="edit-hint">Separă serviciile prin virgulă — ex: Implantologie, Ortodonție</p>
+                <input
+                  class="edit-input"
+                  [(ngModel)]="editValue"
+                  (keydown.enter)="saveEdit()"
+                  (keydown.escape)="cancelEdit()"
+                  autofocus
+                />
+                <div class="edit-actions">
+                  <button class="btn-save" (click)="saveEdit()">Salvează</button>
+                  <button class="btn-cancel" (click)="cancelEdit()">Renunță</button>
+                </div>
+              </div>
+            } @else {
+              @if (servicesArray.length > 0) {
+                <div class="chips-wrap">
+                  @for (service of servicesArray; track service) {
+                    <span class="chip">{{ service }}</span>
+                  }
+                </div>
+              } @else {
+                <p class="empty-text">Niciun serviciu adăugat încă.</p>
+              }
+            }
+          </div>
+
+        </div>
+
+        <!-- RIGHT COL -->
+        <div class="profile-right">
+
+          <!-- DATE DE CONTACT -->
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">Date de contact</h3>
+            </div>
+            <div class="contact-list">
+
+              <div class="contact-item">
+                <div class="contact-label-row">
+                  <span class="material-symbols-outlined contact-icon">phone</span>
+                  <span class="contact-label">Telefon clinică</span>
+                </div>
+                @if (editingField === 'phone') {
+                  <div class="inline-edit-wrap">
+                    <input class="edit-input" [(ngModel)]="editValue" (keydown.enter)="saveEdit()" (keydown.escape)="cancelEdit()" autofocus />
+                    <div class="edit-actions">
+                      <button class="btn-save" (click)="saveEdit()">Salvează</button>
+                      <button class="btn-cancel" (click)="cancelEdit()">Renunță</button>
+                    </div>
+                  </div>
+                } @else {
+                  <div class="contact-value-row">
+                    <span class="contact-value">{{ clinic.phone || '—' }}</span>
+                    <button class="icon-btn sm" (click)="startEdit('phone', clinic.phone)">
+                      <span class="material-symbols-outlined">edit</span>
+                    </button>
+                  </div>
+                }
+              </div>
+
+              <div class="contact-item">
+                <div class="contact-label-row">
+                  <span class="material-symbols-outlined contact-icon">mail</span>
+                  <span class="contact-label">Email clinică</span>
+                </div>
+                @if (editingField === 'email') {
+                  <div class="inline-edit-wrap">
+                    <input class="edit-input" [(ngModel)]="editValue" (keydown.enter)="saveEdit()" (keydown.escape)="cancelEdit()" autofocus />
+                    <div class="edit-actions">
+                      <button class="btn-save" (click)="saveEdit()">Salvează</button>
+                      <button class="btn-cancel" (click)="cancelEdit()">Renunță</button>
+                    </div>
+                  </div>
+                } @else {
+                  <div class="contact-value-row">
+                    <span class="contact-value">{{ clinic.email || '—' }}</span>
+                    <button class="icon-btn sm" (click)="startEdit('email', clinic.email)">
+                      <span class="material-symbols-outlined">edit</span>
+                    </button>
+                  </div>
+                }
+              </div>
+
+              <div class="contact-divider"></div>
+
+              <div class="contact-item">
+                <div class="contact-label-row">
+                  <span class="material-symbols-outlined contact-icon">smartphone</span>
+                  <span class="contact-label">Telefon contact pacienți</span>
+                </div>
+                @if (editingField === 'client_phone') {
+                  <div class="inline-edit-wrap">
+                    <input class="edit-input" [(ngModel)]="editValue" (keydown.enter)="saveEdit()" (keydown.escape)="cancelEdit()" autofocus />
+                    <div class="edit-actions">
+                      <button class="btn-save" (click)="saveEdit()">Salvează</button>
+                      <button class="btn-cancel" (click)="cancelEdit()">Renunță</button>
+                    </div>
+                  </div>
+                } @else {
+                  <div class="contact-value-row">
+                    <span class="contact-value">{{ clinic.client_phone || '—' }}</span>
+                    <button class="icon-btn sm" (click)="startEdit('client_phone', clinic.client_phone)">
+                      <span class="material-symbols-outlined">edit</span>
+                    </button>
+                  </div>
+                }
+              </div>
+
+              <div class="contact-item">
+                <div class="contact-label-row">
+                  <span class="material-symbols-outlined contact-icon">contact_mail</span>
+                  <span class="contact-label">Email contact pacienți</span>
+                </div>
+                @if (editingField === 'client_email') {
+                  <div class="inline-edit-wrap">
+                    <input class="edit-input" [(ngModel)]="editValue" (keydown.enter)="saveEdit()" (keydown.escape)="cancelEdit()" autofocus />
+                    <div class="edit-actions">
+                      <button class="btn-save" (click)="saveEdit()">Salvează</button>
+                      <button class="btn-cancel" (click)="cancelEdit()">Renunță</button>
+                    </div>
+                  </div>
+                } @else {
+                  <div class="contact-value-row">
+                    <span class="contact-value">{{ clinic.client_email || '—' }}</span>
+                    <button class="icon-btn sm" (click)="startEdit('client_email', clinic.client_email)">
+                      <span class="material-symbols-outlined">edit</span>
+                    </button>
+                  </div>
+                }
+              </div>
+
+            </div>
+          </div>
+
+          <!-- PROGRAM -->
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">Program</h3>
+              <button class="icon-btn" title="Editează programul">
+                <span class="material-symbols-outlined">edit</span>
+              </button>
+            </div>
+            <div class="schedule-list">
+              <div class="schedule-row">
+                <span class="schedule-day">Luni — Vineri</span>
+                <span class="schedule-time">09:00 – 19:00</span>
+              </div>
+              <div class="schedule-row">
+                <span class="schedule-day">Sâmbătă</span>
+                <span class="schedule-time">10:00 – 15:00</span>
+              </div>
+              <div class="schedule-row">
+                <span class="schedule-day">Duminică</span>
+                <span class="schedule-time closed-label">Închis</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- ─── GALLERY MODAL ──────────────────────────────────── -->
+
+    @if (editingGallery) {
+      <div class="modal-backdrop" (click)="closeGalleryEdit()">
+        <div class="modal-card" (click)="$event.stopPropagation()">
+
+          <div class="modal-header">
+            <h3>Editează galeria</h3>
+            <button class="icon-btn" (click)="closeGalleryEdit()">
+              <span class="material-symbols-outlined">close</span>
+            </button>
+          </div>
+
+          <div class="modal-body">
+            @if (clinicImages.length > 0) {
+              <div class="modal-section">
+                <p class="modal-label">Imagini curente</p>
+                <div class="modal-images-grid">
+                  @for (img of clinicImages; track img; let i = $index) {
+                    <div class="modal-img-wrap">
+                      <img [src]="img" class="modal-img" alt="" />
+                      <button class="remove-img-btn" (click)="removeExistingImage(i)">
+                        <span class="material-symbols-outlined">close</span>
+                      </button>
+                    </div>
+                  }
+                </div>
+              </div>
+            }
+
+            <div class="modal-section">
+              <p class="modal-label">Adaugă imagini noi</p>
+              <div class="upload-zone" (click)="triggerGalleryInput()">
+                <span class="material-symbols-outlined upload-icon">cloud_upload</span>
+                <p>Click pentru a selecta imagini</p>
+                <span class="upload-hint">JPG, PNG, WEBP — multiple fișiere acceptate</span>
+              </div>
+              @if (newImagePreviews.length > 0) {
+                <div class="modal-images-grid" style="margin-top:16px;">
+                  @for (preview of newImagePreviews; track preview; let i = $index) {
+                    <div class="modal-img-wrap">
+                      <img [src]="preview" class="modal-img" alt="" />
+                      <button class="remove-img-btn" (click)="removeNewPreview(i)">
+                        <span class="material-symbols-outlined">close</span>
+                      </button>
+                    </div>
+                  }
+                </div>
+              }
+            </div>
+          </div>
+
+          <div class="modal-footer">
+            <button class="btn-cancel-lg" (click)="closeGalleryEdit()">Renunță</button>
+            <button class="btn-save-lg" (click)="saveGallery()">
+              <span class="material-symbols-outlined">check</span>
+              Salvează galeria
+            </button>
+          </div>
+
+        </div>
+      </div>
+    }
+
+  }
+
+</div>

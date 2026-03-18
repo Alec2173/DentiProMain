@@ -1,0 +1,85 @@
+.mobile-text h2 {
+  font-size: 40px;
+
+  line-height: 1.2;
+
+  margin-bottom: 20px;
+}
+
+.mobile-subtitle {
+  font-size: 17px;
+
+  color: var(--text-muted);
+
+  margin-bottom: 36px;
+}
+
+.mobile-features {
+  display: flex;
+  flex-direction: column;
+
+  gap: 24px;
+
+  margin-bottom: 40px;
+}
+
+.feature {
+  display: flex;
+
+  gap: 16px;
+}
+
+.feature span {
+  font-size: 28px;
+
+  color: var(--accent-primary);
+}
+
+.feature h4 {
+  margin: 0;
+
+  font-size: 16px;
+}
+
+.feature p {
+  margin: 2px 0 0;
+
+  font-size: 14px;
+
+  color: var(--text-soft);
+}
+
+.mobile-cta {
+  display: flex;
+  flex-direction: column;
+
+  gap: 10px;
+}
+
+.mobile-main-btn {
+  padding: 16px 28px;
+
+  border-radius: 14px;
+
+  text-decoration: none;
+
+  background: linear-gradient(135deg, #0ea5e9, #2563eb);
+
+  color: white;
+
+  font-weight: 600;
+
+  width: fit-content;
+
+  transition: transform 0.2s ease;
+}
+
+.mobile-main-btn:hover {
+  transform: translateY(-3px);
+}
+
+.mobile-note {
+  font-size: 13px;
+
+  color: var(--text-muted);
+}

@@ -1,23 +1,39 @@
-import { Component, OnInit, Output, EventEmitter } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  Output,
+  EventEmitter,
+  ViewEncapsulation,
+  ViewChild,
+} from '@angular/core';
+
 import { ServiciiService } from '../servicii.service';
-import { DropdownModule } from 'primeng/dropdown';
 import { FormsModule } from '@angular/forms';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { AutoCompleteModule, AutoComplete } from 'primeng/autocomplete';
 
 @Component({
   selector: 'app-servicii',
-  imports: [FormsModule, DropdownModule],
+  standalone: true,
+  imports: [FormsModule, AutoCompleteModule],
   templateUrl: './servicii.component.html',
   styleUrl: './servicii.component.css',
+  encapsulation: ViewEncapsulation.None,
 })
-export class ServiciiComponent {
+export class ServiciiComponent implements OnInit {
   constructor(private service: ServiciiService) {}
+
+  @ViewChild('serviceSearch') serviceSearch!: AutoComplete;
+
   @Output() citySelected = new EventEmitter<string>();
 
-  selectedService: any = '';
-  servicii: any = [];
-  serviceObjects: any = [];
-  caca: any[] = [];
+  selectedService: any = null;
+
+  servicii: string[] = [];
+  serviceObjects: any[] = [];
+  filteredServices: any[] = [];
+
+  preventOpen = false;
+
   ngOnInit(): void {
     this.servicii = this.service.getServiciuName();
 
@@ -25,8 +41,43 @@ export class ServiciiComponent {
       id: index + 1,
       name: name,
     }));
+
+    this.filteredServices = [...this.serviceObjects];
   }
-  onServiceChange() {
-    this.citySelected.emit(this.selectedService.name);
+
+  filterServices(event: any) {
+    const query = event.query?.toLowerCase() || '';
+
+    if (!query) {
+      this.filteredServices = [...this.serviceObjects];
+      return;
+    }
+
+    this.filteredServices = this.serviceObjects.filter((service) =>
+      service.name.toLowerCase().includes(query),
+    );
+  }
+
+  showAllServices() {
+    if (this.preventOpen) {
+      this.preventOpen = false;
+      return;
+    }
+
+    this.filteredServices = [...this.serviceObjects];
+
+    setTimeout(() => {
+      this.serviceSearch.show();
+    });
+  }
+
+  onServiceSelect() {
+    if (this.selectedService) {
+      this.citySelected.emit(this.selectedService.name);
+    }
+
+    this.preventOpen = true;
+
+    this.serviceSearch.hide();
   }
 }

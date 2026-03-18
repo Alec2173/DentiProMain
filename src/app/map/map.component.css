@@ -1,11 +1,28 @@
 .wrap-map {
-  width: calc(65vw - 5rem);
-  height: 92.5vh;
   position: relative;
+  width: 100%;
+  height: calc(100vh - 70px); /* navbar height */
+  overflow: hidden;
 }
 
 .map {
-  width: 100%;
-  height: 100%;
-  position: relative; /* asigură-te că e așa */
+  position: absolute;
+  inset: 0;
+}
+
+/* MapLibre core layout */
+
+.maplibregl-map {
+  position: absolute !important;
+  inset: 0;
+}
+
+.maplibregl-canvas {
+  position: absolute !important;
+  inset: 0;
+}
+
+.maplibregl-marker {
+  position: absolute;
+  pointer-events: auto;
 }

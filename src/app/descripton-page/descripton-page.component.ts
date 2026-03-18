@@ -22,7 +22,7 @@ export class DescriptonPageComponent implements OnInit {
     const id = this.route.snapshot.paramMap.get('id');
     this.clinicData.loadClinicsAuto().subscribe({
       next: (data) => {
-        this.clinics = data.find((c: any) => c.id == id);
+        this.clinics = data.find((c: any) => c.id === Number(id));
 
         try {
           this.clinicImages = JSON.parse(this.clinics.clinic_images || '[]');

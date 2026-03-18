@@ -27,12 +27,15 @@ app-map {
 } */
 /* Container general pe toată pagina */
 .main {
-  height: 100vh;
+  margin-top: 100px;
+  height: (100vh-100px);
   display: flex;
   flex-direction: column;
+  width: 100vw;
 }
 
 app-filter-nav {
+  margin-top: 100px;
   position: fixed;
   top: 0;
   left: 0;
@@ -43,24 +46,25 @@ app-filter-nav {
 }
 .flex-container {
   flex: 1 1;
-  height: calc(100vh - 7.5vh);
+  height: calc(100vh);
   position: relative;
   overflow-y: hidden;
 }
 
 app-map {
+  margin-top: 80px;
   position: fixed;
-  top: 7.5vh;
+  top: 100px;
   bottom: 0;
   height: 110%;
-  left: 5rem;
-  width: calc(65vw - 5rem);
+
+  width: 70vw;
   background: #ddd;
 }
 
 app-cards {
   position: fixed;
-  top: 7.5vh;
+  top: 180px;
   bottom: 0;
   right: 0;
   width: 35vw;

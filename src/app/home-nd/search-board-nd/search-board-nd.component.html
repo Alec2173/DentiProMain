@@ -1,60 +1,39 @@
-<section class="search-section">
-  <div class="search-container">
-    <div class="search-title">
-      <h1>
-        Găsește clinica dentară
-        <span>perfectă</span>
-      </h1>
+<div class="main">
+  <section class="hero">
+    <h1 class="hero-title">Găsește clinica dentară potrivită</h1>
 
-      <p>Compară clinici, servicii și recenzii reale într-un singur loc</p>
-    </div>
+    <p class="hero-subtitle">
+      Compară servicii, disponibilitate și contactează direct clinica dorită.
+    </p>
+  </section>
 
-    <div class="search-board">
-      <div class="search-field location">
-        <label>Locație</label>
-
-        <div class="input-wrapper">
-          <span class="material-symbols-outlined"> location_on </span>
-
-          <input type="text" placeholder="Ex: București" />
-        </div>
+  <section class="search-board-wrapper">
+    <div class="search-bar">
+      <div class="search-segment">
+        <span class="material-symbols-outlined">location_on</span>
+        <input type="text" placeholder="Oraș sau clinică" />
       </div>
 
       <div class="divider"></div>
 
-      <div class="search-field service">
-        <label>Serviciu</label>
-
-        <div class="input-wrapper">
-          <span class="material-symbols-outlined"> dentistry </span>
-
-          <select>
-            <option>Toate serviciile</option>
-            <option>Implant dentar</option>
-            <option>Albire dentară</option>
-            <option>Detartraj</option>
-            <option>Aparat dentar</option>
-          </select>
-        </div>
+      <div class="search-segment">
+        <span class="material-symbols-outlined">medical_services</span>
+        <input type="text" placeholder="Serviciu dentar" />
       </div>
 
       <div class="divider"></div>
 
-      <div class="search-field date">
-        <label>Dată</label>
-
-        <div class="input-wrapper">
-          <span class="material-symbols-outlined"> calendar_month </span>
-
-          <app-calendar></app-calendar>
-        </div>
+      <div class="search-segment">
+        <span class="material-symbols-outlined">calendar_month</span>
       </div>
 
-      <button class="search-button">
-        <span class="material-symbols-outlined"> search </span>
-
-        Caută
+      <button class="search-action">
+        <span class="material-symbols-outlined">search</span>
       </button>
     </div>
-  </div>
-</section>
+
+    <div class="search-meta">
+      Peste <strong>70 de clinici dentare</strong> înregistrate pe platformă
+    </div>
+  </section>
+</div>

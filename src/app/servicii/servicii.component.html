@@ -1,19 +1,25 @@
-<p-dropdown
-  class="service-dropdown"
-  [options]="serviceObjects"
+<p-autoComplete
+  #serviceSearch
+  class="service-search"
+  appendTo="self"
   [(ngModel)]="selectedService"
-  optionLabel="name"
-  [filter]="true"
+  [suggestions]="filteredServices"
+  (completeMethod)="filterServices($event)"
+  (onFocus)="showAllServices()"
+  (onSelect)="onServiceSelect()"
+  field="name"
+  placeholder="Servicii stomatologice"
   [showClear]="true"
-  placeholder="Servicii"
-  (ngModelChange)="onServiceChange()"
 >
-  <!-- item template -->
-
   <ng-template let-service pTemplate="item">
-    <div class="service-item">
-      <span class="service-icon"></span>
-      <span>{{ service.name }}</span>
+    <div class="service-option">
+      <div class="service-option-icon">
+        <span class="material-symbols-outlined">dentistry</span>
+      </div>
+
+      <div class="service-option-text">
+        {{ service.name }}
+      </div>
     </div>
   </ng-template>
-</p-dropdown>
+</p-autoComplete>

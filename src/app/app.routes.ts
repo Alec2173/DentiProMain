@@ -46,6 +46,13 @@ export const routes: Routes = [
       ),
   },
   {
+    path: 'clinic-profile/:id',
+    loadComponent: () =>
+      import('./clinic-profile/clinic-profile.component').then(
+        (m) => m.ClinicProfileComponent,
+      ),
+  },
+  {
     path: 'finder',
     loadComponent: () =>
       import('./finder/finder.component').then((m) => m.FinderComponent),

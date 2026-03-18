@@ -5,9 +5,7 @@ import { RoCitiesService } from '../ro-cities.service';
 import { OraseComponent } from '../orase/orase.component';
 import { ServiciiService } from '../servicii.service';
 import { HttpClient } from '@angular/common/http';
-import { Router, RouterLink } from '@angular/router';
-import { JsonPipe } from '@angular/common';
-import { ViewerComponent } from './viewer/viewer.component';
+import { Router } from '@angular/router';
 import { IphonePreviewComponent } from './iphone-preview/iphone-preview.component';
 import { GoogleMapsModule } from '@angular/google-maps';
 import { GoogleMapsComponent } from '../google-maps/google-maps.component';
@@ -18,14 +16,6 @@ import { GoogleMapsComponent } from '../google-maps/google-maps.component';
     FormsModule,
     CommonModule,
     OraseComponent,
-    RouterLink,
-    ViewerComponent,
-    IphonePreviewComponent,
-    FormsModule,
-    CommonModule,
-    OraseComponent,
-    RouterLink,
-    ViewerComponent,
     IphonePreviewComponent,
     GoogleMapsComponent,
     GoogleMapsModule,
@@ -38,7 +28,7 @@ export class FormComponent implements OnInit {
     private roCitiesService: RoCitiesService,
     private serviciiService: ServiciiService,
     private http: HttpClient,
-    private router: Router
+    private router: Router,
   ) {}
   isLoading: boolean = false;
   errorMessage = '';
@@ -242,7 +232,7 @@ export class FormComponent implements OnInit {
       this.formData.selectedServices.push(value);
     } else {
       this.formData.selectedServices = this.formData.selectedServices.filter(
-        (s: string) => s !== value
+        (s: string) => s !== value,
       );
     }
   }

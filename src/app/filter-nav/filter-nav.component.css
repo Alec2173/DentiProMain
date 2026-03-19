@@ -1,250 +1,271 @@
-/* ---------- MAIN ---------- */
+/* ════════════════════════════════════════
+   FILTER NAV
+════════════════════════════════════════ */
 
-.main {
+.fnav {
   width: 100%;
-  height: 80px;
-
-  display: flex;
-  align-items: center;
-
-  padding-left: 160px; /* spațiu pentru sidenav */
-
-  background: #081c34;
-}
-
-/* ---------- NAV BAR ---------- */
-
-.nav {
-  width: 95%;
   height: 60px;
-
   display: flex;
   align-items: center;
-  justify-content: space-between;
-
-  padding: 0 24px;
-
-  border-radius: 14px;
-
-  backdrop-filter: blur(12px);
-
-  background: linear-gradient(
-    160deg,
-    rgba(13, 42, 78, 0.95),
-    rgba(8, 28, 52, 0.95)
-  );
-
-  border: 1px solid rgba(255, 255, 255, 0.05);
-
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.35);
+  background: rgba(6, 14, 28, 0.97);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  padding: 0 20px;
 }
 
-/* ---------- LEFT FILTERS ---------- */
-
-.nav-left {
+.fnav-inner {
+  width: 100%;
   display: flex;
   align-items: center;
-
-  gap: 28px; /* spațiere mare între filtre */
+  gap: 2px;
 }
 
-/* ---------- FILTER ITEM ---------- */
+/* ─── SEGMENT ─── */
 
-.filter-item {
+.seg {
+  position: relative;
   display: flex;
   align-items: center;
-
-  gap: 10px;
-
-  padding: 8px 12px;
-
-  border-radius: 10px;
-
-  transition: all 0.2s ease;
+  gap: 8px;
+  padding: 7px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.15s;
+  user-select: none;
 }
 
-.filter-item:hover {
+.seg:hover,
+.seg.active {
   background: rgba(255, 255, 255, 0.05);
 }
 
-/* ---------- ICON ---------- */
-
-.icon {
-  width: 16px;
-  height: 16px;
-
-  fill: #9fb4d4;
+.seg-icon {
+  font-size: 16px;
+  color: var(--accent-blue);
+  flex-shrink: 0;
 }
 
-/* ---------- DIVIDER ---------- */
+.seg-body {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 120px;
+}
 
-.divider {
-  width: 1px;
-  height: 26px;
+.seg-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.3);
+  pointer-events: none;
+}
 
+.seg-value-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.seg-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  box-shadow: none;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 13px;
+  font-weight: 500;
+  font-family: inherit;
+  cursor: text;
+  min-width: 0;
+  max-width: 150px;
+}
+
+.seg-input:focus,
+.seg-input:focus-visible {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+.seg-input::placeholder {
+  color: rgba(255, 255, 255, 0.35);
+  font-weight: 400;
+}
+
+/* ─── CLEAR BTN ─── */
+
+.clear-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: rgba(255, 255, 255, 0.3);
+  display: flex;
+  align-items: center;
+  padding: 2px;
+  border-radius: 50%;
+  transition: color 0.15s, background 0.15s;
+  flex-shrink: 0;
+}
+
+.clear-btn:hover {
+  color: white;
   background: rgba(255, 255, 255, 0.08);
 }
 
-/* ---------- DROPDOWN ---------- */
+.clear-btn .material-symbols-outlined { font-size: 14px; }
 
-.dropdown-filter {
-  position: relative;
+/* ─── SEPARATOR ─── */
+
+.seg-sep {
+  width: 1px;
+  height: 22px;
+  background: rgba(255, 255, 255, 0.06);
+  flex-shrink: 0;
+  margin: 0 2px;
 }
 
-/* button */
+/* ─── ACTIVE FILTERS ─── */
 
-.dropdown-btn {
+.active-filters {
   display: flex;
   align-items: center;
-
-  gap: 8px;
-
-  padding: 8px 12px;
-
-  border-radius: 10px;
-
-  border: none;
-
-  background: transparent;
-
-  color: white;
-
-  cursor: pointer;
-
-  font-size: 14px;
-
-  transition: all 0.2s ease;
+  gap: 6px;
+  margin-left: 12px;
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
 }
 
-.dropdown-btn:hover {
-  background: rgba(255, 255, 255, 0.05);
+.filter-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  background: rgba(37, 99, 235, 0.15);
+  border: 1px solid rgba(37, 99, 235, 0.25);
+  border-radius: 100px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #93c5fd;
+  white-space: nowrap;
 }
 
-/* arrow */
+.filter-pill .material-symbols-outlined { font-size: 13px; }
 
-.arrow {
-  width: 14px;
-  height: 14px;
-
-  fill: #9fb4d4;
+.no-filters {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.2);
 }
 
-/* dropdown */
-
-.dropdown-content {
-  position: absolute;
-
-  top: 44px;
-  left: 0;
-
-  display: flex;
-  flex-direction: column;
-
-  gap: 10px;
-
-  padding: 14px;
-
-  border-radius: 12px;
-
-  background: #0f2f54;
-
-  border: 1px solid rgba(255, 255, 255, 0.05);
-
-  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.45);
-
-  opacity: 0;
-  pointer-events: none;
-
-  transform: translateY(8px);
-
-  transition: all 0.2s ease;
-}
-
-/* open dropdown */
-
-.dropdown-filter:focus-within .dropdown-content {
-  opacity: 1;
-  pointer-events: auto;
-
-  transform: translateY(0);
-}
-
-/* inputs */
-
-.dropdown-content input {
-  width: 100px;
-
-  padding: 7px 10px;
-
-  border-radius: 7px;
-
-  border: none;
-
-  outline: none;
-
-  background: #081c34;
-
-  color: white;
-
-  font-size: 13px;
-}
-
-.dropdown-content input::placeholder {
-  color: rgba(255, 255, 255, 0.45);
-}
-
-/* ---------- APPLY BUTTON ---------- */
-
-/* ---------- APPLY BUTTON ---------- */
+/* ─── APPLY BUTTON ─── */
 
 .apply-btn {
   display: flex;
   align-items: center;
-
-  gap: 8px;
-
-  padding: 10px 20px;
-
+  gap: 6px;
+  background: linear-gradient(135deg, #2563eb, #0ea5e9);
   border: none;
-
-  border-radius: 999px;
-
-  background: linear-gradient(135deg, #0ea5e9, #2563eb);
-
-  color: white;
-
-  font-size: 14px;
-
+  border-radius: 8px;
+  padding: 8px 18px;
+  color: #fff;
+  font-size: 13px;
   font-weight: 600;
-
-  letter-spacing: 0.3px;
-
+  font-family: inherit;
   cursor: pointer;
-
-  transition: all 0.25s ease;
-
-  box-shadow: 0 6px 18px rgba(37, 99, 235, 0.35);
+  flex-shrink: 0;
+  margin-left: auto;
+  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.3);
+  transition: opacity 0.15s, transform 0.15s;
 }
-
-/* hover */
 
 .apply-btn:hover {
-  transform: translateY(-2px);
-
-  box-shadow: 0 10px 25px rgba(37, 99, 235, 0.45);
+  opacity: 0.9;
+  transform: translateY(-1px);
 }
 
-/* active */
+.apply-btn .material-symbols-outlined { font-size: 16px; }
 
-.apply-btn:active {
-  transform: scale(0.97);
+/* ════════════════════════════════════════
+   DROPDOWNS
+════════════════════════════════════════ */
+
+.dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  background: #0c1e38;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 14px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.65);
+  z-index: 9999;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  animation: dropIn 0.16s cubic-bezier(0.34, 1.4, 0.64, 1);
 }
 
-/* icon */
+@keyframes dropIn {
+  from { opacity: 0; transform: translateY(-5px) scale(0.98); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
 
-.apply-icon {
-  width: 16px;
-  height: 16px;
+.drop-list {
+  min-width: 220px;
+  max-height: 300px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255,255,255,0.08) transparent;
+}
 
-  fill: white;
+.drop-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.7);
+  cursor: pointer;
+  transition: background 0.12s, color 0.12s;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.drop-item:last-child { border-bottom: none; }
+
+.drop-item:hover,
+.drop-item.selected {
+  background: rgba(37, 99, 235, 0.14);
+  color: white;
+}
+
+.drop-icon {
+  font-size: 14px;
+  color: #3b82f6;
+}
+
+.check-icon {
+  font-size: 13px;
+  color: #3b82f6;
+}
+
+.drop-empty {
+  padding: 14px;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.25);
+  text-align: center;
+}
+
+/* ─── SERVICE DROPDOWN ─── */
+
+.service-dd {
+  min-width: 300px;
+  max-height: 380px;
+}
+
+.service-list {
+  overflow-y: auto;
+  flex: 1;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255,255,255,0.08) transparent;
 }

@@ -1,64 +1,76 @@
-<section class="popular-clinics">
-  <div class="container">
-    <div class="section-header">
-      <h2>Clinici apreciate de pacienți</h2>
+<section class="pc-section">
+  <div class="pc-container">
 
-      <p>
-        Descoperă unele dintre cele mai populare clinici dentare de pe platformă
+    <!-- HEADER -->
+    <div class="section-header">
+      <span class="section-badge">Clinici recomandate</span>
+      <h2 class="section-title">
+        Clinici apreciate<br>
+        <span class="title-gradient">de pacienți</span>
+      </h2>
+      <p class="section-subtitle">
+        Descoperă cele mai populare clinici dentare verificate pe platformă.
       </p>
     </div>
 
-    <div class="clinic-grid">
-      <div class="clinic-card">
-        <div class="clinic-image">
-          <img src="clinic1.jpg" />
-        </div>
-
-        <div class="clinic-content">
-          <h3>Smile Dent Clinic</h3>
-
-          <div class="clinic-meta">
-            <span class="material-symbols-outlined">location_on</span>
-            București
+    <!-- SKELETON -->
+    @if (isLoading) {
+      <div class="clinic-grid">
+        @for (i of [1,2,3]; track i) {
+          <div class="clinic-card">
+            <div class="card-image skeleton" style="height: 200px;"></div>
+            <div class="card-body">
+              <div class="skeleton" style="height: 20px; width: 60%; margin-bottom: 12px;"></div>
+              <div class="skeleton" style="height: 14px; width: 40%;"></div>
+            </div>
           </div>
-
-          <div class="clinic-rating">⭐ 4.9 · 124 recenzii</div>
-        </div>
+        }
       </div>
+    }
 
-      <div class="clinic-card">
-        <div class="clinic-image">
-          <img src="clinic2.jpg" />
-        </div>
-
-        <div class="clinic-content">
-          <h3>Implant Experts</h3>
-
-          <div class="clinic-meta">
-            <span class="material-symbols-outlined">location_on</span>
-            Cluj-Napoca
-          </div>
-
-          <div class="clinic-rating">⭐ 4.8 · 96 recenzii</div>
-        </div>
+    <!-- REAL DATA -->
+    @if (!isLoading) {
+      <div class="clinic-grid">
+        @for (clinic of clinics; track clinic.id) {
+          <a class="clinic-card" [routerLink]="['/descripton', clinic.id]">
+            <div class="card-image">
+              @if (getCoverImage(clinic)) {
+                <img [src]="getCoverImage(clinic)" [alt]="clinic.name" loading="lazy" />
+              } @else {
+                <div class="card-image-placeholder">
+                  <span class="material-symbols-outlined">local_hospital</span>
+                </div>
+              }
+              <div class="card-image-overlay"></div>
+            </div>
+            <div class="card-body">
+              <div class="card-header">
+                @if (clinic.logo_path) {
+                  <img class="card-logo" [src]="clinic.logo_path" [alt]="clinic.name" />
+                }
+                <h3 class="card-name">{{ clinic.name }}</h3>
+              </div>
+              <div class="card-meta">
+                <span class="material-symbols-outlined meta-icon">location_on</span>
+                {{ clinic.city }}
+              </div>
+              <div class="card-footer">
+                <span class="card-link">Vezi profil</span>
+                <span class="material-symbols-outlined card-arrow">arrow_forward</span>
+              </div>
+            </div>
+          </a>
+        }
       </div>
+    }
 
-      <div class="clinic-card">
-        <div class="clinic-image">
-          <img src="clinic3.jpg" />
-        </div>
-
-        <div class="clinic-content">
-          <h3>Dental Elite</h3>
-
-          <div class="clinic-meta">
-            <span class="material-symbols-outlined">location_on</span>
-            Timișoara
-          </div>
-
-          <div class="clinic-rating">⭐ 4.7 · 81 recenzii</div>
-        </div>
-      </div>
+    <!-- VIEW ALL -->
+    <div class="view-all-row">
+      <a routerLink="/finder" class="view-all-btn">
+        <span>Vezi toate clinicile</span>
+        <span class="material-symbols-outlined">arrow_forward</span>
+      </a>
     </div>
+
   </div>
 </section>

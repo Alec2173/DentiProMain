@@ -1,7 +1,16 @@
-<div class="main">
+<div class="finder-shell">
+
+  <!-- FILTER BAR (fixed below navbar) -->
   <app-filter-nav></app-filter-nav>
-  <div class="flex-container">
-    <app-map></app-map>
-    <app-cards></app-cards>
+
+  <!-- CONTENT ROW -->
+  <div class="finder-body">
+    <div class="map-panel">
+      <app-map></app-map>
+    </div>
+    <div class="cards-panel">
+      <app-cards></app-cards>
+    </div>
   </div>
+
 </div>

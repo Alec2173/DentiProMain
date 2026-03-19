@@ -1,233 +1,488 @@
 @import "vanilla-cookieconsent/dist/cookieconsent.css";
 @import "maplibre-gl/dist/maplibre-gl.css";
+
+/* ════════════════════════════════════════════════════════════
+   DENTIPRO — DESIGN SYSTEM
+   "Clinical Precision"
+   Fundație vizuală globală pentru întreaga aplicație.
+════════════════════════════════════════════════════════════ */
+
 :root {
-  --bg-primary: #071a30;
-  --bg-secondary: #061423;
 
-  --accent-primary: #0ea5e9;
-  --accent-secondary: #2563eb;
+  /* ── BACKGROUNDS ── */
+  --bg-deep:      #020b18;   /* page base, cel mai adânc */
+  --bg-primary:   #071224;   /* background principal */
+  --bg-surface:   #0a1d36;   /* secțiuni, zone de conținut */
+  --bg-elevated:  #0e2444;   /* cards, suprafețe ridicate */
+  --bg-overlay:   rgba(2, 11, 24, 0.88);  /* modals, overlays */
 
-  --glow-blue: rgba(14, 165, 233, 0.35);
-  --glow-indigo: rgba(37, 99, 235, 0.35);
+  /* ── ACCENTE ── */
+  --accent-blue:      #2563eb;               /* CTA principal, acțiuni primare */
+  --accent-blue-dark: #1d4ed8;               /* hover pe blue */
+  --accent-cyan:      #06b6d4;               /* identitate medicală, secundar */
+  --accent-cyan-dark: #0891b2;               /* hover pe cyan */
 
-  --text-primary: #ffffff;
-  --text-muted: #9fb4d4;
-  --text-soft: #8aa8d0;
+  --accent-gradient:        linear-gradient(135deg, #2563eb 0%, #06b6d4 100%);
+  --accent-gradient-subtle: linear-gradient(135deg, rgba(37,99,235,0.15) 0%, rgba(6,182,212,0.10) 100%);
 
-  --surface-main: #071a30;
+  /* ── GLOW ── */
+  --glow-blue: rgba(37,  99, 235, 0.20);
+  --glow-cyan: rgba(6,  182, 212, 0.15);
+  --glow-blue-strong: rgba(37,  99, 235, 0.35);
+  --glow-cyan-strong: rgba(6,  182, 212, 0.28);
 
-  --border-light: rgba(255, 255, 255, 0.08);
-  --border-subtle: rgba(255, 255, 255, 0.05);
+  /* ── TEXT ── */
+  --text-primary:   #eef4ff;                      /* titluri, text important */
+  --text-secondary: rgba(238, 244, 255, 0.55);    /* body text */
+  --text-muted:     rgba(238, 244, 255, 0.30);    /* placeholders, hints */
+  --text-disabled:  rgba(238, 244, 255, 0.15);    /* disabled states */
+  --text-accent:    #60a5fa;                       /* links, accent text */
 
-  --gradient-accent: linear-gradient(135deg, #0ea5e9, #2563eb);
+  /* ── BORDERS ── */
+  --border-subtle: rgba(255, 255, 255, 0.04);
+  --border-light:  rgba(255, 255, 255, 0.07);
+  --border-medium: rgba(255, 255, 255, 0.11);
+  --border-strong: rgba(255, 255, 255, 0.18);
+  --border-focus:  rgba(37, 99, 235, 0.55);
 
-  --radius-lg: 18px;
-  --radius-xl: 22px;
+  /* ── CARDS ── */
+  --card-bg:           rgba(10, 29, 54, 0.75);
+  --card-bg-hover:     rgba(12, 34, 62, 0.85);
+  --card-border:       rgba(255, 255, 255, 0.06);
+  --card-border-hover: rgba(255, 255, 255, 0.10);
+  --card-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.04) inset,
+    0 8px 32px rgba(0, 0, 0, 0.35);
+  --card-shadow-hover:
+    0 1px 0 rgba(255, 255, 255, 0.05) inset,
+    0 16px 48px rgba(0, 0, 0, 0.45),
+    0 0 0 1px rgba(37, 99, 235, 0.12);
 
-  --transition-fast: 0.15s ease;
-  --transition-normal: 0.25s ease;
+  /* ── SHADOWS ── */
+  --shadow-xs: 0 1px 4px  rgba(0, 0, 0, 0.20);
+  --shadow-sm: 0 2px 10px rgba(0, 0, 0, 0.30);
+  --shadow-md: 0 8px 28px rgba(0, 0, 0, 0.40);
+  --shadow-lg: 0 16px 52px rgba(0, 0, 0, 0.52);
+  --shadow-xl: 0 32px 80px rgba(0, 0, 0, 0.65);
+
+  --shadow-glow-blue: 0 0 48px rgba(37,  99, 235, 0.18);
+  --shadow-glow-cyan: 0 0 48px rgba(6, 182, 212, 0.14);
+
+  /* ── BORDER RADIUS ── */
+  --radius-xs:   4px;
+  --radius-sm:   8px;
+  --radius-md:   12px;
+  --radius-lg:   16px;
+  --radius-xl:   20px;
+  --radius-2xl:  24px;
+  --radius-full: 9999px;
+
+  /* ── SPACING (8px grid) ── */
+  --space-1:  4px;
+  --space-2:  8px;
+  --space-3:  12px;
+  --space-4:  16px;
+  --space-5:  20px;
+  --space-6:  24px;
+  --space-8:  32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+  --space-20: 80px;
+  --space-24: 96px;
+
+  /* ── TRANSITIONS ── */
+  --t-fast:   0.14s ease;
+  --t-normal: 0.22s ease;
+  --t-slow:   0.35s ease;
+  --t-spring: 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  /* ── TYPOGRAPHY ── */
+  --font-sans: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI",
+               Roboto, Helvetica, Arial, sans-serif;
+  --font-mono: "SF Mono", "Fira Code", "Cascadia Code", Consolas, monospace;
+
+  --text-xs:   11px;
+  --text-sm:   13px;
+  --text-base: 15px;
+  --text-md:   17px;
+  --text-lg:   20px;
+  --text-xl:   24px;
+  --text-2xl:  30px;
+  --text-3xl:  38px;
+  --text-4xl:  48px;
+  --text-5xl:  60px;
+
+  /* ── Z-INDEX ── */
+  --z-base:    1;
+  --z-above:   10;
+  --z-dropdown: 100;
+  --z-sticky:  200;
+  --z-navbar:  500;
+  --z-modal:   1000;
+  --z-toast:   1500;
+
+  /* ── Backwards compat cu variabilele vechi folosite în componente ── */
+  --bg-primary-old:    var(--bg-primary);
+  --bg-secondary:      var(--bg-surface);
+  --surface-main:      var(--bg-elevated);
+  --accent-primary:    var(--accent-cyan);
+  --accent-secondary:  var(--accent-blue);
+  --gradient-accent:   var(--accent-gradient);
+  --text-muted-old:    var(--text-secondary);
+  --text-soft:         var(--text-muted);
+  --border-light-old:  var(--border-light);
+  --border-subtle-old: var(--border-subtle);
+  --radius-lg:         var(--radius-lg);
+  --radius-xl:         var(--radius-xl);
+  --transition-fast:   var(--t-fast);
+  --transition-normal: var(--t-normal);
+  --glow-blue-old:     var(--glow-blue-strong);
+  --glow-indigo:       rgba(99, 102, 241, 0.20);
 }
-html,
-body {
-  height: 100%;
+
+/* ════════════════════════════════════════════════════════════
+   RESET & BASE
+════════════════════════════════════════════════════════════ */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
   margin: 0;
+  padding: 0;
 }
+
+html {
+  height: 100%;
+  font-size: 16px;
+  -webkit-text-size-adjust: 100%;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
 body {
-  overflow-x: hidden !important;
-  margin: 0 !important;
-  padding: 0 !important;
   height: 100%;
   width: 100%;
-  color: white !important;
+  overflow-x: hidden;
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-sans);
+  font-size: var(--text-base);
+  line-height: 1.6;
+  color: var(--text-primary);
+  background-color: var(--bg-primary);
 }
-/* ===============================
-   MAP POPUP CONTAINER
-================================ */
-/* ======================================
-   MAP POPUP CONTAINER
-====================================== */
+
+img,
+video {
+  max-width: 100%;
+  display: block;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  font-family: var(--font-sans);
+  cursor: pointer;
+}
+
+input,
+textarea,
+select {
+  font-family: var(--font-sans);
+}
+
+/* ════════════════════════════════════════════════════════════
+   SCROLLBAR
+════════════════════════════════════════════════════════════ */
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.10);
+  border-radius: var(--radius-full);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.18);
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255,255,255,0.10) transparent;
+}
+
+/* ════════════════════════════════════════════════════════════
+   SELECTION
+════════════════════════════════════════════════════════════ */
+
+::selection {
+  background: rgba(37, 99, 235, 0.35);
+  color: #fff;
+}
+
+/* ════════════════════════════════════════════════════════════
+   FOCUS VISIBLE (accessibility)
+════════════════════════════════════════════════════════════ */
+
+:focus-visible {
+  outline: 2px solid var(--accent-blue);
+  outline-offset: 3px;
+  border-radius: var(--radius-sm);
+}
+
+/* ════════════════════════════════════════════════════════════
+   TYPOGRAPHY UTILITIES
+════════════════════════════════════════════════════════════ */
+
+.text-gradient {
+  background: var(--accent-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.text-primary   { color: var(--text-primary); }
+.text-secondary { color: var(--text-secondary); }
+.text-muted     { color: var(--text-muted); }
+.text-accent    { color: var(--text-accent); }
+
+/* ════════════════════════════════════════════════════════════
+   MAPLIBRE — POPUP CARD GLOBAL
+════════════════════════════════════════════════════════════ */
 
 .maplibregl-popup-content {
   padding: 0;
-
-  border-radius: 14px;
-
+  border-radius: 16px;
   overflow: hidden;
-
-  background: #081c34;
-
-  border: 1px solid rgba(255, 255, 255, 0.08);
-
-  box-shadow:
-    0 16px 40px rgba(0, 0, 0, 0.45),
-    inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  background: transparent;
+  border: none;
+  box-shadow: none;
 }
 
 .maplibregl-popup-tip {
-  border-top-color: #081c34;
+  border-top-color: #0d2040;
 }
 
-/* ======================================
-   POPUP CARD
-====================================== */
+.maplibregl-popup-close-button {
+  display: none;
+}
+
+/* ─── CARD WRAPPER ─── */
 
 .map-popup-card {
-  width: 240px;
-
+  width: 252px;
+  border-radius: 14px;
+  overflow: hidden;
+  background: #0c1e38;
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  cursor: pointer;
+  transition: border-color 0.2s;
   display: flex;
   flex-direction: column;
-
-  color: white;
-
-  cursor: pointer;
-
-  transition:
-    transform 0.18s ease,
-    box-shadow 0.18s ease;
 }
-
-/* hover */
 
 .map-popup-card:hover {
-  transform: translateY(-3px);
-
-  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.35);
+  border-color: rgba(37, 99, 235, 0.4);
 }
 
-/* ======================================
-   IMAGE
-====================================== */
+/* ─── IMAGE ─── */
 
 .popup-image {
   width: 100%;
-
-  height: 120px;
-
+  height: 130px;
   overflow: hidden;
-
   position: relative;
+  background: #0a1d36;
 }
 
 .popup-image img {
   width: 100%;
   height: 100%;
-
   object-fit: cover;
-
-  transition: transform 0.35s ease;
+  display: block;
 }
-
-/* zoom effect */
-
-.map-popup-card:hover .popup-image img {
-  transform: scale(1.05);
-}
-
-/* subtle gradient overlay */
 
 .popup-image::after {
-  content: "";
-
+  content: '';
   position: absolute;
-
   inset: 0;
-
   background: linear-gradient(
     180deg,
-    rgba(8, 28, 52, 0) 40%,
-    rgba(8, 28, 52, 0.75)
+    transparent 30%,
+    rgba(8, 24, 41, 0.75) 100%
   );
+  pointer-events: none;
 }
 
-/* ======================================
-   INFO SECTION
-====================================== */
+/* ─── INFO ─── */
 
 .popup-info {
-  padding: 12px 14px;
-
+  padding: 14px 16px;
   display: flex;
   flex-direction: column;
-
-  gap: 5px;
+  gap: 6px;
 }
 
-/* ======================================
-   HEADER
-====================================== */
+/* ─── HEADER ROW ─── */
 
 .popup-header {
   display: flex;
-
   align-items: center;
-
   gap: 8px;
 }
 
-/* ======================================
-   LOGO
-====================================== */
-
 .popup-logo {
-  width: 22px;
-  height: 22px;
-
+  width: 24px;
+  height: 24px;
   border-radius: 6px;
-
   object-fit: cover;
-
-  background: rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  flex-shrink: 0;
 }
-
-/* ======================================
-   CITY
-====================================== */
 
 .popup-city {
-  font-size: 12px;
-
-  color: rgba(255, 255, 255, 0.7);
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.4);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-weight: 500;
 }
 
-/* ======================================
-   CLINIC NAME
-====================================== */
+/* ─── NAME ─── */
 
 .popup-name {
-  font-size: 15px;
-
+  font-size: 14px;
   font-weight: 600;
-
-  line-height: 1.2;
-
-  letter-spacing: 0.2px;
+  color: rgba(255, 255, 255, 0.9);
+  letter-spacing: -0.01em;
+  line-height: 1.35;
 }
 
-/* ======================================
-   RATING
-====================================== */
+/* ─── FOOTER ROW ─── */
+
+.popup-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 8px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  margin-top: 2px;
+}
 
 .popup-rating {
-  font-size: 13px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.7);
+  font-weight: 500;
+}
 
-  color: #ffd166;
+.popup-star {
+  font-size: 14px;
+  color: #f59e0b;
+  font-variation-settings: 'FILL' 1;
+  vertical-align: middle;
+}
 
+.popup-cta {
+  font-size: 11px;
   font-weight: 600;
+  color: #3b82f6;
+  display: flex;
+  align-items: center;
+  gap: 3px;
 }
 
-/* ======================================
-   HOVER GLOW
-====================================== */
-
-.map-popup-card:hover .popup-name {
-  color: #38bdf8;
+.popup-cta-arrow {
+  font-size: 13px;
 }
 
-/* ======================================
-   SMALL TRANSITION SMOOTHNESS
-====================================== */
+/* ════════════════════════════════════════════════════════════
+   SKELETON ANIMATION (global)
+════════════════════════════════════════════════════════════ */
 
-.popup-name,
-.popup-image img {
-  transition: all 0.2s ease;
+@keyframes shimmer {
+  0%   { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+.skeleton {
+  position: relative;
+  background: rgba(255, 255, 255, 0.04);
+  overflow: hidden;
+  border-radius: var(--radius-sm);
+}
+
+.skeleton::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    transparent       0%,
+    rgba(255,255,255,0.055) 50%,
+    transparent       100%
+  );
+  animation: shimmer 1.5s infinite;
+}
+
+/* ════════════════════════════════════════════════════════════
+   ANIMAȚII GLOBALE
+════════════════════════════════════════════════════════════ */
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.92); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+@keyframes scaleInSpring {
+  from { opacity: 0; transform: scale(0.88); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+@keyframes dropIn {
+  from { opacity: 0; transform: translateY(-6px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.4; }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes strokeCircle {
+  to { stroke-dashoffset: 0; }
+}
+
+@keyframes strokeCheck {
+  to { stroke-dashoffset: 0; }
 }

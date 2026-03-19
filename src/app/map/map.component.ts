@@ -65,32 +65,32 @@ export class MapComponent implements OnInit, OnDestroy {
           const card = document.createElement('div');
           card.className = 'map-popup-card';
 
+          // Parse images
+          let coverImg = 'no-img.jpg';
+          try {
+            const imgs = typeof clinic.clinic_images === 'string'
+              ? JSON.parse(clinic.clinic_images || '[]')
+              : (clinic.clinic_images ?? []);
+            if (Array.isArray(imgs) && imgs.length > 0) coverImg = imgs[0];
+          } catch {}
+
           card.innerHTML = `
             <div class="popup-image">
-              <img src="${clinic.clinic_images_parsed?.[0] || 'fundal.png'}"/>
+              <img src="${coverImg}" loading="lazy" />
             </div>
-
             <div class="popup-info">
-
               <div class="popup-header">
-
-                <img class="popup-logo"
-                     src="${clinic.logo_path || 'no-img.jpg'}"/>
-
-                <span class="popup-city">
-                  ${clinic.city}
+                <img class="popup-logo" src="${clinic.logo_path || 'no-img.jpg'}" />
+                <span class="popup-city">${clinic.city ?? ''}</span>
+              </div>
+              <div class="popup-name">${clinic.name ?? ''}</div>
+              <div class="popup-footer">
+                <span class="popup-rating"><span class="material-symbols-outlined popup-star">star</span> 4.5</span>
+                <span class="popup-cta">
+                  Vezi profil
+                  <span class="material-symbols-outlined popup-cta-arrow">arrow_forward</span>
                 </span>
-
               </div>
-
-              <div class="popup-name">
-                ${clinic.name}
-              </div>
-
-              <div class="popup-rating">
-                ⭐ 4.5
-              </div>
-
             </div>
           `;
 

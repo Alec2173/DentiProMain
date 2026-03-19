@@ -1,53 +1,113 @@
-<div class="main">
-  <div class="nav">
-    <div class="nav-left">
-      <div class="filter-item">
-        <svg class="icon" viewBox="0 0 24 24">
-          <path d="M12 21s-6-5.4-6-10a6 6 0 1112 0c0 4.6-6 10-6 10z" />
-        </svg>
+<div class="fnav" (click)="closeAll()">
+  <div class="fnav-inner">
 
-        <app-orase (citySelected)="data.oras = $event"></app-orase>
-      </div>
-
-      <div class="divider"></div>
-
-      <div class="filter-item">
-        <svg class="icon" viewBox="0 0 24 24">
-          <path d="M17 3H7a2 2 0 00-2 2v14l7-3 7 3V5a2 2 0 00-2-2z" />
-        </svg>
-
-        <app-servicii></app-servicii>
-      </div>
-
-      <div class="divider"></div>
-
-      <div class="dropdown-filter" tabindex="0">
-        <button class="dropdown-btn">
-          <svg class="icon" viewBox="0 0 24 24">
-            <path d="M12 1v22M1 12h22" />
-          </svg>
-
-          Preț
-
-          <svg class="arrow" viewBox="0 0 24 24">
-            <path d="M6 9l6 6 6-6" />
-          </svg>
-        </button>
-
-        <div class="dropdown-content">
-          <input type="number" min="0" placeholder="Min" />
-
-          <input type="number" min="0" placeholder="Max" />
+    <!-- ─── CITY SEGMENT ─── -->
+    <div class="seg" [class.active]="cityDropdownOpen" (click)="$event.stopPropagation()">
+      <span class="material-symbols-outlined seg-icon">location_on</span>
+      <div class="seg-body">
+        <span class="seg-label">Oraș</span>
+        <div class="seg-value-row">
+          <input
+            class="seg-input"
+            [(ngModel)]="searchCity"
+            placeholder="Orice oraș"
+            (focus)="onCityFocus($event)"
+            (input)="onCityInput()"
+            autocomplete="off"
+          />
+          @if (searchCity) {
+            <button class="clear-btn" (click)="$event.stopPropagation(); clearCity()">
+              <span class="material-symbols-outlined">close</span>
+            </button>
+          }
         </div>
       </div>
+
+      @if (cityDropdownOpen && filteredCities.length > 0) {
+        <div class="dropdown" (click)="$event.stopPropagation()">
+          <div class="drop-list">
+            @for (city of filteredCities; track city) {
+              <div class="drop-item" (click)="selectCity(city)">
+                <span class="material-symbols-outlined drop-icon">location_on</span>
+                {{ city }}
+              </div>
+            }
+          </div>
+        </div>
+      }
     </div>
 
-    <button class="apply-btn" (click)="onSubmit()">
-      <svg class="apply-icon" viewBox="0 0 24 24">
-        <path d="M10 18a8 8 0 1 1 5.3-14l4.4 4.4M21 21l-4.3-4.3" />
-      </svg>
+    <div class="seg-sep"></div>
 
+    <!-- ─── SERVICE SEGMENT ─── -->
+    <div class="seg" [class.active]="serviceDropdownOpen" (click)="$event.stopPropagation()">
+      <span class="material-symbols-outlined seg-icon">dentistry</span>
+      <div class="seg-body">
+        <span class="seg-label">Serviciu</span>
+        <div class="seg-value-row">
+          <input
+            class="seg-input"
+            [(ngModel)]="serviceText"
+            placeholder="Orice serviciu"
+            (focus)="onServiceFocus($event)"
+            (input)="onServiceInput()"
+            autocomplete="off"
+          />
+          @if (serviceText) {
+            <button class="clear-btn" (click)="$event.stopPropagation(); clearService()">
+              <span class="material-symbols-outlined">close</span>
+            </button>
+          }
+        </div>
+      </div>
+
+      @if (serviceDropdownOpen && filteredServices.length > 0) {
+        <div class="dropdown service-dd" (click)="$event.stopPropagation()">
+          <div class="drop-list">
+            @for (s of filteredServices; track s.id) {
+              <div
+                class="drop-item"
+                [class.selected]="searchService === s.id"
+                (click)="selectService(s)"
+              >
+                @if (searchService === s.id) {
+                  <span class="material-symbols-outlined check-icon">check</span>
+                }
+                {{ s.label }}
+              </div>
+            }
+          </div>
+        </div>
+      }
+    </div>
+
+    <div class="seg-sep"></div>
+
+    <!-- ─── ACTIVE FILTERS PILLS ─── -->
+    <div class="active-filters">
+      @if (searchCity || searchService) {
+        @if (searchCity) {
+          <span class="filter-pill">
+            <span class="material-symbols-outlined">location_on</span>
+            {{ searchCity }}
+          </span>
+        }
+        @if (searchService) {
+          <span class="filter-pill">
+            <span class="material-symbols-outlined">dentistry</span>
+            {{ serviceText }}
+          </span>
+        }
+      } @else {
+        <span class="no-filters">Niciun filtru activ</span>
+      }
+    </div>
+
+    <!-- ─── APPLY BUTTON ─── -->
+    <button class="apply-btn" (click)="$event.stopPropagation(); apply()">
+      <span class="material-symbols-outlined">search</span>
       Aplică filtre
     </button>
+
   </div>
 </div>

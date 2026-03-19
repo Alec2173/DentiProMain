@@ -1,39 +1,133 @@
-<div class="main">
+<div class="main" (click)="closeAll()">
+
+  <!-- ─── HERO ─────────────────────────────────────────────── -->
   <section class="hero">
-    <h1 class="hero-title">Găsește clinica dentară potrivită</h1>
+    <div class="hero-badge">
+      <span class="badge-dot"></span>
+      Marketplace dentar verificat în România
+    </div>
+
+    <h1 class="hero-title">
+      Găsește clinica dentară<br>
+      <span class="title-gradient">potrivită pentru tine</span>
+    </h1>
 
     <p class="hero-subtitle">
       Compară servicii, disponibilitate și contactează direct clinica dorită.
+      Peste 70 de clinici verificate în toată țara.
     </p>
   </section>
 
+  <!-- ─── SEARCH BOARD ──────────────────────────────────────── -->
   <section class="search-board-wrapper">
     <div class="search-bar">
-      <div class="search-segment">
-        <span class="material-symbols-outlined">location_on</span>
-        <input type="text" placeholder="Oraș sau clinică" />
+
+      <!-- LOCAȚIE -->
+      <div class="segment" [class.active]="cityDropdownOpen" (click)="$event.stopPropagation()">
+        <span class="seg-label">
+          <span class="material-symbols-outlined seg-icon">location_on</span>
+          Locație
+        </span>
+        <div class="seg-value-row">
+          <input
+            class="seg-input"
+            [(ngModel)]="searchCity"
+            placeholder="Orice oraș"
+            (focus)="onCityFocus($event)"
+            (input)="onCityInput()"
+            autocomplete="off"
+          />
+          @if (searchCity) {
+            <button class="clear-btn" (click)="$event.stopPropagation(); clearCity()">
+              <span class="material-symbols-outlined">close</span>
+            </button>
+          }
+        </div>
+
+        @if (cityDropdownOpen && filteredCities.length > 0) {
+          <div class="dropdown" (click)="$event.stopPropagation()">
+            @for (city of filteredCities; track city) {
+              <div class="dropdown-item" (click)="selectCity(city)">
+                <span class="material-symbols-outlined drop-icon">location_on</span>
+                {{ city }}
+              </div>
+            }
+          </div>
+        }
       </div>
 
-      <div class="divider"></div>
+      <div class="seg-divider"></div>
 
-      <div class="search-segment">
-        <span class="material-symbols-outlined">medical_services</span>
-        <input type="text" placeholder="Serviciu dentar" />
+      <!-- SERVICIU -->
+      <div class="segment" [class.active]="serviceDropdownOpen" (click)="$event.stopPropagation()">
+        <span class="seg-label">
+          <span class="material-symbols-outlined seg-icon">dentistry</span>
+          Serviciu
+        </span>
+        <div class="seg-value-row">
+          <input
+            class="seg-input"
+            [(ngModel)]="serviceText"
+            placeholder="Orice serviciu"
+            (focus)="onServiceFocus($event)"
+            (input)="onServiceInput()"
+            autocomplete="off"
+          />
+          @if (serviceText) {
+            <button class="clear-btn" (click)="$event.stopPropagation(); clearService()">
+              <span class="material-symbols-outlined">close</span>
+            </button>
+          }
+        </div>
+
+        @if (serviceDropdownOpen && filteredServices.length > 0) {
+          <div class="dropdown service-dropdown" (click)="$event.stopPropagation()">
+            @for (service of filteredServices; track service.id) {
+              <div
+                class="dropdown-item"
+                [class.selected]="searchService === service.id"
+                (click)="selectService(service)"
+              >
+                @if (searchService === service.id) {
+                  <span class="material-symbols-outlined service-check">check</span>
+                }
+                {{ service.label }}
+              </div>
+            }
+          </div>
+        }
       </div>
 
-      <div class="divider"></div>
-
-      <div class="search-segment">
-        <span class="material-symbols-outlined">calendar_month</span>
-      </div>
-
-      <button class="search-action">
+      <!-- BUTON CĂUTARE -->
+      <button class="search-action" (click)="search()">
         <span class="material-symbols-outlined">search</span>
+        <span class="search-btn-label">Caută</span>
       </button>
+
     </div>
 
-    <div class="search-meta">
-      Peste <strong>70 de clinici dentare</strong> înregistrate pe platformă
+    <!-- Trust bar -->
+    <div class="trust-bar">
+      <div class="trust-item">
+        <span class="trust-num">70+</span>
+        <span class="trust-label">Clinici verificate</span>
+      </div>
+      <div class="trust-sep"></div>
+      <div class="trust-item">
+        <span class="trust-num">20+</span>
+        <span class="trust-label">Orașe</span>
+      </div>
+      <div class="trust-sep"></div>
+      <div class="trust-item">
+        <span class="trust-num">26</span>
+        <span class="trust-label">Servicii disponibile</span>
+      </div>
+      <div class="trust-sep"></div>
+      <div class="trust-item">
+        <span class="trust-num">100%</span>
+        <span class="trust-label">Clinici verificate</span>
+      </div>
     </div>
+
   </section>
 </div>

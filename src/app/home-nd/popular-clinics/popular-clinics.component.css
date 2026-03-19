@@ -1,96 +1,269 @@
-.popular-clinics {
-  width: 100%;
+/* ════════════════════════════════════════
+   SECTION
+════════════════════════════════════════ */
 
-  padding: 120px 0;
-
-  background-color: #071a30;
+.pc-section {
+  padding: 120px 24px;
+  background:
+    radial-gradient(ellipse 900px 500px at 80% 50%, rgba(6, 182, 212, 0.05), transparent 65%),
+    var(--bg-surface);
 }
 
-.popular-clinics .container {
-  max-width: 1200px;
-
+.pc-container {
+  max-width: 1100px;
   margin: 0 auto;
 }
+
+/* ════════════════════════════════════════
+   HEADER
+════════════════════════════════════════ */
+
 .section-header {
   text-align: center;
-
-  margin-bottom: 70px;
+  margin-bottom: 64px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
 }
 
-.section-header h2 {
-  font-size: 36px;
-
-  margin-bottom: 10px;
+.section-badge {
+  display: inline-flex;
+  align-items: center;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent-cyan);
+  background: rgba(6, 182, 212, 0.1);
+  border: 1px solid rgba(6, 182, 212, 0.2);
+  border-radius: var(--radius-full);
+  padding: 6px 16px;
 }
 
-.section-header p {
-  color: var(--text-muted);
-
-  font-size: 16px;
+.section-title {
+  font-size: 42px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.15;
+  color: var(--text-primary);
+  margin: 0;
 }
+
+.title-gradient {
+  background: var(--accent-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.section-subtitle {
+  font-size: 17px;
+  color: var(--text-secondary);
+  max-width: 480px;
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* ════════════════════════════════════════
+   CLINIC GRID
+════════════════════════════════════════ */
 
 .clinic-grid {
   display: grid;
-
   grid-template-columns: repeat(3, 1fr);
-
-  gap: 30px;
+  gap: 24px;
 }
 
+/* ─── CLINIC CARD ─── */
+
 .clinic-card {
-  background: #0b2a4a;
-
-  border-radius: 18px;
-
+  display: block;
+  text-decoration: none;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-xl);
   overflow: hidden;
-
-  transition:
-    transform 0.25s ease,
-    box-shadow 0.25s ease;
-
+  transition: transform var(--t-normal), box-shadow var(--t-normal), border-color var(--t-normal);
   cursor: pointer;
 }
 
 .clinic-card:hover {
-  transform: translateY(-8px);
-
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+  transform: translateY(-6px);
+  border-color: rgba(37, 99, 235, 0.2);
+  box-shadow:
+    0 20px 60px rgba(0, 0, 0, 0.45),
+    0 0 0 1px rgba(37, 99, 235, 0.08);
 }
 
-.clinic-image img {
+/* ─── IMAGE ─── */
+
+.card-image {
+  position: relative;
+  height: 200px;
+  overflow: hidden;
+  background: var(--bg-elevated);
+}
+
+.card-image img {
   width: 100%;
-
-  height: 180px;
-
+  height: 100%;
   object-fit: cover;
+  transition: transform var(--t-slow);
 }
 
-.clinic-content {
-  padding: 18px;
+.clinic-card:hover .card-image img {
+  transform: scale(1.05);
 }
 
-.clinic-content h3 {
-  margin: 0 0 8px;
-
-  font-size: 18px;
-}
-
-.clinic-meta {
+.card-image-placeholder {
+  width: 100%;
+  height: 100%;
   display: flex;
-
   align-items: center;
-
-  gap: 6px;
-
-  color: var(--text-muted);
-
-  font-size: 14px;
-
-  margin-bottom: 6px;
+  justify-content: center;
+  background: var(--bg-elevated);
+  color: var(--border-medium);
 }
 
-.clinic-rating {
-  font-size: 14px;
+.card-image-placeholder .material-symbols-outlined {
+  font-size: 48px;
+}
 
-  color: #ffd166;
+.card-image-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    transparent 40%,
+    rgba(2, 11, 24, 0.6) 100%
+  );
+}
+
+/* ─── BODY ─── */
+
+.card-body {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.card-logo {
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-sm);
+  object-fit: cover;
+  border: 1px solid var(--border-light);
+  flex-shrink: 0;
+}
+
+.card-name {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: -0.02em;
+  margin: 0;
+  transition: color var(--t-fast);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.clinic-card:hover .card-name {
+  color: var(--accent-cyan);
+}
+
+.card-meta {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.meta-icon {
+  font-size: 15px;
+  color: var(--accent-blue);
+}
+
+.card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 8px;
+  border-top: 1px solid var(--border-subtle);
+  margin-top: 4px;
+}
+
+.card-link {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--accent-blue);
+}
+
+.card-arrow {
+  font-size: 16px;
+  color: var(--accent-blue);
+  transition: transform var(--t-fast);
+}
+
+.clinic-card:hover .card-arrow {
+  transform: translateX(4px);
+}
+
+/* ════════════════════════════════════════
+   VIEW ALL
+════════════════════════════════════════ */
+
+.view-all-row {
+  display: flex;
+  justify-content: center;
+  margin-top: 48px;
+}
+
+.view-all-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 32px;
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-full);
+  color: var(--text-primary);
+  font-size: 15px;
+  font-weight: 600;
+  text-decoration: none;
+  background: transparent;
+  transition: background var(--t-fast), border-color var(--t-fast), transform var(--t-fast);
+}
+
+.view-all-btn:hover {
+  background: rgba(37, 99, 235, 0.08);
+  border-color: rgba(37, 99, 235, 0.3);
+  transform: translateY(-1px);
+}
+
+.view-all-btn .material-symbols-outlined {
+  font-size: 18px;
+  transition: transform var(--t-fast);
+}
+
+.view-all-btn:hover .material-symbols-outlined {
+  transform: translateX(3px);
+}
+
+@media (max-width: 768px) {
+  .clinic-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .section-title {
+    font-size: 30px;
+  }
 }

@@ -1,68 +1,122 @@
 <nav class="navbar">
   <div class="navbar-left">
     <!-- LOGO -->
-
     <a routerLink="/" class="brand">
       <img src="logo-new.png" alt="DentiPro" class="brand-logo" />
     </a>
 
     <!-- DESKTOP NAV -->
-
     <div class="nav-links">
       <a routerLink="/" routerLinkActive="active">
         <i class="fal fa-home"></i>
         <span>Acasă</span>
       </a>
-
       <a routerLink="/finder" routerLinkActive="active">
         <i class="fal fa-search"></i>
         <span>Caută clinici</span>
       </a>
-
       <a routerLink="/services" routerLinkActive="active">
         <i class="fal fa-tooth"></i>
         <span>Servicii</span>
       </a>
-
       <a routerLink="/favorites" routerLinkActive="active">
         <i class="fal fa-heart"></i>
         <span>Favorite</span>
+      </a>
+      <a routerLink="/pricing" routerLinkActive="active">
+        <i class="fal fa-tag"></i>
+        <span>Prețuri</span>
       </a>
     </div>
   </div>
 
   <!-- SEARCH -->
-
   <div class="navbar-center">
     <div class="global-search">
       <i class="fal fa-search search-icon"></i>
-
       <input type="text" placeholder="Caută clinici sau servicii..." />
     </div>
   </div>
 
   <!-- RIGHT SIDE -->
-
   <div class="navbar-right">
     <a routerLink="/Inscriere" class="add-clinic-btn">
       <i class="fal fa-plus"></i>
       <span>Adaugă clinică</span>
     </a>
 
-    <button class="icon-btn">
-      <i class="fal fa-bell"></i>
-    </button>
+    <!-- NOT LOGGED IN -->
+    @if (!authService.isLoggedIn) {
+      <button class="auth-btn login-btn" (click)="openModal('login'); $event.stopPropagation()">
+        <i class="fal fa-sign-in-alt"></i>
+        <span>Autentificare</span>
+      </button>
+      <button class="auth-btn signup-btn" (click)="openModal('register'); $event.stopPropagation()">
+        <i class="fal fa-user-plus"></i>
+        <span>Cont nou</span>
+      </button>
+    }
 
-    <button class="icon-btn">
-      <i class="fal fa-envelope"></i>
-    </button>
+    <!-- LOGGED IN -->
+    @if (authService.isLoggedIn) {
+      <button class="icon-btn">
+        <i class="fal fa-bell"></i>
+      </button>
 
-    <div class="user-menu">
-      <div class="avatar">AC</div>
-    </div>
+      <div class="user-area" (click)="toggleUserMenu(); $event.stopPropagation()">
+        <div class="clinic-avatar">
+          @if (authService.currentUser?.logoUrl) {
+            <img [src]="authService.currentUser!.logoUrl" class="clinic-avatar-img" alt="logo" />
+          } @else {
+            <span class="clinic-avatar-initials">{{ getInitials() }}</span>
+          }
+        </div>
+        <span class="clinic-name-short">{{ authService.currentUser?.name }}</span>
+        <i class="fal fa-chevron-down user-chevron" [class.open]="userMenuOpen"></i>
+
+        @if (userMenuOpen) {
+          <div class="user-dropdown">
+            <div class="udd-header">
+              <div class="udd-avatar">{{ getInitials() }}</div>
+              <div>
+                <div class="udd-name">{{ authService.currentUser?.name }}</div>
+                <div class="udd-email">{{ authService.currentUser?.email }}</div>
+              </div>
+            </div>
+
+            <div class="udd-divider"></div>
+
+            <a
+              class="udd-item"
+              [routerLink]="['/clinic-profile', authService.currentUser?.clinicId]"
+              (click)="userMenuOpen = false"
+            >
+              <i class="fal fa-clinic-medical"></i>
+              Profil clinică
+            </a>
+
+            <a class="udd-item" routerLink="/Inscriere" (click)="userMenuOpen = false">
+              <i class="fal fa-edit"></i>
+              Editează profil
+            </a>
+
+            <a class="udd-item" routerLink="/pricing" (click)="userMenuOpen = false">
+              <i class="fal fa-tag"></i>
+              Plan & abonament
+            </a>
+
+            <div class="udd-divider"></div>
+
+            <button class="udd-item udd-logout" (click)="logout()">
+              <i class="fal fa-sign-out-alt"></i>
+              Deconectare
+            </button>
+          </div>
+        }
+      </div>
+    }
 
     <!-- BURGER MENU -->
-
     <button class="mobile-menu-btn" (click)="toggleMobileMenu()">
       <i class="fal fa-bars"></i>
     </button>
@@ -70,32 +124,246 @@
 </nav>
 
 <!-- MOBILE MENU -->
-
 @if (mobileMenuOpen) {
   <div class="mobile-menu">
     <a routerLink="/" (click)="closeMobileMenu()">
       <i class="fal fa-home"></i>
       Acasă
     </a>
-
     <a routerLink="/finder" (click)="closeMobileMenu()">
       <i class="fal fa-search"></i>
       Caută clinici
     </a>
-
     <a routerLink="/services" (click)="closeMobileMenu()">
       <i class="fal fa-tooth"></i>
       Servicii
     </a>
-
     <a routerLink="/favorites" (click)="closeMobileMenu()">
       <i class="fal fa-heart"></i>
       Favorite
     </a>
-
     <a routerLink="/Inscriere" (click)="closeMobileMenu()">
       <i class="fal fa-plus"></i>
       Adaugă clinică
     </a>
+
+    @if (!authService.isLoggedIn) {
+      <div class="mobile-auth-row">
+        <button class="mobile-auth-btn login" (click)="openModal('login')">
+          <i class="fal fa-sign-in-alt"></i> Autentificare
+        </button>
+        <button class="mobile-auth-btn signup" (click)="openModal('register')">
+          <i class="fal fa-user-plus"></i> Cont nou
+        </button>
+      </div>
+    }
+
+    @if (authService.isLoggedIn) {
+      <a [routerLink]="['/clinic-profile', authService.currentUser?.clinicId]" (click)="closeMobileMenu()">
+        <i class="fal fa-clinic-medical"></i>
+        Profil clinică
+      </a>
+      <button class="mobile-logout-btn" (click)="logout(); closeMobileMenu()">
+        <i class="fal fa-sign-out-alt"></i>
+        Deconectare
+      </button>
+    }
+  </div>
+}
+
+<!-- ══════════════════════════════════════════
+     AUTH MODAL
+══════════════════════════════════════════ -->
+@if (showModal) {
+  <div class="modal-overlay" (click)="closeModal()">
+    <div class="modal-card" (click)="$event.stopPropagation()">
+
+      <!-- CLOSE -->
+      <button class="modal-close" (click)="closeModal()">
+        <i class="fal fa-times"></i>
+      </button>
+
+      <!-- LOGO -->
+      <div class="modal-logo">
+        <span class="modal-logo-icon material-symbols-outlined">dentistry</span>
+        <span class="modal-logo-text">DentiPro</span>
+      </div>
+
+      <!-- TABS -->
+      <div class="modal-tabs">
+        <button
+          class="modal-tab"
+          [class.active]="modalTab === 'login'"
+          (click)="switchTab('login')"
+        >
+          Autentificare
+        </button>
+        <button
+          class="modal-tab"
+          [class.active]="modalTab === 'register'"
+          (click)="switchTab('register')"
+        >
+          Cont nou
+        </button>
+      </div>
+
+      <!-- ── LOGIN FORM ── -->
+      @if (modalTab === 'login') {
+        <div class="modal-body">
+          <p class="modal-sub">Bine ai revenit! Intră în contul tău DentiPro.</p>
+
+          <div class="modal-field">
+            <label class="modal-label">
+              <i class="fal fa-envelope"></i> Email
+            </label>
+            <input
+              type="email"
+              class="modal-input"
+              [(ngModel)]="loginEmail"
+              placeholder="clinica@exemplu.ro"
+              autocomplete="email"
+              (keydown.enter)="submitLogin()"
+            />
+          </div>
+
+          <div class="modal-field">
+            <label class="modal-label">
+              <i class="fal fa-lock"></i> Parolă
+            </label>
+            <div class="modal-pw-wrap">
+              <input
+                [type]="loginShowPw ? 'text' : 'password'"
+                class="modal-input"
+                [(ngModel)]="loginPassword"
+                placeholder="••••••••"
+                autocomplete="current-password"
+                (keydown.enter)="submitLogin()"
+              />
+              <button class="pw-toggle" (click)="loginShowPw = !loginShowPw">
+                <i [class]="loginShowPw ? 'fal fa-eye-slash' : 'fal fa-eye'"></i>
+              </button>
+            </div>
+          </div>
+
+          @if (modalError) {
+            <div class="modal-error">
+              <i class="fal fa-exclamation-circle"></i>
+              {{ modalError }}
+            </div>
+          }
+
+          <button
+            class="modal-submit"
+            (click)="submitLogin()"
+            [disabled]="modalLoading"
+          >
+            @if (modalLoading) {
+              <span class="modal-spinner"></span> Se autentifică...
+            } @else {
+              <i class="fal fa-sign-in-alt"></i> Intră în cont
+            }
+          </button>
+
+          <p class="modal-switch">
+            Nu ai cont?
+            <button class="modal-switch-btn" (click)="switchTab('register')">
+              Înregistrează-te gratuit
+            </button>
+          </p>
+        </div>
+      }
+
+      <!-- ── REGISTER FORM ── -->
+      @if (modalTab === 'register') {
+        <div class="modal-body">
+          <p class="modal-sub">Creează un cont pentru clinica ta în câteva secunde.</p>
+
+          <div class="modal-field">
+            <label class="modal-label">
+              <i class="fal fa-clinic-medical"></i> Nume clinică <span class="req">*</span>
+            </label>
+            <input
+              type="text"
+              class="modal-input"
+              [(ngModel)]="regName"
+              placeholder="ex. Dental Studio Cluj"
+              autocomplete="organization"
+            />
+          </div>
+
+          <div class="modal-field">
+            <label class="modal-label">
+              <i class="fal fa-envelope"></i> Email <span class="req">*</span>
+            </label>
+            <input
+              type="email"
+              class="modal-input"
+              [(ngModel)]="regEmail"
+              placeholder="clinica@exemplu.ro"
+              autocomplete="email"
+            />
+          </div>
+
+          <div class="modal-field">
+            <label class="modal-label">
+              <i class="fal fa-lock"></i> Parolă <span class="req">*</span>
+            </label>
+            <div class="modal-pw-wrap">
+              <input
+                [type]="regShowPw ? 'text' : 'password'"
+                class="modal-input"
+                [(ngModel)]="regPassword"
+                placeholder="Minim 6 caractere"
+                autocomplete="new-password"
+              />
+              <button class="pw-toggle" (click)="regShowPw = !regShowPw">
+                <i [class]="regShowPw ? 'fal fa-eye-slash' : 'fal fa-eye'"></i>
+              </button>
+            </div>
+          </div>
+
+          <div class="modal-field">
+            <label class="modal-label">
+              <i class="fal fa-check-circle"></i> Confirmă parola <span class="req">*</span>
+            </label>
+            <input
+              type="password"
+              class="modal-input"
+              [(ngModel)]="regConfirm"
+              placeholder="Repetă parola"
+              autocomplete="new-password"
+              (keydown.enter)="submitRegister()"
+            />
+          </div>
+
+          @if (modalError) {
+            <div class="modal-error">
+              <i class="fal fa-exclamation-circle"></i>
+              {{ modalError }}
+            </div>
+          }
+
+          <button
+            class="modal-submit"
+            (click)="submitRegister()"
+            [disabled]="modalLoading"
+          >
+            @if (modalLoading) {
+              <span class="modal-spinner"></span> Se creează contul...
+            } @else {
+              <i class="fal fa-user-plus"></i> Creează cont gratuit
+            }
+          </button>
+
+          <p class="modal-switch">
+            Ai deja cont?
+            <button class="modal-switch-btn" (click)="switchTab('login')">
+              Autentifică-te
+            </button>
+          </p>
+        </div>
+      }
+
+    </div>
   </div>
 }

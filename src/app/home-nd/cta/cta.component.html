@@ -1,32 +1,81 @@
-<section class="clinic-cta">
+<section class="cta-section">
   <div class="cta-container">
-    <div class="cta-content">
-      <h2>Ești o clinică dentară?</h2>
 
-      <p>
-        Înscrie clinica ta pe DentiPro și ajută pacienții să te descopere mai
-        ușor. Platforma noastră conectează clinicile stomatologice cu pacienții
-        care caută servicii dentare în orașul lor.
+    <!-- LEFT: TEXT -->
+    <div class="cta-left">
+      <span class="cta-badge">Pentru clinici</span>
+      <h2 class="cta-title">
+        Ești o clinică dentară?<br>
+        <span class="title-gradient">Înscrie-te gratuit</span>
+      </h2>
+      <p class="cta-subtitle">
+        Conectează-te cu mii de pacienți care caută servicii stomatologice în orașul tău.
+        Profilul tău pe DentiPro îți aduce vizibilitate, credibilitate și programări noi.
       </p>
 
-      <ul class="cta-benefits">
-        <li>
-          <span class="material-symbols-outlined">visibility</span>
-          Vizibilitate în fața pacienților
+      <ul class="benefits-list">
+        <li class="benefit-item">
+          <span class="benefit-icon material-symbols-outlined">visibility</span>
+          <span>Vizibilitate în fața pacienților care caută activ</span>
         </li>
-
-        <li>
-          <span class="material-symbols-outlined">event_available</span>
-          Gestionarea programărilor
+        <li class="benefit-item">
+          <span class="benefit-icon material-symbols-outlined">edit_note</span>
+          <span>Profil complet cu galerie, servicii și contact</span>
         </li>
-
-        <li>
-          <span class="material-symbols-outlined">analytics</span>
-          Statistici despre vizite și cereri
+        <li class="benefit-item">
+          <span class="benefit-icon material-symbols-outlined">location_on</span>
+          <span>Prezență pe hartă interactivă a clinicilor</span>
+        </li>
+        <li class="benefit-item">
+          <span class="benefit-icon material-symbols-outlined">verified</span>
+          <span>Insignă „Verificat DentiPro" pe profil</span>
         </li>
       </ul>
 
-      <button class="cta-btn">Adaugă clinica</button>
+      <a routerLink="/Inscriere" class="cta-btn">
+        <span class="material-symbols-outlined">add_business</span>
+        Adaugă clinica ta
+      </a>
     </div>
+
+    <!-- RIGHT: GLASS CARD -->
+    <div class="cta-right">
+      <div class="stats-card">
+        <div class="stats-header">
+          <span class="material-symbols-outlined stats-icon">bar_chart</span>
+          <span class="stats-label">Statistici platformă</span>
+        </div>
+
+        <div class="stat-row">
+          <div class="stat-item">
+            <span class="stat-num">70+</span>
+            <span class="stat-name">Clinici active</span>
+          </div>
+          <div class="stat-divider"></div>
+          <div class="stat-item">
+            <span class="stat-num">20+</span>
+            <span class="stat-name">Orașe acoperite</span>
+          </div>
+        </div>
+
+        <div class="stat-row">
+          <div class="stat-item">
+            <span class="stat-num">26</span>
+            <span class="stat-name">Servicii listate</span>
+          </div>
+          <div class="stat-divider"></div>
+          <div class="stat-item">
+            <span class="stat-num">100%</span>
+            <span class="stat-name">Clinici verificate</span>
+          </div>
+        </div>
+
+        <div class="stats-footer">
+          <span class="material-symbols-outlined check-icon">check_circle</span>
+          Înregistrare gratuită · Fără comisioane
+        </div>
+      </div>
+    </div>
+
   </div>
 </section>

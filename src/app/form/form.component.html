@@ -1,193 +1,737 @@
-<div class="main">
-  @if (!clicked) {
-    <div class="page-divider">
-      <form class="clinic-form glass-card" #clinicForm="ngForm">
-        <div class="form-header">
-          <h2>Înregistrează clinica</h2>
-          <p>Adaugă informațiile clinicii pentru listarea pe DentiPro</p>
+<div class="main" (click)="closeCityDropdown()">
+
+  <!-- ══════════════════════════════════════════
+       SUCCESS OVERLAY
+  ══════════════════════════════════════════ -->
+  @if (submitSuccess) {
+    <div class="success-overlay">
+      <div class="success-card">
+        <div class="success-icon-wrap">
+          <svg class="checkmark" viewBox="0 0 52 52">
+            <circle class="checkmark-circle" cx="26" cy="26" r="25" fill="none"/>
+            <path class="checkmark-check" fill="none" d="M14 27l8 8 16-16"/>
+          </svg>
         </div>
-
-        <div class="form-section">
-          <h3>Informații clinică</h3>
-
-          <div class="two">
-            <label class="input-group">
-              <span>Nume clinică</span>
-              <input
-                type="text"
-                name="name"
-                [(ngModel)]="formData.name"
-                (input)="getName($event)"
-              />
-            </label>
-
-            <label class="input-group">
-              <span>Telefon clinică</span>
-              <input
-                type="tel"
-                name="phone"
-                [(ngModel)]="formData.phone"
-                required
-                (input)="getTel($event)"
-              />
-            </label>
+        <h2>Cerere trimisă cu succes!</h2>
+        <p>
+          Mulțumim! Am primit înregistrarea clinicii tale. Te vom contacta
+          în cel mai scurt timp la adresa de email furnizată.
+        </p>
+        <div class="success-details">
+          <div class="success-detail-item">
+            <span class="material-symbols-outlined">mail</span>
+            Verifică inbox-ul pentru confirmare
           </div>
-
-          <div class="two">
-            <label class="input-group">
-              <span>Email</span>
-              <input
-                type="email"
-                name="email"
-                [(ngModel)]="formData.email"
-                (input)="getEmail($event)"
-              />
-            </label>
-
-            <label class="input-group">
-              <span>Confirmare email</span>
-              <input
-                type="email"
-                name="confirmEmail"
-                [(ngModel)]="formData.confirmEmail"
-              />
-            </label>
+          <div class="success-detail-item">
+            <span class="material-symbols-outlined">schedule</span>
+            Timp de răspuns: 24–48 ore
+          </div>
+          <div class="success-detail-item">
+            <span class="material-symbols-outlined">workspace_premium</span>
+            Plan ales: <strong>{{ getSelectedPlan()?.name }}</strong>
           </div>
         </div>
-
-        <div class="form-section">
-          <h3>Media clinică</h3>
-
-          <div class="upload-grid">
-            <label class="upload-card">
-              <div class="upload-icon">⬆</div>
-              <p>Încarcă logo</p>
-
-              <input
-                type="file"
-                name="logo"
-                (change)="onLogoUpload($event)"
-                accept="image/*"
-              />
-            </label>
-
-            <label class="upload-card">
-              <div class="upload-icon">⬆</div>
-              <p>Imagini clinică</p>
-
-              <input
-                type="file"
-                name="clinicImages"
-                (change)="onImagesUpload($event)"
-                multiple
-                accept="image/*"
-              />
-            </label>
-          </div>
-        </div>
-
-        <div class="form-section">
-          <h3>Locație clinică</h3>
-
-          <app-orase
-            (citySelected)="formData.city = $event; formInput.oras = $event"
-          >
-          </app-orase>
-
-          <div class="map-container">
-            <p>Selectează locația pe hartă</p>
-
-            <app-google-maps (locationSelected)="onLocationSelected($event)">
-            </app-google-maps>
-          </div>
-        </div>
-
-        <div class="form-section">
-          <h3>Preferințe</h3>
-
-          <div class="radio-group">
-            <label class="radio-card">
-              <input
-                type="radio"
-                name="share-prices"
-                (change)="formData.showPrices = true"
-              />
-
-              <span>Arată prețurile</span>
-            </label>
-
-            <label class="radio-card">
-              <input
-                type="radio"
-                name="share-prices"
-                (change)="formData.showPrices = false"
-              />
-
-              <span>Nu arăta prețurile</span>
-            </label>
-          </div>
-        </div>
-
-        <div class="form-section">
-          <label class="input-group">
-            <span>Telefon manager</span>
-
-            <input
-              type="tel"
-              name="managerPhone"
-              placeholder="07xxxxxxxx"
-              [(ngModel)]="formData.managerPhone"
-            />
-          </label>
-
-          <label class="input-group">
-            <span>Observații</span>
-
-            <textarea
-              rows="3"
-              maxlength="100"
-              [(ngModel)]="formData.additionalNotes"
-              name="additionalNotes"
-            ></textarea>
-          </label>
-        </div>
-
-        <div class="terms">
-          <label>
-            <input
-              type="checkbox"
-              [(ngModel)]="formData.termsAccepted"
-              name="terms"
-            />
-            Accept termenii
-          </label>
-
-          <label>
-            <input
-              type="checkbox"
-              [(ngModel)]="formData.onWebAccepted"
-              name="onWeb"
-            />
-            Accept publicarea datelor
-          </label>
-        </div>
-
-        <button
-          class="submit-btn"
-          type="button"
-          [disabled]="isLoading"
-          (click)="onSubmit()"
-        >
-          {{ isLoading ? "Se trimite..." : "Trimite cererea" }}
+        <button class="success-btn" routerLink="/">
+          Înapoi la pagina principală
         </button>
-      </form>
-
-      <app-iphone-preview
-        [transferData]="formInput"
-        (closeViewer)="clicked = false"
-        [dataForImage]="formData"
-      >
-      </app-iphone-preview>
+      </div>
     </div>
   }
+
+  <!-- ══════════════════════════════════════════
+       WRAPPER
+  ══════════════════════════════════════════ -->
+  <div class="form-wrapper">
+
+    <!-- PAGE HEADER -->
+    <div class="page-header">
+      <div class="header-badge">
+        <span class="material-symbols-outlined">dentistry</span>
+        DentiPro pentru clinici
+      </div>
+      <h1 class="page-title">Înregistrează clinica ta</h1>
+      <p class="page-sub">
+        Completează formularul în câteva minute și intră în cel mai mare
+        marketplace dentar din România.
+      </p>
+    </div>
+
+    <!-- PROGRESS STEPS -->
+    <div class="progress-steps">
+      @for (step of [1, 2, 3, 4, 5, 6]; track step) {
+        <div
+          class="ps-step"
+          [class.active]="currentStep === step"
+          [class.done]="currentStep > step"
+          (click)="goToStep(step)"
+        >
+          <div class="ps-circle">
+            @if (currentStep > step) {
+              <span class="material-symbols-outlined">check</span>
+            } @else {
+              {{ step }}
+            }
+          </div>
+          <div class="ps-labels">
+            <span class="ps-name">{{ stepLabels[step - 1] }}</span>
+          </div>
+        </div>
+        @if (step < 6) {
+          <div class="ps-line" [class.done]="currentStep > step"></div>
+        }
+      }
+    </div>
+
+    <!-- FORM CARD -->
+    <div class="form-card">
+
+      <!-- ═══════════════════════════════════════
+           STEP 1 — CLINICA
+      ═══════════════════════════════════════ -->
+      @if (currentStep === 1) {
+        <div class="step-header">
+          <div class="step-num">01</div>
+          <div>
+            <h2 class="step-title">Informații clinică</h2>
+            <p class="step-sub">Date de bază și contact pentru profilul tău public</p>
+          </div>
+        </div>
+
+        <label class="field-group">
+          <span class="field-label">
+            <span class="material-symbols-outlined">business</span>
+            Nume clinică <span class="req">*</span>
+          </span>
+          <input
+            type="text"
+            [(ngModel)]="formData.name"
+            name="name"
+            placeholder="ex. Dental Studio Cluj"
+            autocomplete="off"
+          />
+        </label>
+
+        <div class="fields-grid two-cols">
+          <label class="field-group">
+            <span class="field-label">
+              <span class="material-symbols-outlined">phone</span>
+              Telefon afișat pe platformă <span class="req">*</span>
+            </span>
+            <span class="field-hint">Numărul pe care îl sună pacienții</span>
+            <input
+              type="tel"
+              [(ngModel)]="formData.clientPhone"
+              name="clientPhone"
+              placeholder="07xxxxxxxx"
+              autocomplete="off"
+            />
+          </label>
+
+          <label class="field-group">
+            <span class="field-label">
+              <span class="material-symbols-outlined">manage_accounts</span>
+              Telefon manager <span class="req">*</span>
+            </span>
+            <span class="field-hint">Intern DentiPro, nu este afișat public</span>
+            <input
+              type="tel"
+              [(ngModel)]="formData.managerPhone"
+              name="managerPhone"
+              placeholder="07xxxxxxxx"
+              autocomplete="off"
+            />
+          </label>
+        </div>
+
+        <div class="fields-grid two-cols">
+          <label class="field-group">
+            <span class="field-label">
+              <span class="material-symbols-outlined">alternate_email</span>
+              Email <span class="req">*</span>
+            </span>
+            <input
+              type="email"
+              [(ngModel)]="formData.email"
+              name="email"
+              placeholder="clinica@exemplu.ro"
+              autocomplete="off"
+            />
+          </label>
+
+          <label class="field-group">
+            <span class="field-label">
+              <span class="material-symbols-outlined">mark_email_read</span>
+              Confirmare email <span class="req">*</span>
+            </span>
+            <input
+              type="email"
+              [(ngModel)]="formData.confirmEmail"
+              name="confirmEmail"
+              placeholder="Repetă adresa de email"
+              autocomplete="off"
+            />
+          </label>
+        </div>
+
+        <!-- CITY DROPDOWN -->
+        <div class="field-group" (click)="$event.stopPropagation()">
+          <span class="field-label">
+            <span class="material-symbols-outlined">location_city</span>
+            Oraș <span class="req">*</span>
+          </span>
+          <div class="city-field-wrap">
+            <div class="city-input-row">
+              <input
+                class="city-input"
+                [(ngModel)]="searchCityInput"
+                name="citySearch"
+                placeholder="Caută orașul..."
+                (focus)="onCityFocus($event)"
+                (input)="onCityInput()"
+                autocomplete="off"
+              />
+              @if (formData.city) {
+                <span class="city-selected-indicator">
+                  <span class="material-symbols-outlined">check_circle</span>
+                  {{ formData.city }}
+                </span>
+              }
+              @if (searchCityInput) {
+                <button class="city-clear-btn" (click)="clearCity()">
+                  <span class="material-symbols-outlined">close</span>
+                </button>
+              }
+            </div>
+            @if (cityDropdownOpen && filteredCities.length > 0) {
+              <div class="city-dropdown">
+                @for (city of filteredCities; track city) {
+                  <div
+                    class="city-drop-item"
+                    [class.selected]="formData.city === city"
+                    (click)="selectCity(city)"
+                  >
+                    <span class="material-symbols-outlined">location_on</span>
+                    {{ city }}
+                  </div>
+                }
+              </div>
+            }
+          </div>
+        </div>
+
+        <label class="field-group">
+          <span class="field-label">
+            <span class="material-symbols-outlined">edit_note</span>
+            Observații suplimentare
+            <span class="char-count">{{ formData.additionalNotes.length }}/100</span>
+          </span>
+          <textarea
+            rows="3"
+            maxlength="100"
+            [(ngModel)]="formData.additionalNotes"
+            name="additionalNotes"
+            placeholder="Orice informație relevantă pentru echipa noastră..."
+          ></textarea>
+        </label>
+      }
+
+      <!-- ═══════════════════════════════════════
+           STEP 2 — PROFIL
+      ═══════════════════════════════════════ -->
+      @if (currentStep === 2) {
+        <div class="step-header">
+          <div class="step-num">02</div>
+          <div>
+            <h2 class="step-title">Profil vizual</h2>
+            <p class="step-sub">Logo, galerie foto și preferința de afișare prețuri</p>
+          </div>
+        </div>
+
+        <div class="section-label">Media clinică</div>
+        <div class="fields-grid two-cols">
+          <label class="upload-zone">
+            <span class="material-symbols-outlined upload-icon">add_photo_alternate</span>
+            <span class="upload-title">Logo clinică</span>
+            <span class="upload-hint">
+              @if (logoName) { {{ logoName }} } @else { PNG, JPG — max 2MB }
+            </span>
+            <input type="file" (change)="onLogoUpload($event)" accept="image/*" />
+          </label>
+
+          <label class="upload-zone">
+            <span class="material-symbols-outlined upload-icon">photo_library</span>
+            <span class="upload-title">Imagini clinică</span>
+            <span class="upload-hint">
+              @if (imageNames.length > 0) {
+                {{ imageNames.length }} imagini selectate
+              } @else {
+                Selectează mai multe imagini
+              }
+            </span>
+            <input type="file" (change)="onImagesUpload($event)" multiple accept="image/*" />
+          </label>
+        </div>
+
+        <div class="section-label">Preferințe afișare prețuri</div>
+        <div class="radio-row">
+          <label class="radio-card" [class.selected]="formData.showPrices === true">
+            <input type="radio" name="showPrices" (change)="formData.showPrices = true" />
+            <span class="material-symbols-outlined radio-icon">visibility</span>
+            <span class="radio-text">Afișează prețurile</span>
+          </label>
+          <label class="radio-card" [class.selected]="formData.showPrices === false">
+            <input type="radio" name="showPrices" (change)="formData.showPrices = false" />
+            <span class="material-symbols-outlined radio-icon">visibility_off</span>
+            <span class="radio-text">Nu afișa prețurile</span>
+          </label>
+        </div>
+      }
+
+      <!-- ═══════════════════════════════════════
+           STEP 3 — LOCAȚIE
+      ═══════════════════════════════════════ -->
+      @if (currentStep === 3) {
+        <div class="step-header">
+          <div class="step-num">03</div>
+          <div>
+            <h2 class="step-title">Locație clinică</h2>
+            <p class="step-sub">Caută adresa clinicii sau dă click pe hartă pentru a o plasa exact</p>
+          </div>
+        </div>
+
+        <!-- ADDRESS SEARCHBAR -->
+        <div class="field-group addr-search-wrap" (click)="$event.stopPropagation()">
+          <span class="field-label">
+            <span class="material-symbols-outlined">search</span>
+            Caută adresa clinicii <span class="req">*</span>
+          </span>
+          <div class="addr-input-row">
+            <span class="material-symbols-outlined addr-search-icon">place</span>
+            <input
+              class="addr-input"
+              type="text"
+              [(ngModel)]="addressSearch"
+              name="addressSearch"
+              placeholder="ex. Str. Victoriei 12, Cluj-Napoca..."
+              autocomplete="off"
+              (input)="onAddressInput()"
+            />
+            @if (addressSearchLoading) {
+              <span class="addr-spinner"></span>
+            }
+            @if (addressSearch && !addressSearchLoading) {
+              <button class="addr-clear-btn" (click)="addressSearch = ''; addressResults = []; addressSearchOpen = false">
+                <span class="material-symbols-outlined">close</span>
+              </button>
+            }
+          </div>
+          @if (addressSearchOpen && addressResults.length > 0) {
+            <div class="addr-dropdown">
+              @for (result of addressResults; track result.place_name) {
+                <div class="addr-drop-item" (click)="selectAddress(result)">
+                  <span class="material-symbols-outlined">location_on</span>
+                  <span>{{ result.place_name }}</span>
+                </div>
+              }
+            </div>
+          }
+        </div>
+
+        <p class="map-instruction">
+          <span class="material-symbols-outlined">touch_app</span>
+          Sau dă click direct pe hartă pentru a plasa markarul la locația clinicii
+        </p>
+        <div id="location-map" class="map-wrapper"></div>
+
+        @if (formData.location.lat) {
+          <div class="location-set">
+            <span class="material-symbols-outlined">check_circle</span>
+            Locație setată: {{ formData.location.lat | number:'1.5-5' }},
+            {{ formData.location.lng | number:'1.5-5' }}
+          </div>
+        }
+      }
+
+      <!-- ═══════════════════════════════════════
+           STEP 4 — SERVICII
+      ═══════════════════════════════════════ -->
+      @if (currentStep === 4) {
+        <div class="step-header">
+          <div class="step-num">04</div>
+          <div>
+            <h2 class="step-title">Servicii oferite</h2>
+            <p class="step-sub">Selectați minimum 5 servicii. Puteți adăuga și servicii personalizate.</p>
+          </div>
+        </div>
+
+        <!-- COUNTER -->
+        <div class="services-counter" [class.ok]="totalSelectedCount >= 5">
+          <span class="material-symbols-outlined">
+            {{ totalSelectedCount >= 5 ? 'check_circle' : 'info' }}
+          </span>
+          {{ totalSelectedCount }} servicii selectate
+          @if (totalSelectedCount < 5) {
+            <span class="counter-remaining">— mai selectați {{ 5 - totalSelectedCount }}</span>
+          }
+        </div>
+
+        <!-- PREDEFINED CHIPS -->
+        <div class="services-grid">
+          @for (service of serviceObject; track service.id) {
+            <label
+              class="service-chip"
+              [class.selected]="isServiceSelected(service.id)"
+            >
+              <input
+                type="checkbox"
+                [value]="service.id"
+                [checked]="isServiceSelected(service.id)"
+                (change)="onServiceChange($event)"
+              />
+              {{ service.label }}
+            </label>
+          }
+        </div>
+
+        <!-- CUSTOM SERVICE ADD -->
+        <div class="section-label" style="margin-top: 8px;">Adaugă serviciu personalizat</div>
+        <div class="custom-service-add">
+          <input
+            type="text"
+            [(ngModel)]="newCustomService"
+            name="newCustomService"
+            placeholder="ex. Implant zimmer, Aparat invizibil..."
+            autocomplete="off"
+            (keydown.enter)="addCustomService()"
+          />
+          <button class="add-service-btn" (click)="addCustomService()">
+            <span class="material-symbols-outlined">add</span>
+            Adaugă
+          </button>
+        </div>
+
+        @if (customServices.length > 0) {
+          <div class="custom-services-list">
+            @for (cs of customServices; track cs.id) {
+              <div class="custom-service-tag">
+                <span class="material-symbols-outlined">star</span>
+                {{ cs.label }}
+                <button class="remove-custom-btn" (click)="removeCustomService(cs.id)">
+                  <span class="material-symbols-outlined">close</span>
+                </button>
+              </div>
+            }
+          </div>
+        }
+      }
+
+      <!-- ═══════════════════════════════════════
+           STEP 5 — PREȚURI
+      ═══════════════════════════════════════ -->
+      @if (currentStep === 5) {
+        <div class="step-header">
+          <div class="step-num">05</div>
+          <div>
+            <h2 class="step-title">Prețuri servicii</h2>
+            <p class="step-sub">Introduceți prețul pentru fiecare serviciu selectat (în RON)</p>
+          </div>
+        </div>
+
+        <div class="prices-grid">
+          @for (item of formData.servicePrices; track item.id) {
+            <div class="price-row-item">
+              <div class="price-service-name">
+                @if (item.id.startsWith('custom_')) {
+                  <span class="material-symbols-outlined custom-star">star</span>
+                } @else {
+                  <span class="material-symbols-outlined svc-icon">dentistry</span>
+                }
+                {{ item.label }}
+              </div>
+
+              <!-- TYPE TOGGLE -->
+              <div class="price-type-toggle">
+                <button
+                  class="price-type-btn"
+                  [class.active]="item.priceType === 'fixed'"
+                  (click)="item.priceType = 'fixed'; item.priceMax = ''"
+                >
+                  <span class="material-symbols-outlined">tag</span>
+                  Preț fix
+                </button>
+                <button
+                  class="price-type-btn"
+                  [class.active]="item.priceType === 'range'"
+                  (click)="item.priceType = 'range'"
+                >
+                  <span class="material-symbols-outlined">swap_horiz</span>
+                  Interval
+                </button>
+              </div>
+
+              <!-- INPUTS -->
+              @if (item.priceType === 'fixed') {
+                <div class="price-input-wrap">
+                  <input
+                    type="number"
+                    [(ngModel)]="item.price"
+                    [name]="'price_' + item.id"
+                    placeholder="0"
+                    min="0"
+                    class="price-input"
+                  />
+                  <span class="price-currency">RON</span>
+                </div>
+              } @else {
+                <div class="price-range-wrap">
+                  <input
+                    type="number"
+                    [(ngModel)]="item.price"
+                    [name]="'priceMin_' + item.id"
+                    placeholder="minim"
+                    min="0"
+                    class="price-input"
+                  />
+                  <span class="price-range-sep">–</span>
+                  <input
+                    type="number"
+                    [(ngModel)]="item.priceMax"
+                    [name]="'priceMax_' + item.id"
+                    placeholder="maxim"
+                    min="0"
+                    class="price-input"
+                  />
+                  <span class="price-currency">RON</span>
+                </div>
+              }
+            </div>
+          }
+        </div>
+
+        <p class="price-note">
+          <span class="material-symbols-outlined">info</span>
+          Puteți pune 0 pentru servicii gratuite sau la cerere de ofertă.
+          Prețurile sunt afișate pe profilul clinicii dacă ați optat pentru afișare.
+        </p>
+      }
+
+      <!-- ═══════════════════════════════════════
+           STEP 6 — FINALIZARE (pachet + revizuire + confirmare)
+      ═══════════════════════════════════════ -->
+      @if (currentStep === 6) {
+        <div class="step-header">
+          <div class="step-num">06</div>
+          <div>
+            <h2 class="step-title">Finalizare</h2>
+            <p class="step-sub">Alege pachetul, verifică datele și trimite cererea</p>
+          </div>
+        </div>
+
+        <!-- BILLING TOGGLE -->
+        <div class="billing-toggle-wrap">
+          <span class="billing-opt" [class.active]="!billingAnnual">Lunar</span>
+          <button class="billing-toggle" (click)="toggleBilling()">
+            <span class="toggle-thumb" [class.annual]="billingAnnual"></span>
+          </button>
+          <span class="billing-opt" [class.active]="billingAnnual">
+            Anual
+            <span class="billing-save">2 luni gratuit</span>
+          </span>
+        </div>
+
+        <!-- PLAN CARDS -->
+        <div class="plan-cards">
+          @for (plan of plans; track plan.id) {
+            <div
+              class="plan-card"
+              [class.featured]="plan.featured"
+              [class.selected]="formData.selectedPlan === plan.id"
+              (click)="selectPlan(plan.id)"
+            >
+              @if (plan.badge) {
+                <div class="plan-badge">{{ plan.badge }}</div>
+              }
+              @if (formData.selectedPlan === plan.id) {
+                <div class="plan-selected-mark">
+                  <span class="material-symbols-outlined">check_circle</span>
+                </div>
+              }
+              <div class="plan-name">{{ plan.name }}</div>
+              <div class="plan-tagline">{{ plan.tagline }}</div>
+
+              <div class="plan-price-row">
+                @if (getDisplayPrice(plan) === 0) {
+                  <span class="plan-price">Gratuit</span>
+                } @else {
+                  <span class="plan-price">{{ getDisplayPrice(plan) }}€</span>
+                  <span class="plan-period">/lună</span>
+                }
+              </div>
+              @if (billingAnnual && plan.annualTotal > 0) {
+                <div class="plan-annual-note">facturat {{ plan.annualTotal }}€/an</div>
+              }
+
+              <div class="plan-divider"></div>
+
+              <ul class="plan-features">
+                @for (feat of plan.features; track feat.text) {
+                  <li class="plan-feat" [class.excluded]="!feat.included">
+                    <span class="material-symbols-outlined feat-icon">
+                      {{ feat.included ? 'check' : 'remove' }}
+                    </span>
+                    <span class="feat-text">{{ feat.text }}</span>
+                    @if (feat.tag) {
+                      <span class="feat-tag" [class]="'tag-' + feat.tag.toLowerCase()">{{ feat.tag }}</span>
+                    }
+                  </li>
+                }
+              </ul>
+
+              <button
+                class="plan-cta"
+                [class.active]="formData.selectedPlan === plan.id"
+                (click)="$event.stopPropagation(); selectPlan(plan.id)"
+              >
+                @if (formData.selectedPlan === plan.id) {
+                  <span class="material-symbols-outlined">check</span> Selectat
+                } @else {
+                  {{ plan.cta }}
+                }
+              </button>
+            </div>
+          }
+        </div>
+
+        <p class="plan-note">
+          <span class="material-symbols-outlined">info</span>
+          Planul Starter este permanent gratuit. La plata anuală economisești echivalentul a 2 luni.
+        </p>
+
+        <!-- SUMMARY -->
+        <div class="section-label" style="margin-top: 24px;">Rezumat înregistrare</div>
+        <div class="summary-grid">
+          <div class="summary-section">
+            <div class="summary-section-title">
+              <span class="material-symbols-outlined">business</span>
+              Clinica
+            </div>
+            <div class="summary-item">
+              <span class="s-label">Nume</span>
+              <span class="s-value">{{ formData.name }}</span>
+            </div>
+            <div class="summary-item">
+              <span class="s-label">Tel. platformă</span>
+              <span class="s-value">{{ formData.clientPhone }}</span>
+            </div>
+            <div class="summary-item">
+              <span class="s-label">Tel. manager</span>
+              <span class="s-value">{{ formData.managerPhone }}</span>
+            </div>
+            <div class="summary-item">
+              <span class="s-label">Email</span>
+              <span class="s-value">{{ formData.email }}</span>
+            </div>
+            <div class="summary-item">
+              <span class="s-label">Oraș</span>
+              <span class="s-value">{{ formData.city }}</span>
+            </div>
+          </div>
+
+          <div class="summary-section">
+            <div class="summary-section-title">
+              <span class="material-symbols-outlined">dentistry</span>
+              Servicii & Prețuri
+            </div>
+            @for (item of formData.servicePrices.slice(0, 5); track item.id) {
+              <div class="summary-item">
+                <span class="s-label">{{ item.label }}</span>
+                <span class="s-value">{{ item.price || '—' }} RON</span>
+              </div>
+            }
+            @if (formData.servicePrices.length > 5) {
+              <div class="summary-item">
+                <span class="s-label">și alte</span>
+                <span class="s-value">{{ formData.servicePrices.length - 5 }} servicii</span>
+              </div>
+            }
+          </div>
+        </div>
+
+        <div class="terms-block">
+          <label class="terms-row">
+            <div class="custom-check" [class.checked]="formData.termsAccepted">
+              <input type="checkbox" [(ngModel)]="formData.termsAccepted" name="terms" />
+              <span class="material-symbols-outlined">check</span>
+            </div>
+            <span>
+              Am citit și accept
+              <a routerLink="/GDPR" class="terms-link">Termenii și condițiile</a>
+              și
+              <a routerLink="/GDPR" class="terms-link">Politica de confidențialitate</a>
+            </span>
+          </label>
+
+          <label class="terms-row">
+            <div class="custom-check" [class.checked]="formData.onWebAccepted">
+              <input type="checkbox" [(ngModel)]="formData.onWebAccepted" name="onWeb" />
+              <span class="material-symbols-outlined">check</span>
+            </div>
+            <span>
+              Sunt de acord cu publicarea informațiilor clinicii pe platforma DentiPro
+            </span>
+          </label>
+        </div>
+      }
+
+      <!-- ═══════════════════════════════════════
+           ERROR BANNER
+      ═══════════════════════════════════════ -->
+      @if (errorMessage) {
+        <div class="error-banner">
+          <span class="material-symbols-outlined">error</span>
+          <span>{{ errorMessage }}</span>
+          <button class="error-close" (click)="errorMessage = ''">
+            <span class="material-symbols-outlined">close</span>
+          </button>
+        </div>
+      }
+
+      <!-- ═══════════════════════════════════════
+           NAVIGATION
+      ═══════════════════════════════════════ -->
+      <div class="nav-row">
+        @if (currentStep > 1) {
+          <button class="btn-back" (click)="prevStep()">
+            <span class="material-symbols-outlined">arrow_back</span>
+            Înapoi
+          </button>
+        } @else {
+          <div></div>
+        }
+
+        @if (currentStep < totalSteps) {
+          <button class="btn-next" (click)="nextStep()">
+            Continuă
+            <span class="material-symbols-outlined">arrow_forward</span>
+          </button>
+        } @else {
+          <button
+            class="btn-submit"
+            (click)="onSubmit()"
+            [disabled]="isLoading"
+            [class.loading]="isLoading"
+          >
+            @if (isLoading) {
+              <span class="spinner"></span>
+              Se trimite...
+            } @else {
+              <span class="material-symbols-outlined">send</span>
+              Trimite cererea
+            }
+          </button>
+        }
+      </div>
+
+    </div><!-- /form-card -->
+  </div><!-- /form-wrapper -->
 </div>

@@ -1,59 +1,36 @@
-<section class="popular-services">
-  <div class="container">
+<section class="ps-section">
+  <div class="ps-container">
+
+    <!-- HEADER -->
     <div class="section-header">
-      <h2>Servicii dentare populare</h2>
-
-      <p>Descoperă rapid cele mai căutate servicii stomatologice</p>
+      <span class="section-badge">Servicii populare</span>
+      <h2 class="section-title">
+        Cele mai căutate<br>
+        <span class="title-gradient">servicii dentare</span>
+      </h2>
+      <p class="section-subtitle">
+        Găsește rapid clinici specializate în serviciul de care ai nevoie.
+      </p>
     </div>
 
+    <!-- GRID -->
     <div class="services-grid">
-      <div class="service-card">
-        <span class="material-symbols-outlined"> dentistry </span>
-
-        <h3>Implant dentar</h3>
-
-        <p>Înlocuiește dinții lipsă cu soluții moderne și durabile.</p>
-      </div>
-
-      <div class="service-card">
-        <span class="material-symbols-outlined"> cleaning_services </span>
-
-        <h3>Detartraj profesional</h3>
-
-        <p>Curățare dentară profesională pentru sănătatea gingiilor.</p>
-      </div>
-
-      <div class="service-card">
-        <span class="material-symbols-outlined"> sentiment_satisfied </span>
-
-        <h3>Albire dentară</h3>
-
-        <p>Obține un zâmbet mai alb prin proceduri sigure.</p>
-      </div>
-
-      <div class="service-card">
-        <span class="material-symbols-outlined"> straighten </span>
-
-        <h3>Aparat dentar</h3>
-
-        <p>Corectează alinierea dinților cu tratamente ortodontice.</p>
-      </div>
-
-      <div class="service-card">
-        <span class="material-symbols-outlined"> healing </span>
-
-        <h3>Endodonție</h3>
-
-        <p>Tratament de canal realizat cu tehnologie modernă.</p>
-      </div>
-
-      <div class="service-card">
-        <span class="material-symbols-outlined"> medical_services </span>
-
-        <h3>Consultație stomatologică</h3>
-
-        <p>Evaluare completă pentru diagnostic și plan de tratament.</p>
-      </div>
+      @for (service of featured; track service.id) {
+        <div class="service-card" (click)="navigate(service.id)">
+          <div class="service-icon-wrap">
+            <span class="material-symbols-outlined">{{ service.icon }}</span>
+          </div>
+          <div class="service-body">
+            <h3 class="service-title">{{ service.label }}</h3>
+            <p class="service-desc">{{ service.desc }}</p>
+          </div>
+          <div class="service-cta">
+            <span class="service-link">Caută clinici</span>
+            <span class="material-symbols-outlined service-arrow">arrow_forward</span>
+          </div>
+        </div>
+      }
     </div>
+
   </div>
 </section>

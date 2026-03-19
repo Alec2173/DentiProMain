@@ -62,6 +62,11 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./form/viewer/viewer.component').then((m) => m.ViewerComponent),
   },
+  {
+    path: 'pricing',
+    loadComponent: () =>
+      import('./pricing/pricing.component').then((m) => m.PricingComponent),
+  },
 
   {
     path: '**',

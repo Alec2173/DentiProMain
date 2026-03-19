@@ -1939,11 +1939,7 @@ export class RoCitiesService {
     return this.city;
   }
 
-  getCities() {
-    this.noRepeat();
-    for (let i = 0; i < this.cities.length; i++) {
-      this.onlyCities.push(this.cities[i].city);
-    }
-    return this.onlyCities;
+  getCities(): string[] {
+    return [...new Set(this.cities.map((c) => c.city))].sort();
   }
 }

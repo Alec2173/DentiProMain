@@ -1,25 +1,112 @@
-import { Component, AfterViewInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
+import { FormsModule } from '@angular/forms';
+import { ServiciiService } from '../../servicii.service';
+import { RoCitiesService } from '../../ro-cities.service';
 
-import flatpickr from 'flatpickr';
-import { CalendarComponent } from '../../calendar/calendar.component';
 @Component({
   selector: 'app-search-board-nd',
-  imports: [CalendarComponent],
+  standalone: true,
+  imports: [FormsModule],
   templateUrl: './search-board-nd.component.html',
   styleUrl: './search-board-nd.component.css',
 })
-export class SearchBoardNdComponent {
-  ngAfterViewInit(): void {
-    flatpickr('#datePicker', {
-      dateFormat: 'd.m.Y',
+export class SearchBoardNdComponent implements OnInit {
+  // City: input text = filter + display
+  searchCity = '';
+  cityDropdownOpen = false;
 
-      minDate: 'today',
+  // Service: serviceText = what user types / label shown; searchService = selected id
+  serviceText = '';
+  searchService = '';
+  serviceDropdownOpen = false;
 
-      disableMobile: true,
+  services: { id: string; label: string }[] = [];
+  cities: string[] = [];
 
-      appendTo: document.body,
+  constructor(
+    private router: Router,
+    private serviciiService: ServiciiService,
+    private roCitiesService: RoCitiesService,
+  ) {}
 
-      position: 'auto center',
-    });
+  ngOnInit() {
+    this.services = this.serviciiService.getServices();
+    this.cities = this.roCitiesService.getCities();
+  }
+
+  get filteredCities(): string[] {
+    const q = this.searchCity.toLowerCase();
+    if (!q) return this.cities.slice(0, 12);
+    return this.cities.filter((c) => c.toLowerCase().includes(q)).slice(0, 12);
+  }
+
+  get filteredServices(): { id: string; label: string }[] {
+    const q = this.serviceText.toLowerCase();
+    if (!q) return this.services;
+    return this.services.filter((s) => s.label.toLowerCase().includes(q));
+  }
+
+  // ── CITY ──────────────────────────────────
+  onCityInput() {
+    this.cityDropdownOpen = true;
+    this.serviceDropdownOpen = false;
+  }
+
+  onCityFocus(e: Event) {
+    e.stopPropagation();
+    this.cityDropdownOpen = true;
+    this.serviceDropdownOpen = false;
+  }
+
+  selectCity(city: string) {
+    this.searchCity = city;
+    this.cityDropdownOpen = false;
+  }
+
+  clearCity() {
+    this.searchCity = '';
+    this.cityDropdownOpen = false;
+  }
+
+  // ── SERVICE ───────────────────────────────
+  onServiceInput() {
+    this.serviceDropdownOpen = true;
+    this.cityDropdownOpen = false;
+    // Clear selection if user is editing
+    if (this.searchService) {
+      this.searchService = '';
+    }
+  }
+
+  onServiceFocus(e: Event) {
+    e.stopPropagation();
+    this.serviceDropdownOpen = true;
+    this.cityDropdownOpen = false;
+  }
+
+  selectService(service: { id: string; label: string }) {
+    this.searchService = service.id;
+    this.serviceText = service.label;
+    this.serviceDropdownOpen = false;
+  }
+
+  clearService() {
+    this.searchService = '';
+    this.serviceText = '';
+    this.serviceDropdownOpen = false;
+  }
+
+  // ── GLOBAL ────────────────────────────────
+  closeAll() {
+    this.cityDropdownOpen = false;
+    this.serviceDropdownOpen = false;
+  }
+
+  search() {
+    const params: Record<string, string> = {};
+    if (this.searchCity) params['city'] = this.searchCity;
+    if (this.searchService) params['service'] = this.searchService;
+    this.router.navigate(['/finder'], { queryParams: params });
   }
 }

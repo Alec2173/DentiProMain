@@ -161,6 +161,8 @@
 
 @media (max-width: 1024px) {
   .hiw-section { padding: 80px 24px; }
+  .section-title { font-size: 36px; }
+  .step-card { padding: 32px 24px; }
 }
 
 @media (max-width: 768px) {
@@ -177,4 +179,13 @@
   .section-title { font-size: 26px; }
   .step-card { padding: 28px 22px; }
   .step-number { font-size: 40px; top: 20px; right: 20px; }
+  .step-title { font-size: 17px; }
+}
+
+@media (max-width: 400px) {
+  .hiw-section { padding: 40px 12px; }
+  .section-title { font-size: 22px; }
+  .section-subtitle { font-size: 14px; }
+  .step-card { padding: 22px 18px; }
+  .step-number { font-size: 34px; }
 }

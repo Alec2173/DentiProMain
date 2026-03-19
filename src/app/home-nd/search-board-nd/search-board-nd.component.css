@@ -343,6 +343,11 @@
 /* Service dropdown slightly wider */
 .service-dropdown {
   min-width: 300px;
+  max-width: calc(100vw - 32px);
+}
+
+.dropdown {
+  max-width: calc(100vw - 32px);
 }
 
 /* ════════════════════════════════════════
@@ -386,10 +391,22 @@
    RESPONSIVE  (always at end — overrides base styles above)
 ════════════════════════════════════════ */
 
+@media (max-width: 1024px) {
+  .hero-title { font-size: 48px; }
+}
+
 @media (max-width: 900px) {
   .main { padding-top: 100px; padding-bottom: 72px; }
   .hero-title { font-size: 44px; }
   .hero-subtitle { font-size: 16px; }
+  .search-board-wrapper { max-width: 100%; }
+}
+
+@media (max-width: 768px) {
+  .hero-title { font-size: 38px; }
+  .hero { gap: 22px; margin-bottom: 48px; }
+  .search-bar { border-radius: 16px; }
+  .search-action { padding: 0 20px; }
 }
 
 @media (max-width: 600px) {
@@ -420,8 +437,17 @@
 }
 
 @media (max-width: 480px) {
+  .main { padding-top: 72px; }
+  .hero-title { font-size: 28px; }
   .trust-bar { gap: 10px; }
   .trust-sep { display: none; }
   .trust-label { font-size: 12px; }
   .trust-num { font-size: 14px; }
+}
+
+@media (max-width: 400px) {
+  .hero-title { font-size: 26px; }
+  .hero-subtitle { font-size: 14px; }
+  .search-bar { padding: 6px; }
+  .segment { padding: 10px 12px; }
 }

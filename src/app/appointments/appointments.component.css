@@ -345,6 +345,11 @@
 .badge-sk  { width: 90px; height: 28px; border-radius: 20px; flex-shrink: 0; }
 
 /* ── RESPONSIVE ──────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .appt-page { padding: 32px 20px 72px; }
+  .header-text h1 { font-size: 24px; }
+}
+
 @media (max-width: 600px) {
   .appt-page {
     padding: 24px 16px 60px;
@@ -355,9 +360,11 @@
   .header-text h1 {
     font-size: 22px;
   }
+  .header-icon { width: 48px; height: 48px; font-size: 18px; border-radius: 14px; }
   .appt-card {
     flex-wrap: wrap;
     gap: 12px;
+    padding: 16px;
   }
   .appt-status {
     width: 100%;
@@ -369,4 +376,28 @@
     padding: 7px 12px;
     font-size: 12px;
   }
+  .state-card { padding: 40px 20px; }
+}
+
+@media (max-width: 480px) {
+  .appt-page { padding: 20px 12px 56px; }
+  .header-text h1 { font-size: 20px; }
+  .header-text p { font-size: 13px; }
+  .appt-avatar { width: 42px; height: 42px; border-radius: 12px; }
+  .appt-name { font-size: 14px; }
+  .appt-service { font-size: 12px; }
+  .appt-datetime { font-size: 12px; }
+  .status-badge { font-size: 11px; padding: 5px 10px; }
+  .filter-tabs { gap: 4px; }
+  .tab-btn { padding: 6px 10px; font-size: 11px; }
+  .tab-count { font-size: 10px; min-width: 18px; height: 18px; }
+}
+
+@media (max-width: 400px) {
+  .appt-page { padding: 16px 10px 48px; }
+  .page-header { gap: 10px; margin-bottom: 24px; }
+  .header-icon { width: 42px; height: 42px; font-size: 16px; }
+  .header-text h1 { font-size: 18px; }
+  .appt-card { padding: 14px 12px; }
+  .filter-tabs { flex-wrap: wrap; }
 }

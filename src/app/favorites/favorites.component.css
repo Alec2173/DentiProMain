@@ -357,6 +357,13 @@
   .clinics-grid {
     grid-template-columns: repeat(2, 1fr);
   }
+  .fav-page { padding: 32px 24px 72px; }
+}
+
+@media (max-width: 768px) {
+  .fav-page { padding: 28px 20px 64px; }
+  .header-text h1 { font-size: 24px; }
+  .clinics-grid { gap: 16px; }
 }
 
 @media (max-width: 600px) {
@@ -372,4 +379,26 @@
   .header-text h1 {
     font-size: 22px;
   }
+  .header-icon { width: 48px; height: 48px; font-size: 18px; border-radius: 14px; }
+  .state-card { padding: 40px 20px; }
+}
+
+@media (max-width: 480px) {
+  .fav-page { padding: 20px 12px 56px; }
+  .header-text h1 { font-size: 20px; }
+  .header-text p { font-size: 13px; }
+  .clinics-grid { grid-template-columns: 1fr; gap: 14px; }
+  .card-cover { height: 140px; }
+  .card-body { padding: 0 16px 16px; }
+  .clinic-name { font-size: 14px; }
+  .btn-view { padding: 8px 12px; font-size: 12px; }
+  .btn-remove { width: 34px; height: 34px; }
+}
+
+@media (max-width: 400px) {
+  .fav-page { padding: 16px 10px 48px; }
+  .page-header { gap: 10px; margin-bottom: 28px; }
+  .header-icon { width: 42px; height: 42px; }
+  .header-text h1 { font-size: 18px; }
+  .state-card { padding: 32px 16px; }
 }

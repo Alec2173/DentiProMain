@@ -79,6 +79,10 @@ app-cards {
 
 /* Tablet / small laptop: tab switcher */
 @media (max-width: 1023px) {
+  .finder-shell {
+    height: calc(100vh - 100px); /* adjust for navbar */
+  }
+
   .finder-body {
     flex-direction: column;
     padding-bottom: 56px; /* space for tab bar */
@@ -154,4 +158,29 @@ app-cards {
   .mobile-tab:first-child {
     border-right: 1px solid rgba(255,255,255,0.06);
   }
+}
+
+/* Mobile: adjust for 64px navbar */
+@media (max-width: 600px) {
+  .finder-shell {
+    height: calc(100vh - 64px);
+  }
+
+  .mobile-tabs {
+    height: 60px;
+    /* safe area for notches */
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+
+  .finder-body {
+    padding-bottom: 60px;
+  }
+
+  .map-panel,
+  .cards-panel {
+    bottom: 60px;
+  }
+
+  .mobile-tab { font-size: 9px; gap: 3px; }
+  .mobile-tab i { font-size: 20px; }
 }

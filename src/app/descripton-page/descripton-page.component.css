@@ -534,10 +534,18 @@
    RESPONSIVE
 ══════════════════════════════════════════════════════════ */
 @media (max-width: 1024px) {
+  .dp-page { padding: 24px 24px 56px; }
   .dp-hero { flex-direction: column; min-height: auto; }
   .dp-gallery { min-height: 320px; }
   .dp-body { grid-template-columns: 1fr; }
   .dp-map-address { display: none; }
+}
+
+@media (max-width: 768px) {
+  .dp-page { padding: 20px 20px 48px; }
+  .dp-gallery { min-height: 260px; }
+  .dp-info__name { font-size: 20px; }
+  .dp-card { padding: 22px 24px; }
 }
 
 @media (max-width: 640px) {
@@ -553,4 +561,26 @@
   .dp-map-container { height: 260px; }
   .sk-hero  { height: 260px; }
   .sk-block { height: 160px; }
+  .dp-hero { gap: 16px; }
+  .dp-gallery { padding: 10px; }
+  .dp-skeleton-body { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 480px) {
+  .dp-page { padding: 12px 12px 40px; }
+  .dp-info__name { font-size: 17px; }
+  .dp-info__logo { width: 52px; height: 52px; }
+  .dp-map-container { height: 220px; }
+  .dp-card { padding: 16px; }
+  .dp-service-item { padding: 9px 12px; }
+  .dp-service-item__label { font-size: 12.5px; }
+  .dp-btn-book, .dp-btn-fav { padding: 11px 14px; font-size: 13px; }
+}
+
+@media (max-width: 400px) {
+  .dp-page { padding: 8px 10px 32px; }
+  .dp-hero { gap: 12px; }
+  .dp-info__header { gap: 10px; }
+  .dp-info__name { font-size: 16px; }
+  .dp-map-container { height: 200px; }
 }

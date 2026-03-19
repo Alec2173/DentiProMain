@@ -1274,9 +1274,14 @@
    RESPONSIVE
 ════════════════════════════════════════ */
 
+@media (max-width: 1024px) {
+  .profile-page { padding: 60px 24px 80px; }
+  .profile-grid { grid-template-columns: 1fr 320px; }
+}
+
 @media (max-width: 900px) {
   .profile-page {
-    padding: 60px 20px 80px;
+    padding: 48px 20px 72px;
   }
 
   .profile-grid {
@@ -1296,16 +1301,54 @@
   .hero-body {
     padding: 0 20px 28px;
   }
+
+  .disclaimer-banner {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .disclaimer-btn { align-self: stretch; justify-content: center; }
 }
 
 @media (max-width: 600px) {
+  .profile-page { padding: 32px 16px 56px; }
+
   .clinic-name {
-    font-size: 22px;
+    font-size: 20px;
   }
 
   .hero-cover {
-    height: 200px;
+    height: 180px;
   }
+
+  .hero-body {
+    flex-direction: column;
+    gap: 16px;
+    margin-top: -40px;
+    padding: 0 16px 24px;
+  }
+
+  .logo-wrapper { width: 80px; height: 80px; }
+  .clinic-logo, .logo-placeholder { width: 80px; height: 80px; border-radius: 16px; }
+  .hero-info { padding-top: 0; }
+  .card { padding: 20px 16px; }
+  .gallery-main-img { height: 220px; }
+  .quick-item { padding: 16px 16px; }
+
+  .modal-backdrop { padding: 16px; }
+  .modal-header, .modal-section, .modal-footer { padding-left: 16px; padding-right: 16px; }
+}
+
+@media (max-width: 400px) {
+  .profile-page { padding: 24px 12px 48px; }
+  .hero-cover { height: 150px; }
+  .clinic-name { font-size: 18px; }
+  .logo-wrapper { width: 68px; height: 68px; }
+  .clinic-logo, .logo-placeholder { width: 68px; height: 68px; }
+  .card { padding: 16px 12px; }
+  .hero-badges { gap: 6px; }
+  .badge { padding: 4px 10px; font-size: 11px; }
 }
 
 /* ════════════════════════════════════════
@@ -1584,8 +1627,25 @@
 
   .map-edit-actions { flex-direction: column; }
 
+  /* Stack input + button vertically so they don't overlap */
+  .map-search-bar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .map-search-input {
+    padding: 12px 14px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .map-search-icon {
+    display: none;
+  }
+
   .map-search-btn {
     width: 100%;
     justify-content: center;
+    border-radius: 0 0 12px 12px;
+    padding: 12px 18px;
   }
 }

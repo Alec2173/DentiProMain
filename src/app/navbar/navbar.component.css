@@ -663,7 +663,7 @@
     padding: 0 16px;
   }
 
-  .brand-logo { height: 48px; }
+  /* NOTE: brand-logo height is intentionally NOT reduced (logo must not shrink) */
 
   /* Hide for-clinics entirely — it's in the hamburger menu */
   .for-clinics-btn { display: none; }
@@ -705,6 +705,26 @@
     right: 12px;
     width: auto;
   }
+}
+
+/* ── MODAL RESPONSIVENESS ── */
+@media (max-width: 480px) {
+  .modal-overlay { padding: 12px; align-items: flex-end; }
+  .modal-card {
+    border-radius: 20px 20px 0 0;
+    max-width: 100%;
+  }
+  .modal-body { padding: 16px 20px 24px; gap: 12px; }
+  .modal-logo { padding: 24px 20px 0; }
+  .modal-tabs { margin: 16px 20px 0; }
+  .modal-input { padding: 10px 12px; font-size: 13px; }
+  .modal-submit { padding: 12px; font-size: 13px; }
+}
+
+@media (max-width: 360px) {
+  .modal-body { padding: 14px 16px 20px; }
+  .modal-logo { padding: 20px 16px 0; }
+  .modal-tabs { margin: 14px 16px 0; }
 }
 
 /* ── MOBILE AUTH IN MENU ── */

@@ -572,15 +572,56 @@
 
 /* ══ RESPONSIVE ══ */
 
+@media (max-width: 1024px) {
+  .cl-section { padding: 72px 24px; }
+  .cl-plans-section { padding: 72px 24px; }
+  .cl-features-grid { grid-template-columns: repeat(2, 1fr); gap: 16px; }
+}
+
 @media (max-width: 900px) {
   .cl-features-grid { grid-template-columns: repeat(2, 1fr); }
-  .cl-plans-grid { flex-direction: column; }
+  .cl-plans-grid { flex-direction: column; max-width: 480px; margin: 0 auto; }
   .cl-steps { flex-direction: column; gap: 20px; }
   .cl-step-arrow { transform: rotate(90deg); }
+  .cl-section { padding: 60px 20px; }
+  .cl-cta-section { padding: 72px 20px; }
+}
+
+@media (max-width: 768px) {
+  .cl-hero { padding: 60px 20px; min-height: auto; }
+  .cl-hero-sub { font-size: 15px; }
+  .cl-stats { flex-direction: row; }
+  .cl-stat { padding: 20px 16px; }
+  .cl-stat-value { font-size: 26px; }
+  .cl-section-title { font-size: clamp(22px, 5vw, 36px); }
+  .cl-section-header { margin-bottom: 40px; gap: 10px; }
 }
 
 @media (max-width: 600px) {
   .cl-features-grid { grid-template-columns: 1fr; }
   .cl-hero-actions { flex-direction: column; align-items: stretch; }
   .cl-btn-primary, .cl-btn-secondary { justify-content: center; }
+  .cl-hero { padding: 48px 16px; }
+  .cl-section { padding: 48px 16px; }
+  .cl-plans-section { padding: 48px 16px; }
+  .cl-cta-section { padding: 56px 16px; }
+  .cl-plans-grid { max-width: 100%; }
+  .cl-plan-card { padding: 24px 20px; }
+  .cl-stats { flex-wrap: wrap; }
+  .cl-stat { flex: 1 1 48%; border-right: none; border-bottom: 1px solid rgba(255,255,255,0.06); }
+  .cl-stat:last-child { border-bottom: none; }
+  .cl-step { max-width: 100%; padding: 0 16px; }
+  .cl-faq-item { padding: 16px; }
+  .cl-faq-q { font-size: 13.5px; }
+}
+
+@media (max-width: 400px) {
+  .cl-hero { padding: 36px 12px; }
+  .cl-hero-title { font-size: clamp(32px, 10vw, 48px); }
+  .cl-section { padding: 40px 12px; }
+  .cl-feature-card { padding: 22px; }
+  .cl-plan-card { padding: 20px 16px; }
+  .cl-plan-price { font-size: 30px; }
+  .cl-stat-value { font-size: 22px; }
+  .cl-cta-btn { padding: 14px 24px; }
 }

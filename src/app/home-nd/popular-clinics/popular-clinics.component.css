@@ -260,6 +260,7 @@
 
 @media (max-width: 1024px) {
   .pc-section { padding: 80px 24px; }
+  .section-title { font-size: 36px; }
 }
 
 @media (max-width: 768px) {
@@ -268,6 +269,7 @@
   .section-title { font-size: 30px; }
   .section-header { margin-bottom: 40px; gap: 12px; }
   .section-subtitle { font-size: 15px; }
+  .card-body { padding: 16px; }
 }
 
 @media (max-width: 540px) {
@@ -276,4 +278,13 @@
   .section-title { font-size: 26px; }
   .card-image { height: 160px; }
   .view-all-btn { width: 100%; justify-content: center; }
+  .card-name { font-size: 15px; }
+}
+
+@media (max-width: 400px) {
+  .pc-section { padding: 40px 12px; }
+  .section-title { font-size: 22px; }
+  .section-subtitle { font-size: 14px; }
+  .clinic-grid { gap: 12px; }
+  .card-image { height: 140px; }
 }

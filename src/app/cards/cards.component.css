@@ -268,10 +268,19 @@ button.card:hover .clinic-name {
   .viewport { padding: 10px 8px 24px; }
 
   button.card { height: 112px; border-radius: 14px; }
-
   .card-image { width: 96px; }
-
   .skeleton-card { height: 112px; }
+  .clinic-name { font-size: 13.5px; }
+  .card-info { padding: 10px 12px 10px 10px; }
+}
+
+@media (max-width: 380px) {
+  .viewport { padding: 8px 6px 20px; }
+  button.card { height: 100px; }
+  .card-image { width: 84px; }
+  .skeleton-card { height: 100px; }
+  .clinic-name { font-size: 12.5px; }
+  .city { font-size: 9.5px; }
 }
 
 /* ════════════════════════════════════════

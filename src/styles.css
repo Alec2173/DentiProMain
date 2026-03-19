@@ -611,3 +611,28 @@ select {
 @keyframes strokeCheck {
   to { stroke-dashoffset: 0; }
 }
+
+/* ════════════════════════════════════════════════════════════
+   GLOBAL RESPONSIVE UTILITIES
+════════════════════════════════════════════════════════════ */
+
+/* Prevent horizontal overflow on any page */
+html, body {
+  overflow-x: hidden;
+  max-width: 100vw;
+}
+
+/* MapLibre popup: shrink on mobile */
+@media (max-width: 480px) {
+  .map-popup-card { width: 220px; }
+  .popup-image { height: 110px; }
+  .popup-name { font-size: 13px; }
+  .popup-info { padding: 12px 14px; }
+}
+
+@media (max-width: 360px) {
+  .map-popup-card { width: 190px; }
+  .popup-image { height: 96px; }
+  .popup-name { font-size: 12px; }
+  .popup-info { padding: 10px 12px; gap: 4px; }
+}

@@ -12,6 +12,8 @@ import { DataShareService } from '../data-share.service';
   styleUrl: './finder.component.css',
 })
 export class FinderComponent implements OnInit {
+  activeTab: 'map' | 'list' = 'list';
+
   constructor(
     private route: ActivatedRoute,
     private dataShareService: DataShareService,

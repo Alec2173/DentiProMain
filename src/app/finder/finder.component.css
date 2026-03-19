@@ -1,21 +1,20 @@
 /* ════════════════════════════════════════
    FINDER SHELL
-   Navbar = 100px fixed at top
-   Filter = 64px fixed below navbar
-   Content = fills remaining viewport
+   Navbar = 100px (desktop) / 64px (mobile)
 ════════════════════════════════════════ */
 
 .finder-shell {
-  height: calc(100vh - 100px); /* 100vh minus navbar height */
+  height: calc(100vh - 100px);
   display: flex;
   flex-direction: column;
-  /* No overflow: hidden here — would clip filter-nav dropdowns */
 }
 
-/* Filter nav sits directly below navbar.
-   z-index needed: backdrop-filter creates a stacking context; without
-   an explicit z-index the filter-nav paints below finder-body (later
-   in DOM), so dropdowns are buried under the map. */
+@media (max-width: 600px) {
+  .finder-shell {
+    height: calc(100vh - 64px);
+  }
+}
+
 app-filter-nav {
   flex-shrink: 0;
   position: relative;
@@ -28,6 +27,7 @@ app-filter-nav {
   flex: 1;
   display: flex;
   overflow: hidden;
+  position: relative;
 }
 
 /* ─── MAP ─── */
@@ -36,6 +36,7 @@ app-filter-nav {
   flex: 1;
   overflow: hidden;
   position: relative;
+  min-width: 0;
 }
 
 app-map {
@@ -50,12 +51,107 @@ app-map {
   width: 380px;
   flex-shrink: 0;
   overflow: hidden;
-  background: var(--bg-surface);
-  border-left: 1px solid var(--border-subtle);
+  background: var(--bg-surface, #0a1628);
+  border-left: 1px solid rgba(255,255,255,0.06);
 }
 
 app-cards {
   display: block;
   width: 100%;
   height: 100%;
+}
+
+/* ─── MOBILE TABS (hidden on desktop) ─── */
+.mobile-tabs { display: none; }
+
+/* ════════════════════════════════════════
+   RESPONSIVE
+════════════════════════════════════════ */
+
+/* Large desktop: cards get more real estate */
+@media (min-width: 1280px) {
+  .cards-panel { width: 460px; }
+}
+
+@media (min-width: 1600px) {
+  .cards-panel { width: 520px; }
+}
+
+/* Tablet / small laptop: tab switcher */
+@media (max-width: 1023px) {
+  .finder-body {
+    flex-direction: column;
+    padding-bottom: 56px; /* space for tab bar */
+  }
+
+  .map-panel,
+  .cards-panel {
+    position: absolute;
+    inset: 0;
+    bottom: 56px;
+    width: 100%;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+  }
+
+  .cards-panel {
+    border-left: none;
+    border-top: 1px solid rgba(255,255,255,0.06);
+  }
+
+  /* Hide inactive tab */
+  .tab-hidden {
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(6px);
+  }
+
+  /* Mobile tab bar */
+  .mobile-tabs {
+    display: flex;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 56px;
+    background: rgba(9, 18, 34, 0.97);
+    backdrop-filter: blur(12px);
+    border-top: 1px solid rgba(255,255,255,0.08);
+    z-index: 30;
+  }
+
+  .mobile-tab {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    background: none;
+    border: none;
+    color: rgba(255,255,255,0.4);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: color 0.2s;
+  }
+
+  .mobile-tab i {
+    font-size: 18px;
+    transition: transform 0.2s;
+  }
+
+  .mobile-tab--active {
+    color: #60a5fa;
+  }
+
+  .mobile-tab--active i {
+    transform: scale(1.15);
+  }
+
+  /* Separator between tabs */
+  .mobile-tab:first-child {
+    border-right: 1px solid rgba(255,255,255,0.06);
+  }
 }

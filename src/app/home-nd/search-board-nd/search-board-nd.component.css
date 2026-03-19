@@ -353,6 +353,8 @@
   display: flex;
   align-items: center;
   gap: 24px;
+  flex-wrap: wrap;
+  justify-content: center;
 }
 
 .trust-item {
@@ -378,4 +380,48 @@
   height: 4px;
   background: rgba(255, 255, 255, 0.15);
   border-radius: 50%;
+}
+
+/* ════════════════════════════════════════
+   RESPONSIVE  (always at end — overrides base styles above)
+════════════════════════════════════════ */
+
+@media (max-width: 900px) {
+  .main { padding-top: 100px; padding-bottom: 72px; }
+  .hero-title { font-size: 44px; }
+  .hero-subtitle { font-size: 16px; }
+}
+
+@media (max-width: 600px) {
+  .main { padding-top: 80px; padding-bottom: 56px; }
+  .hero { gap: 20px; margin-bottom: 40px; padding: 0 16px; }
+  .hero-title { font-size: 32px; letter-spacing: -0.02em; }
+  .hero-subtitle { font-size: 15px; }
+  .hero-badge { font-size: 12px; padding: 6px 12px; }
+
+  .search-board-wrapper { padding: 0 16px; gap: 16px; }
+
+  .search-bar {
+    flex-direction: column;
+    border-radius: 16px;
+    padding: 8px;
+    gap: 2px;
+  }
+
+  .segment { border-radius: 10px; padding: 12px 14px; }
+  .seg-divider { display: none; }
+
+  .search-action {
+    border-radius: 10px;
+    padding: 14px;
+    justify-content: center;
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .trust-bar { gap: 10px; }
+  .trust-sep { display: none; }
+  .trust-label { font-size: 12px; }
+  .trust-num { font-size: 14px; }
 }

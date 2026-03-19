@@ -1,0 +1,199 @@
+<div class="dashboard-page">
+
+  <!-- ── SKELETON LOADING ──────────────────────────────────── -->
+  @if (isLoading) {
+    <div class="skeleton-wrap">
+      <div class="welcome-skeleton">
+        <div class="skeleton avatar-sk-lg"></div>
+        <div class="sk-text-group">
+          <div class="skeleton text-sk title-sk"></div>
+          <div class="skeleton text-sk sub-sk"></div>
+        </div>
+      </div>
+      <div class="stats-grid">
+        @for (i of [1,2,3]; track i) {
+          <div class="skeleton stat-card-sk"></div>
+        }
+      </div>
+      <div class="skeleton progress-sk"></div>
+      <div class="actions-grid">
+        @for (i of [1,2,3]; track i) {
+          <div class="skeleton action-sk"></div>
+        }
+      </div>
+    </div>
+  }
+
+  @if (!isLoading && data) {
+
+    <!-- ── WELCOME HEADER ──────────────────────────────────────── -->
+    <div class="welcome-header">
+      <div class="clinic-avatar">
+        @if (data.clinic?.logo_url) {
+          <img [src]="data.clinic.logo_url" [alt]="auth.currentUser?.name" class="avatar-img" />
+        } @else {
+          <span class="avatar-initials">{{ getInitials() }}</span>
+        }
+      </div>
+      <div class="welcome-text">
+        <div class="welcome-top">
+          <h1>Bun venit, <span class="clinic-name-accent">{{ auth.currentUser?.name }}</span>!</h1>
+          @if (data.clinic?.plan && data.clinic.plan !== 'free') {
+            <span class="plan-badge plan-{{ data.clinic.plan }}">
+              @if (data.clinic.plan === 'premium') { <i class="fal fa-crown"></i> Premium }
+              @if (data.clinic.plan === 'basic') { <i class="fal fa-star"></i> Basic }
+            </span>
+          } @else {
+            <span class="plan-badge plan-free">
+              <i class="fal fa-circle"></i> Free
+            </span>
+          }
+        </div>
+        <p class="welcome-sub">Gestionează profilul tău și urmărește activitatea clinicii</p>
+      </div>
+    </div>
+
+    <!-- ── STATS GRID ─────────────────────────────────────────── -->
+    <div class="stats-grid">
+
+      <div class="stat-card stat-favorites">
+        <div class="stat-icon">
+          <i class="fal fa-heart"></i>
+        </div>
+        <div class="stat-body">
+          <span class="stat-value">{{ data.stats?.favorites ?? 0 }}</span>
+          <span class="stat-label">Adăugări la favorite</span>
+        </div>
+      </div>
+
+      <div class="stat-card stat-images">
+        <div class="stat-icon">
+          <i class="fal fa-images"></i>
+        </div>
+        <div class="stat-body">
+          <span class="stat-value">{{ data.stats?.images ?? 0 }}</span>
+          <span class="stat-label">Imagini încărcate</span>
+        </div>
+      </div>
+
+      <div class="stat-card stat-services">
+        <div class="stat-icon">
+          <i class="fal fa-tooth"></i>
+        </div>
+        <div class="stat-body">
+          <span class="stat-value">{{ data.stats?.services ?? 0 }}</span>
+          <span class="stat-label">Servicii listate</span>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ── PROFILE COMPLETION ─────────────────────────────────── -->
+    <div class="completion-card">
+      <div class="completion-header">
+        <div class="completion-title">
+          <i class="fal fa-tasks"></i>
+          <span>Completitudine profil</span>
+        </div>
+        <span class="completion-pct">{{ profileCompletion }}%</span>
+      </div>
+      <div class="progress-track">
+        <div class="progress-fill" [style.width.%]="profileCompletion"></div>
+      </div>
+      @if (profileCompletion < 100) {
+        <p class="completion-hint">
+          <i class="fal fa-info-circle"></i>
+          Profilul tău este <strong>{{ profileCompletion }}% complet</strong>. Adaugă mai multe detalii pentru a atrage mai mulți pacienți.
+        </p>
+      } @else {
+        <p class="completion-hint success">
+          <i class="fal fa-check-circle"></i>
+          Profilul tău este complet! Felicitări.
+        </p>
+      }
+    </div>
+
+    <!-- ── QUICK ACTIONS ──────────────────────────────────────── -->
+    <div class="section-title">
+      <i class="fal fa-bolt"></i> Acțiuni rapide
+    </div>
+    <div class="actions-grid">
+
+      <a routerLink="/clinici/profil" class="action-card action-edit">
+        <div class="action-icon">
+          <i class="fal fa-edit"></i>
+        </div>
+        <div class="action-text">
+          <span class="action-label">Editează profilul</span>
+          <span class="action-sub">Actualizează informațiile clinicii</span>
+        </div>
+        <i class="fal fa-chevron-right action-arrow"></i>
+      </a>
+
+      @if (auth.currentUser?.clinicId) {
+        <a [routerLink]="['/clinic-profile', auth.currentUser?.clinicId]" class="action-card action-view">
+          <div class="action-icon">
+            <i class="fal fa-external-link"></i>
+          </div>
+          <div class="action-text">
+            <span class="action-label">Profil public</span>
+            <span class="action-sub">Cum văd pacienții clinica ta</span>
+          </div>
+          <i class="fal fa-chevron-right action-arrow"></i>
+        </a>
+      }
+
+      <a routerLink="/clinici/pricing" class="action-card action-plan">
+        <div class="action-icon">
+          <i class="fal fa-crown"></i>
+        </div>
+        <div class="action-text">
+          <span class="action-label">Plan &amp; Prețuri</span>
+          <span class="action-sub">Upgrade pentru mai multă vizibilitate</span>
+        </div>
+        <i class="fal fa-chevron-right action-arrow"></i>
+      </a>
+
+    </div>
+
+    <!-- ── RECENT ACTIVITY ────────────────────────────────────── -->
+    @if (data.recentFavorites && data.recentFavorites.length > 0) {
+      <div class="section-title">
+        <i class="fal fa-history"></i> Activitate recentă
+      </div>
+      <div class="activity-card">
+        @for (fav of data.recentFavorites; track fav.id) {
+          <div class="activity-row">
+            <div class="activity-avatar">
+              @if (fav.avatar_url) {
+                <img [src]="fav.avatar_url" [alt]="fav.name" />
+              } @else {
+                <span>{{ getFavoriteUserInitials(fav.name) }}</span>
+              }
+            </div>
+            <div class="activity-info">
+              <span class="activity-name">{{ fav.name || 'Utilizator anonim' }}</span>
+              <span class="activity-action">
+                <i class="fal fa-heart"></i> A adăugat la favorite
+              </span>
+            </div>
+            <span class="activity-date">{{ formatDate(fav.created_at) }}</span>
+          </div>
+        }
+      </div>
+    }
+
+  }
+
+  <!-- ── NO DATA / ERROR ────────────────────────────────────── -->
+  @if (!isLoading && !data) {
+    <div class="state-card empty-state">
+      <div class="state-icon">
+        <i class="fal fa-exclamation-circle"></i>
+      </div>
+      <h3>Nu s-au putut încărca datele</h3>
+      <p>A apărut o eroare la încărcarea dashboard-ului. Încearcă din nou.</p>
+    </div>
+  }
+
+</div>

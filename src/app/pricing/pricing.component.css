@@ -557,3 +557,22 @@
 }
 
 .bottom-cta-btn .material-symbols-outlined { font-size: 18px; }
+
+/* ════════════════════════════════════════
+   RESPONSIVE
+════════════════════════════════════════ */
+
+@media (max-width: 900px) {
+  .main { padding: 80px 20px 72px; gap: 56px; }
+  .plans-grid { grid-template-columns: 1fr; max-width: 480px; }
+  .hero-title { font-size: 40px; }
+}
+
+@media (max-width: 540px) {
+  .main { padding: 64px 16px 56px; gap: 40px; }
+  .hero-title { font-size: 32px; }
+  .hero-sub { font-size: 15px; }
+  .plan-card { padding: 24px 20px; }
+  .price-num { font-size: 38px; }
+  .bottom-cta-btn { width: 100%; justify-content: center; }
+}

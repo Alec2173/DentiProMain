@@ -1,19 +1,32 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable, tap } from 'rxjs';
-import { switchMap } from 'rxjs';
+import { Observable } from 'rxjs';
+
+export interface ClinicService {
+  service_id: string;
+  label: string;
+  price_type: 'fixed' | 'range' | 'from';
+  price_min: number | null;
+  price_max: number | null;
+}
 
 export interface Clinic {
   id: number;
   name: string;
-  phone: string;
   email: string;
-  services: string;
+  phone_public: string;
+  phone_manager: string;
   city: string;
-  logo_path: string;
-  clinic_images: string[];
-  client_phone: string;
-  client_email: string;
+  address: string;
+  logo_url: string;
+  images: string[];
+  services: ClinicService[];
+  show_prices: boolean;
+  additional_notes: string;
+  latitude: number;
+  longitude: number;
+  plan: string;
+  status: string;
 }
 
 @Injectable({
@@ -23,53 +36,17 @@ export class ClinicDataService {
   private apiUrl = 'https://www.dentipro.ro/api/clinics';
 
   constructor(private http: HttpClient) {}
-  getToken() {
-    this.http
-      .post<{ token: string }>('https://www.dentipro.ro/api/login', {
-        username: 'admin',
-        password: 'parola123',
-      })
-      .subscribe({
-        next: (res) => {
-          localStorage.setItem('token', res.token); // Salvezi tokenul
-          console.log('Token:', res.token);
-        },
-        error: (err) => {
-          console.error('Eroare la login:', err);
-        },
-      });
-  }
-  getClinics(): Observable<Clinic[]> {
-    const token = localStorage.getItem('token');
-    let headers = new HttpHeaders();
-    if (token) {
-      headers = headers.set('Authorization', `Bearer ${token}`);
-    } else {
-      console.warn('Token lipsa in localStorage');
-    }
-    return this.http
-      .get<Clinic[]>(this.apiUrl, { headers })
-      .pipe(tap((data) => console.log('Date primite în serviciu:', data)));
-  }
 
   loadClinicsAuto(filters?: any): Observable<Clinic[]> {
-    return this.http
-      .post<{ token: string }>('https://www.dentipro.ro/api/login', {
-        username: 'Alec',
-        password: '6IY7{|#J2jTA60c',
-      })
-      .pipe(
-        tap((res) => localStorage.setItem('token', res.token)),
-        switchMap(() => this.getClinics()),
-      );
+    return this.http.get<Clinic[]>(this.apiUrl);
   }
 
-  updateClinic(id: number, data: Partial<Clinic>): Observable<Clinic> {
-    const token = localStorage.getItem('token');
-    let headers = new HttpHeaders();
-    if (token) {
-      headers = headers.set('Authorization', `Bearer ${token}`);
-    }
+  getClinicById(id: number): Observable<Clinic> {
+    return this.http.get<Clinic>(`${this.apiUrl}/${id}`);
+  }
+
+  updateClinic(id: number, data: Partial<Clinic>, token: string): Observable<Clinic> {
+    const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
     return this.http.patch<Clinic>(`${this.apiUrl}/${id}`, data, { headers });
   }
 }

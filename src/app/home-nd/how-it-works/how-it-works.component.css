@@ -159,18 +159,22 @@
   color: var(--border-medium);
 }
 
+@media (max-width: 1024px) {
+  .hiw-section { padding: 80px 24px; }
+}
+
 @media (max-width: 768px) {
-  .steps-row {
-    flex-direction: column;
-    gap: 16px;
-  }
+  .hiw-section { padding: 64px 20px; }
+  .section-header { margin-bottom: 48px; }
+  .section-title { font-size: 30px; }
+  .section-subtitle { font-size: 15px; }
+  .steps-row { flex-direction: column; gap: 12px; }
+  .step-connector { transform: rotate(90deg); margin-bottom: 0; }
+}
 
-  .step-connector {
-    transform: rotate(90deg);
-    margin-bottom: 0;
-  }
-
-  .section-title {
-    font-size: 30px;
-  }
+@media (max-width: 540px) {
+  .hiw-section { padding: 52px 16px; }
+  .section-title { font-size: 26px; }
+  .step-card { padding: 28px 22px; }
+  .step-number { font-size: 40px; top: 20px; right: 20px; }
 }

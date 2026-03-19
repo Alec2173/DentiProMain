@@ -1,48 +1,85 @@
 <nav class="navbar">
   <div class="navbar-left">
-    <!-- LOGO -->
     <a routerLink="/" class="brand">
       <img src="logo-new.png" alt="DentiPro" class="brand-logo" />
     </a>
 
-    <!-- DESKTOP NAV -->
     <div class="nav-links">
-      <a routerLink="/" routerLinkActive="active">
-        <i class="fal fa-home"></i>
-        <span>Acasă</span>
+      <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact:true}">
+        <i class="fal fa-home"></i><span>Acasă</span>
       </a>
       <a routerLink="/finder" routerLinkActive="active">
-        <i class="fal fa-search"></i>
-        <span>Caută clinici</span>
+        <i class="fal fa-search"></i><span>Caută clinici</span>
       </a>
       <a routerLink="/services" routerLinkActive="active">
-        <i class="fal fa-tooth"></i>
-        <span>Servicii</span>
+        <i class="fal fa-tooth"></i><span>Servicii</span>
       </a>
       <a routerLink="/favorites" routerLinkActive="active">
-        <i class="fal fa-heart"></i>
-        <span>Favorite</span>
-      </a>
-      <a routerLink="/pricing" routerLinkActive="active">
-        <i class="fal fa-tag"></i>
-        <span>Prețuri</span>
+        <i class="fal fa-heart"></i><span>Favorite</span>
       </a>
     </div>
   </div>
 
   <!-- SEARCH -->
   <div class="navbar-center">
-    <div class="global-search">
-      <i class="fal fa-search search-icon"></i>
-      <input type="text" placeholder="Caută clinici sau servicii..." />
+    <div class="search-wrap">
+      <div class="global-search" [class.search-active]="showSearchDrop">
+        <i class="fal fa-search search-icon"></i>
+        <input
+          type="text"
+          placeholder="Caută clinici, orașe sau servicii..."
+          [(ngModel)]="searchQuery"
+          (input)="onSearchInput()"
+          (focus)="onSearchInput()"
+          autocomplete="off"
+        />
+        @if (searchQuery) {
+          <button class="search-clear" (click)="clearSearch()">
+            <i class="fal fa-times"></i>
+          </button>
+        }
+      </div>
+
+      @if (showSearchDrop) {
+        <div class="search-dropdown">
+          @if (searchResults.length > 0) {
+            @for (c of searchResults; track c.id) {
+              <div class="search-result" (click)="goToClinic(c.id)">
+                <div class="sr-logo">
+                  @if (c.logo_url) {
+                    <img [src]="c.logo_url" alt="" />
+                  } @else {
+                    <span class="sr-initials">{{ c.name?.charAt(0) }}</span>
+                  }
+                </div>
+                <div class="sr-info">
+                  <div class="sr-name">{{ c.name }}</div>
+                  <div class="sr-sub">
+                    @if (c.city) { <span><i class="fal fa-map-marker-alt"></i> {{ c.city }}</span> }
+                    @if (c.servicePreview) { <span class="sr-services">{{ c.servicePreview }}</span> }
+                  </div>
+                </div>
+                <i class="fal fa-arrow-right sr-arrow"></i>
+              </div>
+            }
+          } @else {
+            <div class="search-no-results">
+              <i class="fal fa-search-minus"></i>
+              Niciun rezultat pentru „{{ searchQuery }}"
+            </div>
+          }
+        </div>
+      }
     </div>
   </div>
 
-  <!-- RIGHT SIDE -->
   <div class="navbar-right">
-    <a routerLink="/Inscriere" class="add-clinic-btn">
-      <i class="fal fa-plus"></i>
-      <span>Adaugă clinică</span>
+
+    <!-- PENTRU CLINICI -->
+    <a routerLink="/clinici" class="for-clinics-btn">
+      <i class="fal fa-clinic-medical"></i>
+      <span>Ești o clinică?</span>
+      <i class="fal fa-arrow-right for-clinics-arrow"></i>
     </a>
 
     <!-- NOT LOGGED IN -->
@@ -64,9 +101,9 @@
       </button>
 
       <div class="user-area" (click)="toggleUserMenu(); $event.stopPropagation()">
-        <div class="clinic-avatar">
+        <div class="clinic-avatar patient-avatar">
           @if (authService.currentUser?.logoUrl) {
-            <img [src]="authService.currentUser!.logoUrl" class="clinic-avatar-img" alt="logo" />
+            <img [src]="authService.currentUser!.logoUrl" class="clinic-avatar-img" alt="avatar" />
           } @else {
             <span class="clinic-avatar-initials">{{ getInitials() }}</span>
           }
@@ -77,46 +114,54 @@
         @if (userMenuOpen) {
           <div class="user-dropdown">
             <div class="udd-header">
-              <div class="udd-avatar">{{ getInitials() }}</div>
+              <div class="udd-avatar patient-avatar">{{ getInitials() }}</div>
               <div>
                 <div class="udd-name">{{ authService.currentUser?.name }}</div>
                 <div class="udd-email">{{ authService.currentUser?.email }}</div>
+                @if (authService.isClinic) {
+                  <div class="udd-role-badge clinic">
+                    <i class="fal fa-clinic-medical"></i> Clinică
+                  </div>
+                } @else {
+                  <div class="udd-role-badge patient">
+                    <i class="fal fa-user"></i> Pacient
+                  </div>
+                }
               </div>
             </div>
 
             <div class="udd-divider"></div>
 
-            <a
-              class="udd-item"
-              [routerLink]="['/clinic-profile', authService.currentUser?.clinicId]"
-              (click)="userMenuOpen = false"
-            >
-              <i class="fal fa-clinic-medical"></i>
-              Profil clinică
-            </a>
+            @if (authService.isClinic) {
+              <a class="udd-item" routerLink="/clinici/dashboard" (click)="userMenuOpen = false">
+                <i class="fal fa-th-large"></i> Portal clinici
+              </a>
+              <a class="udd-item" routerLink="/clinici/profil" (click)="userMenuOpen = false">
+                <i class="fal fa-edit"></i> Editează profilul
+              </a>
+              <div class="udd-divider"></div>
+            }
 
-            <a class="udd-item" routerLink="/Inscriere" (click)="userMenuOpen = false">
-              <i class="fal fa-edit"></i>
-              Editează profil
+            <a class="udd-item" routerLink="/favorites" (click)="userMenuOpen = false">
+              <i class="fal fa-heart"></i> Clinici favorite
             </a>
-
-            <a class="udd-item" routerLink="/pricing" (click)="userMenuOpen = false">
-              <i class="fal fa-tag"></i>
-              Plan & abonament
+            <a class="udd-item" routerLink="/appointments" (click)="userMenuOpen = false">
+              <i class="fal fa-calendar-check"></i> Programările mele
+            </a>
+            <a class="udd-item" routerLink="/profile" (click)="userMenuOpen = false">
+              <i class="fal fa-user-circle"></i> Profilul meu
             </a>
 
             <div class="udd-divider"></div>
 
             <button class="udd-item udd-logout" (click)="logout()">
-              <i class="fal fa-sign-out-alt"></i>
-              Deconectare
+              <i class="fal fa-sign-out-alt"></i> Deconectare
             </button>
           </div>
         }
       </div>
     }
 
-    <!-- BURGER MENU -->
     <button class="mobile-menu-btn" (click)="toggleMobileMenu()">
       <i class="fal fa-bars"></i>
     </button>
@@ -126,119 +171,76 @@
 <!-- MOBILE MENU -->
 @if (mobileMenuOpen) {
   <div class="mobile-menu">
-    <a routerLink="/" (click)="closeMobileMenu()">
-      <i class="fal fa-home"></i>
-      Acasă
-    </a>
-    <a routerLink="/finder" (click)="closeMobileMenu()">
-      <i class="fal fa-search"></i>
-      Caută clinici
-    </a>
-    <a routerLink="/services" (click)="closeMobileMenu()">
-      <i class="fal fa-tooth"></i>
-      Servicii
-    </a>
-    <a routerLink="/favorites" (click)="closeMobileMenu()">
-      <i class="fal fa-heart"></i>
-      Favorite
-    </a>
-    <a routerLink="/Inscriere" (click)="closeMobileMenu()">
-      <i class="fal fa-plus"></i>
-      Adaugă clinică
+    <a routerLink="/" (click)="closeMobileMenu()"><i class="fal fa-home"></i> Acasă</a>
+    <a routerLink="/finder" (click)="closeMobileMenu()"><i class="fal fa-search"></i> Caută clinici</a>
+    <a routerLink="/services" (click)="closeMobileMenu()"><i class="fal fa-tooth"></i> Servicii</a>
+    <a routerLink="/favorites" (click)="closeMobileMenu()"><i class="fal fa-heart"></i> Favorite</a>
+    <a routerLink="/clinici" (click)="closeMobileMenu()" class="mobile-clinic-link">
+      <i class="fal fa-clinic-medical"></i> Portal clinici
     </a>
 
     @if (!authService.isLoggedIn) {
       <div class="mobile-auth-row">
-        <button class="mobile-auth-btn login" (click)="openModal('login')">
+        <button class="mobile-auth-btn login" (click)="openModal('login'); closeMobileMenu()">
           <i class="fal fa-sign-in-alt"></i> Autentificare
         </button>
-        <button class="mobile-auth-btn signup" (click)="openModal('register')">
+        <button class="mobile-auth-btn signup" (click)="openModal('register'); closeMobileMenu()">
           <i class="fal fa-user-plus"></i> Cont nou
         </button>
       </div>
     }
 
     @if (authService.isLoggedIn) {
-      <a [routerLink]="['/clinic-profile', authService.currentUser?.clinicId]" (click)="closeMobileMenu()">
-        <i class="fal fa-clinic-medical"></i>
-        Profil clinică
-      </a>
+      <a routerLink="/favorites" (click)="closeMobileMenu()"><i class="fal fa-heart"></i> Favorite</a>
+      <a routerLink="/appointments" (click)="closeMobileMenu()"><i class="fal fa-calendar-check"></i> Programări</a>
       <button class="mobile-logout-btn" (click)="logout(); closeMobileMenu()">
-        <i class="fal fa-sign-out-alt"></i>
-        Deconectare
+        <i class="fal fa-sign-out-alt"></i> Deconectare
       </button>
     }
   </div>
 }
 
-<!-- ══════════════════════════════════════════
-     AUTH MODAL
-══════════════════════════════════════════ -->
+<!-- ══ AUTH MODAL (pacienți only) ══ -->
 @if (showModal) {
   <div class="modal-overlay" (click)="closeModal()">
     <div class="modal-card" (click)="$event.stopPropagation()">
 
-      <!-- CLOSE -->
       <button class="modal-close" (click)="closeModal()">
         <i class="fal fa-times"></i>
       </button>
 
-      <!-- LOGO -->
       <div class="modal-logo">
         <span class="modal-logo-icon material-symbols-outlined">dentistry</span>
         <span class="modal-logo-text">DentiPro</span>
       </div>
 
-      <!-- TABS -->
       <div class="modal-tabs">
-        <button
-          class="modal-tab"
-          [class.active]="modalTab === 'login'"
-          (click)="switchTab('login')"
-        >
+        <button class="modal-tab" [class.active]="modalTab === 'login'" (click)="switchTab('login')">
           Autentificare
         </button>
-        <button
-          class="modal-tab"
-          [class.active]="modalTab === 'register'"
-          (click)="switchTab('register')"
-        >
+        <button class="modal-tab" [class.active]="modalTab === 'register'" (click)="switchTab('register')">
           Cont nou
         </button>
       </div>
 
-      <!-- ── LOGIN FORM ── -->
+      <!-- LOGIN -->
       @if (modalTab === 'login') {
         <div class="modal-body">
-          <p class="modal-sub">Bine ai revenit! Intră în contul tău DentiPro.</p>
+          <p class="modal-sub">Bine ai revenit! Intră în contul tău de pacient.</p>
 
           <div class="modal-field">
-            <label class="modal-label">
-              <i class="fal fa-envelope"></i> Email
-            </label>
-            <input
-              type="email"
-              class="modal-input"
-              [(ngModel)]="loginEmail"
-              placeholder="clinica@exemplu.ro"
-              autocomplete="email"
-              (keydown.enter)="submitLogin()"
-            />
+            <label class="modal-label"><i class="fal fa-envelope"></i> Email</label>
+            <input type="email" class="modal-input" [(ngModel)]="loginEmail"
+              placeholder="email@exemplu.ro" autocomplete="email"
+              (keydown.enter)="submitLogin()" />
           </div>
 
           <div class="modal-field">
-            <label class="modal-label">
-              <i class="fal fa-lock"></i> Parolă
-            </label>
+            <label class="modal-label"><i class="fal fa-lock"></i> Parolă</label>
             <div class="modal-pw-wrap">
-              <input
-                [type]="loginShowPw ? 'text' : 'password'"
-                class="modal-input"
-                [(ngModel)]="loginPassword"
-                placeholder="••••••••"
-                autocomplete="current-password"
-                (keydown.enter)="submitLogin()"
-              />
+              <input [type]="loginShowPw ? 'text' : 'password'" class="modal-input"
+                [(ngModel)]="loginPassword" placeholder="••••••••"
+                autocomplete="current-password" (keydown.enter)="submitLogin()" />
               <button class="pw-toggle" (click)="loginShowPw = !loginShowPw">
                 <i [class]="loginShowPw ? 'fal fa-eye-slash' : 'fal fa-eye'"></i>
               </button>
@@ -246,17 +248,10 @@
           </div>
 
           @if (modalError) {
-            <div class="modal-error">
-              <i class="fal fa-exclamation-circle"></i>
-              {{ modalError }}
-            </div>
+            <div class="modal-error"><i class="fal fa-exclamation-circle"></i> {{ modalError }}</div>
           }
 
-          <button
-            class="modal-submit"
-            (click)="submitLogin()"
-            [disabled]="modalLoading"
-          >
+          <button class="modal-submit" (click)="submitLogin()" [disabled]="modalLoading">
             @if (modalLoading) {
               <span class="modal-spinner"></span> Se autentifică...
             } @else {
@@ -266,101 +261,77 @@
 
           <p class="modal-switch">
             Nu ai cont?
-            <button class="modal-switch-btn" (click)="switchTab('register')">
-              Înregistrează-te gratuit
-            </button>
+            <button class="modal-switch-btn" (click)="switchTab('register')">Înregistrează-te</button>
           </p>
+
+          <div class="modal-clinic-redirect">
+            <span>Ești o clinică?</span>
+            <a routerLink="/clinici/autentificare" (click)="closeModal()" class="modal-clinic-link">
+              <i class="fal fa-clinic-medical"></i> Portal clinici
+            </a>
+          </div>
         </div>
       }
 
-      <!-- ── REGISTER FORM ── -->
+      <!-- REGISTER (patient only) -->
       @if (modalTab === 'register') {
         <div class="modal-body">
-          <p class="modal-sub">Creează un cont pentru clinica ta în câteva secunde.</p>
+          <p class="modal-sub">Creează-ți contul de pacient DentiPro.</p>
 
           <div class="modal-field">
-            <label class="modal-label">
-              <i class="fal fa-clinic-medical"></i> Nume clinică <span class="req">*</span>
-            </label>
-            <input
-              type="text"
-              class="modal-input"
-              [(ngModel)]="regName"
-              placeholder="ex. Dental Studio Cluj"
-              autocomplete="organization"
-            />
+            <label class="modal-label"><i class="fal fa-user"></i> Nume complet <span class="req">*</span></label>
+            <input type="text" class="modal-input" [(ngModel)]="regName"
+              placeholder="Popescu Ion" autocomplete="name" />
           </div>
 
           <div class="modal-field">
-            <label class="modal-label">
-              <i class="fal fa-envelope"></i> Email <span class="req">*</span>
-            </label>
-            <input
-              type="email"
-              class="modal-input"
-              [(ngModel)]="regEmail"
-              placeholder="clinica@exemplu.ro"
-              autocomplete="email"
-            />
+            <label class="modal-label"><i class="fal fa-envelope"></i> Email <span class="req">*</span></label>
+            <input type="email" class="modal-input" [(ngModel)]="regEmail"
+              placeholder="email@exemplu.ro" autocomplete="email" />
           </div>
 
           <div class="modal-field">
-            <label class="modal-label">
-              <i class="fal fa-lock"></i> Parolă <span class="req">*</span>
-            </label>
+            <label class="modal-label"><i class="fal fa-lock"></i> Parolă <span class="req">*</span></label>
             <div class="modal-pw-wrap">
-              <input
-                [type]="regShowPw ? 'text' : 'password'"
-                class="modal-input"
-                [(ngModel)]="regPassword"
-                placeholder="Minim 6 caractere"
-                autocomplete="new-password"
-              />
-              <button class="pw-toggle" (click)="regShowPw = !regShowPw">
-                <i [class]="regShowPw ? 'fal fa-eye-slash' : 'fal fa-eye'"></i>
+              <input [type]="loginShowPw ? 'text' : 'password'" class="modal-input"
+                [(ngModel)]="regPassword" placeholder="Minim 6 caractere"
+                autocomplete="new-password" />
+              <button class="pw-toggle" (click)="loginShowPw = !loginShowPw">
+                <i [class]="loginShowPw ? 'fal fa-eye-slash' : 'fal fa-eye'"></i>
               </button>
             </div>
           </div>
 
           <div class="modal-field">
-            <label class="modal-label">
-              <i class="fal fa-check-circle"></i> Confirmă parola <span class="req">*</span>
-            </label>
-            <input
-              type="password"
-              class="modal-input"
-              [(ngModel)]="regConfirm"
-              placeholder="Repetă parola"
-              autocomplete="new-password"
-              (keydown.enter)="submitRegister()"
-            />
+            <label class="modal-label"><i class="fal fa-check-circle"></i> Confirmă parola <span class="req">*</span></label>
+            <input type="password" class="modal-input" [(ngModel)]="regConfirm"
+              placeholder="Repetă parola" autocomplete="new-password"
+              (keydown.enter)="submitRegister()" />
           </div>
 
           @if (modalError) {
-            <div class="modal-error">
-              <i class="fal fa-exclamation-circle"></i>
-              {{ modalError }}
-            </div>
+            <div class="modal-error"><i class="fal fa-exclamation-circle"></i> {{ modalError }}</div>
           }
 
-          <button
-            class="modal-submit"
-            (click)="submitRegister()"
-            [disabled]="modalLoading"
-          >
+          <button class="modal-submit" (click)="submitRegister()" [disabled]="modalLoading">
             @if (modalLoading) {
               <span class="modal-spinner"></span> Se creează contul...
             } @else {
-              <i class="fal fa-user-plus"></i> Creează cont gratuit
+              <i class="fal fa-user-plus"></i> Creează cont pacient
             }
           </button>
 
           <p class="modal-switch">
             Ai deja cont?
-            <button class="modal-switch-btn" (click)="switchTab('login')">
-              Autentifică-te
-            </button>
+            <button class="modal-switch-btn" (click)="switchTab('login')">Autentifică-te</button>
           </p>
+
+          <div class="modal-clinic-redirect">
+            <span>Ești o clinică?</span>
+            <a routerLink="/clinici/autentificare" (click)="closeModal()" class="modal-clinic-link">
+              <i class="fal fa-clinic-medical"></i> Portal clinici
+            </a>
+          </div>
         </div>
       }
 

@@ -1,21 +1,28 @@
-import { Component, HostListener } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { Component, HostListener, OnInit } from '@angular/core';
+import { RouterLink, RouterLinkActive, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../auth.service';
+import { ClinicDataService } from '../clinic-data.service';
 
 @Component({
   selector: 'app-navbar',
   standalone: true,
-  imports: [RouterLink, FormsModule, CommonModule],
+  imports: [RouterLink, RouterLinkActive, FormsModule, CommonModule],
   templateUrl: './navbar.component.html',
   styleUrl: './navbar.component.css',
 })
-export class NavbarComponent {
+export class NavbarComponent implements OnInit {
   mobileMenuOpen = false;
   userMenuOpen = false;
 
-  // ── AUTH MODAL ────────────────────────────────
+  // ── SEARCH ────────────────────────────────────────────────
+  searchQuery = '';
+  searchResults: any[] = [];
+  showSearchDrop = false;
+  private allClinics: any[] = [];
+
+  // ── AUTH MODAL (patients only) ────────────────────────────
   showModal = false;
   modalTab: 'login' | 'register' = 'login';
   modalLoading = false;
@@ -29,23 +36,63 @@ export class NavbarComponent {
   regEmail = '';
   regPassword = '';
   regConfirm = '';
-  regShowPw = false;
 
-  constructor(public authService: AuthService) {}
+  constructor(
+    public authService: AuthService,
+    private clinicData: ClinicDataService,
+    private router: Router,
+  ) {}
 
-  // ── MOBILE MENU ───────────────────────────────
-  toggleMobileMenu() {
-    this.mobileMenuOpen = !this.mobileMenuOpen;
+  ngOnInit() {
+    this.clinicData.loadClinicsAuto().subscribe({
+      next: (data) => { this.allClinics = data; },
+    });
   }
 
-  closeMobileMenu() {
-    this.mobileMenuOpen = false;
+  onSearchInput() {
+    const q = this.searchQuery.trim().toLowerCase();
+    if (q.length < 2) { this.searchResults = []; this.showSearchDrop = false; return; }
+
+    this.searchResults = this.allClinics
+      .filter(c => {
+        const inName    = c.name?.toLowerCase().includes(q);
+        const inCity    = c.city?.toLowerCase().includes(q);
+        const inServices = Array.isArray(c.services)
+          ? c.services.some((s: any) => s.label?.toLowerCase().includes(q))
+          : (typeof c.services === 'string' && c.services.toLowerCase().includes(q));
+        return inName || inCity || inServices;
+      })
+      .slice(0, 6)
+      .map(c => ({
+        ...c,
+        images: Array.isArray(c.images) ? c.images : [],
+        logo_url: c.logo_url || c.logo_path || null,
+        servicePreview: Array.isArray(c.services)
+          ? c.services.slice(0, 2).map((s: any) => s.label).join(', ')
+          : '',
+      }));
+
+    this.showSearchDrop = this.searchResults.length > 0 || q.length >= 2;
   }
 
-  // ── USER DROPDOWN ─────────────────────────────
-  toggleUserMenu() {
-    this.userMenuOpen = !this.userMenuOpen;
+  goToClinic(id: number) {
+    this.showSearchDrop = false;
+    this.searchQuery = '';
+    this.router.navigate(['/descripton', id]);
   }
+
+  clearSearch() {
+    this.searchQuery = '';
+    this.searchResults = [];
+    this.showSearchDrop = false;
+  }
+
+  // ── MOBILE MENU ───────────────────────────────────────────
+  toggleMobileMenu() { this.mobileMenuOpen = !this.mobileMenuOpen; }
+  closeMobileMenu() { this.mobileMenuOpen = false; }
+
+  // ── USER DROPDOWN ─────────────────────────────────────────
+  toggleUserMenu() { this.userMenuOpen = !this.userMenuOpen; }
 
   logout() {
     this.authService.logout();
@@ -53,16 +100,11 @@ export class NavbarComponent {
   }
 
   getInitials(): string {
-    const name = this.authService.currentUser?.name ?? '';
-    return name
-      .split(' ')
-      .slice(0, 2)
-      .map((w) => w[0])
-      .join('')
-      .toUpperCase();
+    return (this.authService.currentUser?.name ?? '')
+      .split(' ').slice(0, 2).map((w) => w[0]).join('').toUpperCase();
   }
 
-  // ── MODAL ─────────────────────────────────────
+  // ── MODAL ─────────────────────────────────────────────────
   openModal(tab: 'login' | 'register') {
     this.modalTab = tab;
     this.showModal = true;
@@ -87,44 +129,49 @@ export class NavbarComponent {
     this.modalError = '';
   }
 
-  submitLogin() {
+  async submitLogin() {
     this.modalError = '';
     this.modalLoading = true;
-    setTimeout(() => {
-      const result = this.authService.login(this.loginEmail, this.loginPassword);
-      this.modalLoading = false;
-      if (result.success) {
-        this.closeModal();
-      } else {
-        this.modalError = result.error ?? 'Eroare la autentificare.';
+    const result = await this.authService.login(this.loginEmail, this.loginPassword);
+    this.modalLoading = false;
+    if (result.success) {
+      if (!this.authService.isPatient) {
+        // Clinic or admin account — not allowed on patient site
+        this.authService.logout();
+        this.modalError = 'Acest cont aparține unei clinici. Folosiți portalul clinicilor pentru autentificare.';
+        return;
       }
-    }, 600);
+      this.closeModal();
+    } else {
+      this.modalError = result.error ?? 'Eroare la autentificare.';
+    }
   }
 
-  submitRegister() {
+  async submitRegister() {
     this.modalError = '';
     this.modalLoading = true;
-    setTimeout(() => {
-      const result = this.authService.register(
-        this.regName,
-        this.regEmail,
-        this.regPassword,
-        this.regConfirm,
-      );
-      this.modalLoading = false;
-      if (result.success) {
-        this.closeModal();
-      } else {
-        this.modalError = result.error ?? 'Eroare la înregistrare.';
-      }
-    }, 600);
+    // Patient-only registration from the main site
+    const result = await this.authService.registerPatient(
+      this.regName, this.regEmail, this.regPassword, this.regConfirm,
+    );
+    this.modalLoading = false;
+    if (result.success) {
+      this.closeModal();
+    } else {
+      this.modalError = result.error ?? 'Eroare la înregistrare.';
+    }
   }
 
   @HostListener('document:click', ['$event'])
   onDocumentClick(e: Event) {
-    const target = e.target as HTMLElement;
-    if (!target.closest('.user-area')) {
-      this.userMenuOpen = false;
-    }
+    const t = e.target as HTMLElement;
+    if (!t.closest('.user-area')) this.userMenuOpen = false;
+    if (!t.closest('.search-wrap')) this.showSearchDrop = false;
+  }
+
+  @HostListener('document:keydown.escape')
+  onEscape() {
+    this.showSearchDrop = false;
+    this.userMenuOpen = false;
   }
 }

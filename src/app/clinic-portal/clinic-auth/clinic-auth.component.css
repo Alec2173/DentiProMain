@@ -1,0 +1,301 @@
+.ca-page {
+  min-height: calc(100vh - 72px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  position: relative;
+  overflow: hidden;
+  background:
+    radial-gradient(ellipse 700px 500px at 20% 20%, rgba(37,99,235,0.12), transparent 60%),
+    radial-gradient(ellipse 500px 400px at 80% 80%, rgba(14,165,233,0.08), transparent 60%),
+    linear-gradient(180deg, #050e1f, #071628);
+}
+
+.ca-card {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  max-width: 440px;
+  background: linear-gradient(160deg, #0d1f3c, #071628);
+  border: 1px solid rgba(255,255,255,0.09);
+  border-radius: 24px;
+  padding: 36px;
+  box-shadow: 0 30px 80px rgba(0,0,0,0.5);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* ── BRAND ── */
+
+.ca-brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+  justify-content: center;
+}
+
+.ca-brand-icon {
+  font-size: 26px;
+  color: #3b82f6;
+}
+
+.ca-brand-text {
+  font-size: 20px;
+  font-weight: 700;
+  color: white;
+  letter-spacing: -0.03em;
+}
+
+.ca-brand-badge {
+  padding: 2px 8px;
+  background: linear-gradient(135deg, #0ea5e9, #2563eb);
+  border-radius: 6px;
+  font-size: 10px;
+  font-weight: 700;
+  color: white;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* ── TITLE ── */
+
+.ca-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: white;
+  letter-spacing: -0.02em;
+  margin: 0;
+  text-align: center;
+}
+
+.ca-sub {
+  font-size: 13px;
+  color: rgba(255,255,255,0.35);
+  text-align: center;
+  margin: -10px 0 0;
+  line-height: 1.5;
+}
+
+/* ── TABS ── */
+
+.ca-tabs {
+  display: flex;
+  gap: 4px;
+  background: rgba(255,255,255,0.04);
+  border-radius: 12px;
+  padding: 4px;
+}
+
+.ca-tab {
+  flex: 1;
+  padding: 9px;
+  border: none;
+  border-radius: 9px;
+  background: transparent;
+  color: rgba(255,255,255,0.35);
+  font-size: 13.5px;
+  font-weight: 500;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.18s;
+}
+
+.ca-tab.active {
+  background: rgba(37,99,235,0.25);
+  color: #93c5fd;
+}
+
+/* ── FORM ── */
+
+.ca-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.ca-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.ca-label {
+  font-size: 12.5px;
+  font-weight: 500;
+  color: rgba(255,255,255,0.4);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.ca-label i { font-size: 13px; color: rgba(59,130,246,0.6); }
+
+.ca-input {
+  width: 100%;
+  padding: 11px 14px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.09);
+  border-radius: 10px;
+  color: white;
+  font-size: 14px;
+  font-family: inherit;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  box-sizing: border-box;
+}
+
+.ca-input:focus {
+  border-color: rgba(59,130,246,0.5);
+  box-shadow: 0 0 0 3px rgba(37,99,235,0.12);
+}
+
+.ca-input::placeholder { color: rgba(255,255,255,0.18); }
+
+.ca-pw-wrap { position: relative; }
+.ca-pw-wrap .ca-input { padding-right: 42px; }
+
+.ca-pw-toggle {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: rgba(255,255,255,0.3);
+  cursor: pointer;
+  padding: 4px;
+  transition: color 0.15s;
+}
+
+.ca-pw-toggle:hover { color: rgba(255,255,255,0.6); }
+
+/* ── INFO NOTE ── */
+
+.ca-info-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 10px 13px;
+  background: rgba(37,99,235,0.07);
+  border: 1px solid rgba(59,130,246,0.15);
+  border-radius: 10px;
+  font-size: 12px;
+  color: rgba(147,197,253,0.65);
+  line-height: 1.5;
+}
+
+.ca-info-note .material-symbols-outlined { font-size: 15px; color: #3b82f6; flex-shrink: 0; margin-top: 1px; }
+
+/* ── ERROR ── */
+
+.ca-error {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  background: rgba(239,68,68,0.08);
+  border: 1px solid rgba(239,68,68,0.2);
+  border-radius: 10px;
+  font-size: 13px;
+  color: #fca5a5;
+}
+
+.ca-error i { color: #f87171; font-size: 14px; }
+
+/* ── SUBMIT ── */
+
+.ca-submit {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 13px;
+  border-radius: 12px;
+  border: none;
+  background: linear-gradient(135deg, #0ea5e9, #2563eb);
+  color: white;
+  font-size: 14px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 4px 16px rgba(14,165,233,0.3);
+}
+
+.ca-submit:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 24px rgba(14,165,233,0.45);
+}
+
+.ca-submit:disabled { opacity: 0.6; cursor: not-allowed; }
+
+.ca-spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255,255,255,0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  flex-shrink: 0;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── SWITCH ── */
+
+.ca-switch {
+  text-align: center;
+  font-size: 12.5px;
+  color: rgba(255,255,255,0.3);
+  margin: 0;
+}
+
+.ca-switch-btn {
+  background: none;
+  border: none;
+  color: #60a5fa;
+  font-size: 12.5px;
+  font-family: inherit;
+  cursor: pointer;
+  padding: 0;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.ca-switch-btn:hover { color: #93c5fd; }
+
+/* ── BACK LINK ── */
+
+.ca-patient-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  font-size: 12px;
+  color: rgba(255,255,255,0.2);
+  text-decoration: none;
+  transition: color 0.15s;
+  padding-top: 4px;
+}
+
+.ca-patient-link:hover { color: rgba(255,255,255,0.5); }
+.ca-patient-link i { font-size: 11px; }
+
+.req { color: #ef4444; font-size: 10px; }
+
+/* ── BACKGROUND ORBS ── */
+
+.ca-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.2;
+  pointer-events: none;
+}
+
+.ca-orb1 { width: 400px; height: 400px; background: #2563eb; top: -80px; right: -80px; }
+.ca-orb2 { width: 300px; height: 300px; background: #0ea5e9; bottom: -60px; left: -60px; }

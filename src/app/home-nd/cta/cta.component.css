@@ -213,12 +213,17 @@
 }
 
 @media (max-width: 900px) {
-  .cta-container {
-    grid-template-columns: 1fr;
-    gap: 48px;
-  }
+  .cta-section { padding: 80px 24px; }
+  .cta-container { grid-template-columns: 1fr; gap: 40px; }
+  .cta-title { font-size: 34px; }
+}
 
-  .cta-title {
-    font-size: 34px;
-  }
+@media (max-width: 540px) {
+  .cta-section { padding: 56px 16px; }
+  .cta-title { font-size: 28px; }
+  .cta-subtitle { font-size: 15px; }
+  .cta-btn { width: 100%; justify-content: center; padding: 14px 24px; font-size: 15px; }
+  .stats-card { padding: 24px 20px; }
+  .stat-num { font-size: 28px; }
+  .stat-divider { margin: 0 12px; }
 }

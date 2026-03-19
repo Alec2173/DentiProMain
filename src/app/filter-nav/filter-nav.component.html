@@ -1,7 +1,33 @@
 <div class="fnav" (click)="closeAll()">
-  <div class="fnav-inner">
 
-    <!-- ─── CITY SEGMENT ─── -->
+  <!-- ─── MOBILE TOGGLE BAR (visible <768px) ─── -->
+  <div class="fnav-mobile-bar" (click)="$event.stopPropagation(); mobileOpen = !mobileOpen">
+    <div class="fnav-mobile-left">
+      <span class="material-symbols-outlined fnav-mobile-icon">tune</span>
+      <span class="fnav-mobile-label">Filtrează</span>
+      @if (activeFilterCount > 0) {
+        <span class="fnav-mobile-count">{{ activeFilterCount }}</span>
+      }
+      @if (searchCity) {
+        <span class="fnav-mobile-pill">
+          <span class="material-symbols-outlined">location_on</span>{{ searchCity }}
+        </span>
+      }
+      @if (searchService) {
+        <span class="fnav-mobile-pill fnav-mobile-pill--service">
+          <span class="material-symbols-outlined">dentistry</span>{{ serviceText }}
+        </span>
+      }
+    </div>
+    <span class="material-symbols-outlined fnav-mobile-chevron" [class.open]="mobileOpen">
+      expand_more
+    </span>
+  </div>
+
+  <!-- ─── FILTER INNER (desktop always / mobile collapsible) ─── -->
+  <div class="fnav-inner" [class.fnav-inner--open]="mobileOpen" (click)="$event.stopPropagation()">
+
+    <!-- CITY -->
     <div class="seg" [class.active]="cityDropdownOpen" (click)="$event.stopPropagation()">
       <span class="material-symbols-outlined seg-icon">location_on</span>
       <div class="seg-body">
@@ -22,7 +48,6 @@
           }
         </div>
       </div>
-
       @if (cityDropdownOpen && filteredCities.length > 0) {
         <div class="dropdown" (click)="$event.stopPropagation()">
           <div class="drop-list">
@@ -39,7 +64,7 @@
 
     <div class="seg-sep"></div>
 
-    <!-- ─── SERVICE SEGMENT ─── -->
+    <!-- SERVICE -->
     <div class="seg" [class.active]="serviceDropdownOpen" (click)="$event.stopPropagation()">
       <span class="material-symbols-outlined seg-icon">dentistry</span>
       <div class="seg-body">
@@ -60,16 +85,11 @@
           }
         </div>
       </div>
-
       @if (serviceDropdownOpen && filteredServices.length > 0) {
         <div class="dropdown service-dd" (click)="$event.stopPropagation()">
           <div class="drop-list">
             @for (s of filteredServices; track s.id) {
-              <div
-                class="drop-item"
-                [class.selected]="searchService === s.id"
-                (click)="selectService(s)"
-              >
+              <div class="drop-item" [class.selected]="searchService === s.id" (click)="selectService(s)">
                 @if (searchService === s.id) {
                   <span class="material-symbols-outlined check-icon">check</span>
                 }
@@ -81,21 +101,19 @@
       }
     </div>
 
-    <div class="seg-sep"></div>
+    <div class="seg-sep active-filters-sep"></div>
 
-    <!-- ─── ACTIVE FILTERS PILLS ─── -->
+    <!-- ACTIVE PILLS -->
     <div class="active-filters">
       @if (searchCity || searchService) {
         @if (searchCity) {
           <span class="filter-pill">
-            <span class="material-symbols-outlined">location_on</span>
-            {{ searchCity }}
+            <span class="material-symbols-outlined">location_on</span>{{ searchCity }}
           </span>
         }
         @if (searchService) {
           <span class="filter-pill">
-            <span class="material-symbols-outlined">dentistry</span>
-            {{ serviceText }}
+            <span class="material-symbols-outlined">dentistry</span>{{ serviceText }}
           </span>
         }
       } @else {
@@ -103,8 +121,8 @@
       }
     </div>
 
-    <!-- ─── APPLY BUTTON ─── -->
-    <button class="apply-btn" (click)="$event.stopPropagation(); apply()">
+    <!-- APPLY -->
+    <button class="apply-btn" (click)="$event.stopPropagation(); apply(); mobileOpen = false">
       <span class="material-symbols-outlined">search</span>
       Aplică filtre
     </button>

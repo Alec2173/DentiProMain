@@ -6,26 +6,28 @@ import {
   HostListener,
 } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
+import { CommonModule } from '@angular/common';
 import { NavbarComponent } from './navbar/navbar.component';
-import { HomeComponent } from './home/home.component';
-import {
-  Router,
-  Event as RouterEvent,
-  NavigationStart,
-  NavigationEnd,
-  NavigationCancel,
-  NavigationError,
-} from '@angular/router';
-import * as CookieConsent from 'vanilla-cookieconsent';
+import { ClinicNavbarComponent } from './clinic-portal/clinic-navbar/clinic-navbar.component';
 import { LeftSidebarComponent } from './left-sidebar/left-sidebar.component';
+import { Router, Event as RouterEvent, NavigationStart, NavigationEnd, NavigationCancel, NavigationError } from '@angular/router';
+import { AuthService } from './auth.service';
+import * as CookieConsent from 'vanilla-cookieconsent';
+
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, NavbarComponent, LeftSidebarComponent],
+  standalone: true,
+  imports: [RouterOutlet, CommonModule, NavbarComponent, ClinicNavbarComponent, LeftSidebarComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css',
 })
-export class AppComponent {
-  constructor(private router: Router) {
+export class AppComponent implements OnInit, AfterViewInit {
+  isClinicPortal = false;
+
+  isLeftSidebarCollapsed = signal<boolean>(false);
+  screenWidth = signal<number>(window.innerWidth);
+
+  constructor(private router: Router, private auth: AuthService) {
     this.router.events.subscribe((event: RouterEvent) => {
       if (
         event instanceof NavigationStart ||
@@ -35,19 +37,18 @@ export class AppComponent {
       ) {
         window.scrollTo(0, 0);
       }
+      if (event instanceof NavigationEnd) {
+        this.isClinicPortal = event.urlAfterRedirects.startsWith('/clinici');
+      }
     });
   }
 
   ngAfterViewInit(): void {
     CookieConsent.run({
       categories: {
-        necessary: {
-          enabled: true, // this category is enabled by default
-          readOnly: true, // this category cannot be disabled
-        },
+        necessary: { enabled: true, readOnly: true },
         analytics: {},
       },
-
       language: {
         default: 'en',
         translations: {
@@ -55,7 +56,7 @@ export class AppComponent {
             consentModal: {
               title: 'Folosim cookie-uri',
               description: '',
-              acceptAllBtn: 'Accepta toate ',
+              acceptAllBtn: 'Accepta toate',
               acceptNecessaryBtn: 'Refuz',
               showPreferencesBtn: 'Vreau sa schimb setarile',
             },
@@ -68,21 +69,16 @@ export class AppComponent {
               sections: [
                 {
                   title: 'Confidențialitatea ta este importantă pentru noi',
-                  description:
-                    'Cookie-urile sunt fișiere text foarte mici ce sunt salvate în browser-ul tău atunci când vizitezi un website. Folosim cookie-uri pentru mai multe scopuri, dar și pentru a îți oferi cea mai bună experiență de utilizare posibilă (de exemplu, să reținem datele tale de logare în cont). Îți poți modifica preferințele și poți refuza ca anumite tipuri de cookie-uri să nu fie salvate în browser în timp ce navigezi pe website-ul nostru. Deasemenea poți șterge cookie-urile salvate deja în browser, dar reține că este posibil să nu poți folosi anumite părți ale website-ul nostru în acest caz.',
+                  description: 'Cookie-urile sunt fișiere text foarte mici ce sunt salvate în browser-ul tău atunci când vizitezi un website.',
                 },
                 {
                   title: 'Cookie-uri strict necesare',
-                  description:
-                    'Aceste cookie-uri sunt esențiale pentru a putea beneficia de serviciile disponibile pe website-ul nostru. Fără aceste cookie-uri nu poți folosi anumite funcționalități ale website-ului nostru.',
-
-                  //this field will generate a toggle linked to the 'necessary' category
+                  description: 'Aceste cookie-uri sunt esențiale pentru a putea beneficia de serviciile disponibile pe website-ul nostru.',
                   linkedCategory: 'necessary',
                 },
                 {
                   title: 'Cookie-uri de analiza si performanta',
-                  description:
-                    'Acest tip de cookie-uri sunt folosite pentru a colecta informații în vederea analizării traficului pe website-ul nostru și modul în care vizitatorii noștri folosesc website-ul. De exemplu, aceste cookie-uri pot urmări cât timp petreci pe website sau paginile pe care le vizitezi, ceea ce ne ajută să înțelegem cum putem îmbunătăți website-ul pentru tine. Informațiile astfel colectate nu identifică individual vizitatorii.',
+                  description: 'Folosite pentru a colecta informații despre traficul pe website-ul nostru.',
                   linkedCategory: 'analytics',
                 },
               ],
@@ -92,22 +88,20 @@ export class AppComponent {
       },
     });
   }
-  isLeftSidebarCollapsed = signal<boolean>(false);
-  screenWidth = signal<number>(window.innerWidth);
 
   @HostListener('window:resize')
   onResize() {
     this.screenWidth.set(window.innerWidth);
-    if (this.screenWidth() < 768) {
-      this.isLeftSidebarCollapsed.set(true);
-    }
+    if (this.screenWidth() < 768) this.isLeftSidebarCollapsed.set(true);
   }
 
   ngOnInit(): void {
     this.isLeftSidebarCollapsed.set(this.screenWidth() < 768);
+    // Validează sesiunea salvată cu serverul (în background, fără a bloca UI-ul)
+    this.auth.verifySession();
   }
 
-  changeIsLeftSidebarCollapsed(isLeftSidebarCollapsed: boolean): void {
-    this.isLeftSidebarCollapsed.set(isLeftSidebarCollapsed);
+  changeIsLeftSidebarCollapsed(val: boolean): void {
+    this.isLeftSidebarCollapsed.set(val);
   }
 }

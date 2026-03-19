@@ -22,20 +22,7 @@ export class PopularClinicsComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (data) => {
-          this.clinics = data
-            .slice(0, 3)
-            .map((c) => ({
-              ...c,
-              clinic_images_parsed: (() => {
-                try {
-                  return typeof c.clinic_images === 'string'
-                    ? JSON.parse(c.clinic_images || '[]')
-                    : (c.clinic_images ?? []);
-                } catch {
-                  return [];
-                }
-              })(),
-            }));
+          this.clinics = data.slice(0, 3);
           this.isLoading = false;
         },
         error: () => { this.isLoading = false; },
@@ -48,6 +35,6 @@ export class PopularClinicsComponent implements OnInit, OnDestroy {
   }
 
   getCoverImage(clinic: any): string {
-    return clinic.clinic_images_parsed?.[0] ?? '';
+    return clinic.images?.[0] ?? '';
   }
 }

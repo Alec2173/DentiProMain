@@ -1,0 +1,139 @@
+<div class="ca-page">
+  <div class="ca-card">
+
+    <!-- LOGO -->
+    <a routerLink="/clinici" class="ca-brand">
+      <span class="material-symbols-outlined ca-brand-icon">dentistry</span>
+      <span class="ca-brand-text">DentiPro</span>
+      <span class="ca-brand-badge">Pro</span>
+    </a>
+
+    <h1 class="ca-title">
+      {{ tab === 'login' ? 'Bine ai revenit' : 'Creează cont clinică' }}
+    </h1>
+    <p class="ca-sub">
+      {{ tab === 'login'
+        ? 'Intră în contul tău DentiPro pentru clinici.'
+        : 'Înregistrează-ți clinica. Gratuit cu planul Starter.' }}
+    </p>
+
+    <!-- TABS -->
+    <div class="ca-tabs">
+      <button class="ca-tab" [class.active]="tab === 'login'" (click)="switchTab('login')">
+        Autentificare
+      </button>
+      <button class="ca-tab" [class.active]="tab === 'register'" (click)="switchTab('register')">
+        Cont nou
+      </button>
+    </div>
+
+    <!-- ── LOGIN ── -->
+    @if (tab === 'login') {
+      <div class="ca-form">
+        <div class="ca-field">
+          <label class="ca-label"><i class="fal fa-envelope"></i> Email</label>
+          <input type="email" class="ca-input" [(ngModel)]="loginEmail"
+            placeholder="clinica@exemplu.ro" autocomplete="email"
+            (keydown.enter)="submitLogin()" />
+        </div>
+
+        <div class="ca-field">
+          <label class="ca-label"><i class="fal fa-lock"></i> Parolă</label>
+          <div class="ca-pw-wrap">
+            <input [type]="loginShowPw ? 'text' : 'password'" class="ca-input"
+              [(ngModel)]="loginPassword" placeholder="••••••••"
+              autocomplete="current-password" (keydown.enter)="submitLogin()" />
+            <button class="ca-pw-toggle" (click)="loginShowPw = !loginShowPw">
+              <i [class]="loginShowPw ? 'fal fa-eye-slash' : 'fal fa-eye'"></i>
+            </button>
+          </div>
+        </div>
+
+        @if (error) {
+          <div class="ca-error"><i class="fal fa-exclamation-circle"></i> {{ error }}</div>
+        }
+
+        <button class="ca-submit" (click)="submitLogin()" [disabled]="loading">
+          @if (loading) {
+            <span class="ca-spinner"></span> Se autentifică...
+          } @else {
+            <i class="fal fa-sign-in-alt"></i> Intră în cont
+          }
+        </button>
+
+        <p class="ca-switch">
+          Nu ai cont?
+          <button class="ca-switch-btn" (click)="switchTab('register')">Înregistrează-te</button>
+        </p>
+      </div>
+    }
+
+    <!-- ── REGISTER ── -->
+    @if (tab === 'register') {
+      <div class="ca-form">
+        <div class="ca-field">
+          <label class="ca-label"><i class="fal fa-clinic-medical"></i> Nume clinică <span class="req">*</span></label>
+          <input type="text" class="ca-input" [(ngModel)]="regName"
+            placeholder="ex. Dental Studio Cluj" autocomplete="organization" />
+        </div>
+
+        <div class="ca-field">
+          <label class="ca-label"><i class="fal fa-envelope"></i> Email <span class="req">*</span></label>
+          <input type="email" class="ca-input" [(ngModel)]="regEmail"
+            placeholder="clinica@exemplu.ro" autocomplete="email" />
+        </div>
+
+        <div class="ca-field">
+          <label class="ca-label"><i class="fal fa-lock"></i> Parolă <span class="req">*</span></label>
+          <div class="ca-pw-wrap">
+            <input [type]="regShowPw ? 'text' : 'password'" class="ca-input"
+              [(ngModel)]="regPassword" placeholder="Minim 6 caractere"
+              autocomplete="new-password" />
+            <button class="ca-pw-toggle" (click)="regShowPw = !regShowPw">
+              <i [class]="regShowPw ? 'fal fa-eye-slash' : 'fal fa-eye'"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="ca-field">
+          <label class="ca-label"><i class="fal fa-check-circle"></i> Confirmă parola <span class="req">*</span></label>
+          <input type="password" class="ca-input" [(ngModel)]="regConfirm"
+            placeholder="Repetă parola" autocomplete="new-password"
+            (keydown.enter)="submitRegister()" />
+        </div>
+
+        <div class="ca-info-note">
+          <span class="material-symbols-outlined">info</span>
+          După înregistrare vei completa profilul complet al clinicii — servicii, locație, imagini.
+        </div>
+
+        @if (error) {
+          <div class="ca-error"><i class="fal fa-exclamation-circle"></i> {{ error }}</div>
+        }
+
+        <button class="ca-submit" (click)="submitRegister()" [disabled]="loading">
+          @if (loading) {
+            <span class="ca-spinner"></span> Se creează contul...
+          } @else {
+            <i class="fal fa-user-plus"></i> Creează cont clinică
+          }
+        </button>
+
+        <p class="ca-switch">
+          Ai deja cont?
+          <button class="ca-switch-btn" (click)="switchTab('login')">Autentifică-te</button>
+        </p>
+      </div>
+    }
+
+    <!-- BACK LINK -->
+    <a routerLink="/" class="ca-patient-link">
+      <i class="fal fa-arrow-left"></i> Înapoi la site-ul pentru pacienți
+    </a>
+
+  </div>
+
+  <!-- Background orbs -->
+  <div class="ca-orb ca-orb1"></div>
+  <div class="ca-orb ca-orb2"></div>
+</div>

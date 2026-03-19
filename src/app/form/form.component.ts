@@ -3,8 +3,10 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RoCitiesService } from '../ro-cities.service';
 import { ServiciiService } from '../servicii.service';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { RouterLink } from '@angular/router';
+import { AuthService } from '../auth.service';
+import { ClinicDataService } from '../clinic-data.service';
 import { Map as MaplibreMap, Marker, NavigationControl } from 'maplibre-gl';
 
 const MAPTILER_KEY = 'cwyGOMCDF8zwmBEDJrCr';
@@ -33,6 +35,8 @@ export class FormComponent implements OnInit, OnDestroy {
 
   // ── STATE ──────────────────────────────────────────────────
   isLoading = false;
+  isUpdating = false;
+  existingClinicId: number | null = null;
   errorMessage = '';
   submitSuccess = false;
   billingAnnual = false;
@@ -154,11 +158,54 @@ export class FormComponent implements OnInit, OnDestroy {
     private roCitiesService: RoCitiesService,
     private serviciiService: ServiciiService,
     private http: HttpClient,
+    private authService: AuthService,
+    private clinicDataService: ClinicDataService,
   ) {}
 
   ngOnInit() {
     this.cities = this.roCitiesService.getCities();
     this.serviceObject = this.serviciiService.getServices();
+    this.tryPrefillFromExistingClinic();
+  }
+
+  private tryPrefillFromExistingClinic() {
+    const clinicId = this.authService.currentUser?.clinicId;
+    if (!clinicId) return;
+
+    this.existingClinicId = Number(clinicId);
+    this.isUpdating = true;
+
+    this.clinicDataService.getClinicById(this.existingClinicId).subscribe({
+      next: (clinic) => {
+        if (!clinic) return;
+        this.formData.name = clinic.name ?? '';
+        this.formData.clientPhone = clinic.phone_public ?? '';
+        this.formData.managerPhone = clinic.phone_manager ?? '';
+        this.formData.email = clinic.email ?? '';
+        this.formData.confirmEmail = clinic.email ?? '';
+        this.formData.city = clinic.city ?? '';
+        this.searchCityInput = clinic.city ?? '';
+        this.formData.showPrices = clinic.show_prices ?? null;
+        this.formData.additionalNotes = clinic.additional_notes ?? '';
+        this.formData.location.lat = clinic.latitude ?? null;
+        this.formData.location.lng = clinic.longitude ?? null;
+        this.formData.selectedPlan = clinic.plan ?? 'starter';
+
+        // Pre-fill servicii
+        if (clinic.services?.length > 0) {
+          this.formData.selectedServices = clinic.services
+            .filter(s => s.service_id)
+            .map(s => s.service_id);
+          this.formData.servicePrices = clinic.services.map(s => ({
+            id: s.service_id ?? `custom_${s.label}`,
+            label: s.label,
+            price: s.price_min?.toString() ?? '',
+            priceMax: s.price_max?.toString() ?? '',
+            priceType: s.price_type ?? 'fixed',
+          }));
+        }
+      },
+    });
   }
 
   ngOnDestroy() {
@@ -537,10 +584,20 @@ export class FormComponent implements OnInit, OnDestroy {
     if (d.logo) fd.append('logo', d.logo);
     (d.clinicImages as File[]).forEach((img) => fd.append('clinicImages', img));
 
-    this.http.post('https://www.dentipro.ro/api/clinics', fd).subscribe({
-      next: () => {
+    const token = this.authService.getToken();
+    const headers = token ? new HttpHeaders({ Authorization: `Bearer ${token}` }) : undefined;
+
+    const request$ = this.isUpdating && this.existingClinicId
+      ? this.http.put(`https://www.dentipro.ro/api/clinics/${this.existingClinicId}`, fd, { headers })
+      : this.http.post('https://www.dentipro.ro/api/clinics', fd, { headers });
+
+    request$.subscribe({
+      next: (res: any) => {
         this.isLoading = false;
         this.submitSuccess = true;
+        if (res?.clinic && token) {
+          this.authService.refreshCurrentUser();
+        }
       },
       error: (err) => {
         console.error(err);

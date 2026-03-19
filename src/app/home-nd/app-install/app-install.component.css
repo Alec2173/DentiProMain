@@ -273,6 +273,46 @@
   margin-top: 6px;
 }
 
+/* ════════════════════════════════════════
+   RESPONSIVE
+════════════════════════════════════════ */
+
+@media (max-width: 1100px) {
+  .main { padding-right: 40px; }
+  .mobile-preview-section { gap: 60px; }
+}
+
+@media (max-width: 900px) {
+  .main {
+    padding-right: 0;
+    padding-top: 80px;
+    align-items: center;
+  }
+  .mobile-preview-section {
+    flex-direction: column;
+    align-items: center;
+    gap: 48px;
+    padding: 60px 24px;
+  }
+  .mobile-content {
+    max-width: 600px;
+    width: 100%;
+    text-align: center;
+  }
+}
+
+@media (max-width: 540px) {
+  .main { padding-top: 56px; }
+  .mobile-preview-section { padding: 40px 16px; gap: 36px; }
+
+  /* Scale down iPhone mockup */
+  .iphone-body { width: 200px; height: 420px; border-radius: 44px; }
+
+  /* Store badges side by side */
+  .store-buttons { flex-direction: row; flex-wrap: wrap; justify-content: center; }
+  .store-badge img { width: 140px; }
+}
+
 .store-badge {
   display: block;
 

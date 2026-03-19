@@ -22,6 +22,12 @@ export class FilterNavComponent implements OnInit, OnDestroy {
   searchService = '';
   serviceDropdownOpen = false;
 
+  mobileOpen = false;
+
+  get activeFilterCount(): number {
+    return (this.searchCity ? 1 : 0) + (this.searchService ? 1 : 0);
+  }
+
   cities: string[] = [];
   services: { id: string; label: string }[] = [];
 

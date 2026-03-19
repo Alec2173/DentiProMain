@@ -1,0 +1,191 @@
+<div class="cl-page">
+
+  <!-- ══ HERO ══ -->
+  <section class="cl-hero">
+    <div class="cl-hero-inner">
+      <div class="cl-hero-badge">
+        <span class="material-symbols-outlined">dentistry</span>
+        Platforma dentară nr. 1 din România
+      </div>
+
+      <h1 class="cl-hero-title">
+        Crește-ți clinica cu<br />
+        <span class="cl-hero-gradient">DentiPro Pro</span>
+      </h1>
+
+      <p class="cl-hero-sub">
+        Conectăm clinicile stomatologice cu pacienții care îi caută.
+        Profil verificat, vizibilitate locală maximă și instrumente dedicate
+        pentru a transforma vizitatorii în pacienți fideli.
+      </p>
+
+      <div class="cl-hero-actions">
+        <a routerLink="/clinici/inscriere" class="cl-btn-primary">
+          <span class="material-symbols-outlined">add_business</span>
+          Înregistrează clinica gratuit
+        </a>
+        <a routerLink="/clinici/autentificare" class="cl-btn-secondary">
+          <span class="material-symbols-outlined">login</span>
+          Am deja cont
+        </a>
+      </div>
+
+      <p class="cl-hero-note">
+        <span class="material-symbols-outlined">check_circle</span>
+        Fără card bancar · Starter gratuit permanent · Setup în 5 minute
+      </p>
+    </div>
+
+    <!-- Decorative circles -->
+    <div class="cl-hero-orb cl-orb1"></div>
+    <div class="cl-hero-orb cl-orb2"></div>
+  </section>
+
+  <!-- ══ STATS ══ -->
+  <section class="cl-stats">
+    @for (s of stats; track s.label) {
+      <div class="cl-stat">
+        <span class="cl-stat-value">{{ s.value }}</span>
+        <span class="cl-stat-label">{{ s.label }}</span>
+      </div>
+    }
+  </section>
+
+  <!-- ══ FEATURES ══ -->
+  <section class="cl-section">
+    <div class="cl-section-header">
+      <div class="cl-section-badge">De ce DentiPro</div>
+      <h2 class="cl-section-title">Tot ce ai nevoie într-o singură platformă</h2>
+      <p class="cl-section-sub">Instrumentele potrivite pentru a atrage și a fideliza pacienți locali.</p>
+    </div>
+
+    <div class="cl-features-grid">
+      @for (f of features; track f.title) {
+        <div class="cl-feature-card">
+          <div class="cl-feature-icon">
+            <span class="material-symbols-outlined">{{ f.icon }}</span>
+          </div>
+          <h3 class="cl-feature-title">{{ f.title }}</h3>
+          <p class="cl-feature-desc">{{ f.desc }}</p>
+        </div>
+      }
+    </div>
+  </section>
+
+  <!-- ══ PLANS ══ -->
+  <section class="cl-section cl-plans-section">
+    <div class="cl-section-header">
+      <div class="cl-section-badge">Prețuri transparente</div>
+      <h2 class="cl-section-title">Alege pachetul potrivit clinicii tale</h2>
+      <p class="cl-section-sub">Poți schimba planul oricând. Starter este gratuit permanent.</p>
+    </div>
+
+    <div class="cl-plans-grid">
+      @for (plan of plans; track plan.id) {
+        <div class="cl-plan-card" [class.featured]="plan.featured">
+          @if (plan.badge) {
+            <div class="cl-plan-badge">{{ plan.badge }}</div>
+          }
+          <div class="cl-plan-name">{{ plan.name }}</div>
+          <div class="cl-plan-price-row">
+            @if (plan.price === 0) {
+              <span class="cl-plan-price">Gratuit</span>
+            } @else {
+              <span class="cl-plan-price">{{ plan.price }}€</span>
+              <span class="cl-plan-period">{{ plan.period }}</span>
+            }
+          </div>
+
+          <ul class="cl-plan-features">
+            @for (feat of plan.features; track feat) {
+              <li class="cl-plan-feat included">
+                <span class="material-symbols-outlined">check</span>
+                {{ feat }}
+              </li>
+            }
+            @for (feat of plan.missing; track feat) {
+              <li class="cl-plan-feat excluded">
+                <span class="material-symbols-outlined">remove</span>
+                {{ feat }}
+              </li>
+            }
+          </ul>
+
+          <a routerLink="/clinici/inscriere" class="cl-plan-cta" [class.featured-cta]="plan.featured">
+            {{ plan.cta }}
+          </a>
+        </div>
+      }
+    </div>
+  </section>
+
+  <!-- ══ HOW IT WORKS ══ -->
+  <section class="cl-section">
+    <div class="cl-section-header">
+      <div class="cl-section-badge">Proces simplu</div>
+      <h2 class="cl-section-title">Ești pe platformă în 3 pași</h2>
+    </div>
+
+    <div class="cl-steps">
+      <div class="cl-step">
+        <div class="cl-step-num">01</div>
+        <div class="cl-step-icon"><span class="material-symbols-outlined">app_registration</span></div>
+        <h3>Completezi formularul</h3>
+        <p>Numele clinicii, servicii, locație pe hartă și câteva poze. Durează ~5 minute.</p>
+      </div>
+      <div class="cl-step-arrow"><span class="material-symbols-outlined">arrow_forward</span></div>
+      <div class="cl-step">
+        <div class="cl-step-num">02</div>
+        <div class="cl-step-icon"><span class="material-symbols-outlined">verified</span></div>
+        <h3>Verificăm profilul</h3>
+        <p>Echipa DentiPro verifică și publică clinica în 24-48 ore.</p>
+      </div>
+      <div class="cl-step-arrow"><span class="material-symbols-outlined">arrow_forward</span></div>
+      <div class="cl-step">
+        <div class="cl-step-num">03</div>
+        <div class="cl-step-icon"><span class="material-symbols-outlined">groups</span></div>
+        <h3>Primești pacienți</h3>
+        <p>Clinica ta apare în search, pe hartă și pe homepage pentru pacienți din zona ta.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ FAQ ══ -->
+  <section class="cl-section cl-faq-section">
+    <div class="cl-section-header">
+      <div class="cl-section-badge">Întrebări frecvente</div>
+      <h2 class="cl-section-title">Ai întrebări? Avem răspunsuri.</h2>
+    </div>
+
+    <div class="cl-faq-list">
+      @for (faq of faqs; track faq.q; let i = $index) {
+        <div class="cl-faq-item" [class.open]="activeFaq === i" (click)="toggleFaq(i)">
+          <div class="cl-faq-q">
+            <span>{{ faq.q }}</span>
+            <span class="material-symbols-outlined cl-faq-icon">
+              {{ activeFaq === i ? 'remove' : 'add' }}
+            </span>
+          </div>
+          @if (activeFaq === i) {
+            <div class="cl-faq-a">{{ faq.a }}</div>
+          }
+        </div>
+      }
+    </div>
+  </section>
+
+  <!-- ══ CTA FINAL ══ -->
+  <section class="cl-cta-section">
+    <div class="cl-cta-inner">
+      <span class="material-symbols-outlined cl-cta-icon">dentistry</span>
+      <h2 class="cl-cta-title">Gata să atragi mai mulți pacienți?</h2>
+      <p class="cl-cta-sub">Înregistrează-ți clinica în câteva minute. Gratuit pentru totdeauna cu planul Starter.</p>
+      <a routerLink="/clinici/inscriere" class="cl-btn-primary cl-cta-btn">
+        <span class="material-symbols-outlined">add_business</span>
+        Înregistrează clinica
+      </a>
+    </div>
+    <div class="cl-cta-orb"></div>
+  </section>
+
+</div>

@@ -1,0 +1,124 @@
+<div class="fav-page">
+
+  <!-- ── PAGE HEADER ──────────────────────────────────────── -->
+  <div class="page-header">
+    <div class="header-icon">
+      <i class="fal fa-heart"></i>
+    </div>
+    <div class="header-text">
+      <h1>Clinici favorite</h1>
+      <p>Clinicile pe care le-ai salvat pentru acces rapid</p>
+    </div>
+  </div>
+
+  <!-- ── NOT LOGGED IN ─────────────────────────────────────── -->
+  @if (!auth.isLoggedIn) {
+    <div class="state-card empty-state">
+      <div class="state-icon">
+        <i class="fal fa-lock"></i>
+      </div>
+      <h3>Autentifică-te pentru a vedea favoritele</h3>
+      <p>Creează un cont sau autentifică-te pentru a salva clinicile favorite și a le accesa rapid.</p>
+      <p class="login-hint"><i class="fal fa-arrow-up"></i> Apasă <strong>Autentificare</strong> din bara de sus</p>
+    </div>
+  }
+
+  <!-- ── SKELETON LOADING ──────────────────────────────────── -->
+  @if (auth.isLoggedIn && isLoading) {
+    <div class="clinics-grid">
+      @for (item of [1,2,3]; track item) {
+        <div class="clinic-card skeleton-card">
+          <div class="skeleton cover-skeleton"></div>
+          <div class="card-body">
+            <div class="skeleton logo-skeleton"></div>
+            <div class="card-info">
+              <div class="skeleton text-skeleton title-sk"></div>
+              <div class="skeleton text-skeleton sub-sk"></div>
+              <div class="skeleton text-skeleton badge-sk"></div>
+            </div>
+            <div class="card-actions">
+              <div class="skeleton btn-skeleton"></div>
+              <div class="skeleton btn-skeleton btn-sm-sk"></div>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  }
+
+  <!-- ── CLINICS GRID ──────────────────────────────────────── -->
+  @if (auth.isLoggedIn && !isLoading && clinics.length > 0) {
+    <div class="results-bar">
+      <span>{{ clinics.length }} {{ clinics.length === 1 ? 'clinică salvată' : 'clinici salvate' }}</span>
+    </div>
+    <div class="clinics-grid">
+      @for (clinic of clinics; track clinic.id) {
+        <div class="clinic-card">
+
+          <!-- Cover image -->
+          <div class="card-cover" [style.backgroundImage]="clinic.cover_image ? 'url(' + clinic.cover_image + ')' : ''">
+            @if (!clinic.cover_image) {
+              <div class="cover-gradient"></div>
+            }
+            <!-- Plan badge -->
+            @if (clinic.plan && clinic.plan !== 'free') {
+              <span class="plan-badge plan-{{ clinic.plan }}">
+                @if (clinic.plan === 'premium') { <i class="fal fa-crown"></i> } Premium
+                @if (clinic.plan === 'basic') { Basic }
+              </span>
+            }
+          </div>
+
+          <!-- Card body -->
+          <div class="card-body">
+            <!-- Logo floating -->
+            <div class="clinic-logo">
+              @if (clinic.logo_url) {
+                <img [src]="clinic.logo_url" [alt]="clinic.name" />
+              } @else {
+                <span class="logo-initials">{{ getInitials(clinic.name) }}</span>
+              }
+            </div>
+
+            <div class="card-info">
+              <h3 class="clinic-name">{{ clinic.name }}</h3>
+              @if (clinic.city) {
+                <p class="clinic-city">
+                  <i class="fal fa-map-marker-alt"></i> {{ clinic.city }}
+                </p>
+              }
+              @if (clinic.specialization) {
+                <p class="clinic-spec">{{ clinic.specialization }}</p>
+              }
+            </div>
+
+            <div class="card-actions">
+              <a [routerLink]="['/clinic-profile', clinic.id]" class="btn-view">
+                <i class="fal fa-eye"></i> Vezi profilul
+              </a>
+              <button class="btn-remove" (click)="remove(clinic.id)" title="Elimină din favorite">
+                <i class="fal fa-heart-broken"></i>
+              </button>
+            </div>
+
+          </div>
+        </div>
+      }
+    </div>
+  }
+
+  <!-- ── EMPTY STATE (logged in, no favorites) ─────────────── -->
+  @if (auth.isLoggedIn && !isLoading && clinics.length === 0) {
+    <div class="state-card empty-state">
+      <div class="state-icon">
+        <i class="fal fa-heart"></i>
+      </div>
+      <h3>Nu ai nicio clinică favorită</h3>
+      <p>Explorează clinicile dentare și apasă pe inimioară pentru a le salva aici.</p>
+      <a routerLink="/finder" class="btn-primary">
+        <i class="fal fa-search"></i> Explorează clinici
+      </a>
+    </div>
+  }
+
+</div>

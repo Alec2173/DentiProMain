@@ -1,16 +1,31 @@
 <div class="finder-shell">
 
-  <!-- FILTER BAR (fixed below navbar) -->
+  <!-- FILTER BAR -->
   <app-filter-nav></app-filter-nav>
 
   <!-- CONTENT ROW -->
   <div class="finder-body">
-    <div class="map-panel">
+
+    <div class="map-panel" [class.tab-hidden]="activeTab !== 'map'">
       <app-map></app-map>
     </div>
-    <div class="cards-panel">
+
+    <div class="cards-panel" [class.tab-hidden]="activeTab !== 'list'">
       <app-cards></app-cards>
     </div>
+
+    <!-- MOBILE TAB BAR (visible <1024px) -->
+    <div class="mobile-tabs">
+      <button class="mobile-tab" [class.mobile-tab--active]="activeTab === 'map'" (click)="activeTab = 'map'">
+        <i class="fal fa-map-marked-alt"></i>
+        <span>Hartă</span>
+      </button>
+      <button class="mobile-tab" [class.mobile-tab--active]="activeTab === 'list'" (click)="activeTab = 'list'">
+        <i class="fal fa-list"></i>
+        <span>Listă</span>
+      </button>
+    </div>
+
   </div>
 
 </div>

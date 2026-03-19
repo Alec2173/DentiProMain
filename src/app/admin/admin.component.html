@@ -1,0 +1,230 @@
+<div class="adm-wrap">
+
+  <!-- HEADER -->
+  <div class="adm-header">
+    <div class="adm-header-left">
+      <div class="adm-logo">
+        <i class="fal fa-shield-alt"></i>
+      </div>
+      <div>
+        <h1 class="adm-title">DentiPro Admin</h1>
+        <p class="adm-sub">Panou de administrare clinici</p>
+      </div>
+    </div>
+    <div class="adm-header-actions">
+      <button class="adm-create-accounts" (click)="createClinicAccounts()" [disabled]="creatingAccounts">
+        <i class="fal fa-user-plus"></i>
+        {{ creatingAccounts ? 'Se procesează...' : 'Creează conturi clinici' }}
+      </button>
+      <button class="adm-refresh" (click)="load()">
+        <i class="fal fa-sync-alt"></i> Reîncarcă
+      </button>
+      <button class="adm-exit" (click)="exitToPatient()">
+        <i class="fal fa-arrow-left"></i> Site pacienți
+      </button>
+    </div>
+  </div>
+
+  <!-- STATS -->
+  <div class="adm-stats">
+    <div class="adm-stat adm-stat-total" (click)="filterStatus='all'; applyFilter()">
+      <span class="adm-stat-num">{{ clinics.length }}</span>
+      <span class="adm-stat-label">Total clinici</span>
+    </div>
+    <div class="adm-stat adm-stat-pending" (click)="filterStatus='pending'; applyFilter()">
+      <span class="adm-stat-num">{{ pendingCount }}</span>
+      <span class="adm-stat-label">În așteptare</span>
+    </div>
+    <div class="adm-stat adm-stat-active" (click)="filterStatus='active'; applyFilter()">
+      <span class="adm-stat-num">{{ activeCount }}</span>
+      <span class="adm-stat-label">Active</span>
+    </div>
+    <div class="adm-stat adm-stat-suspended" (click)="filterStatus='suspended'; applyFilter()">
+      <span class="adm-stat-num">{{ suspendedCount }}</span>
+      <span class="adm-stat-label">Suspendate</span>
+    </div>
+  </div>
+
+  <!-- FILTERS -->
+  <div class="adm-filters">
+    <div class="adm-search">
+      <i class="fal fa-search"></i>
+      <input type="text" placeholder="Caută după nume, email, oraș..."
+        [(ngModel)]="searchQuery" (input)="applyFilter()" />
+    </div>
+    <div class="adm-filter-tabs">
+      <button [class.active]="filterStatus==='all'" (click)="filterStatus='all'; applyFilter()">Toate</button>
+      <button [class.active]="filterStatus==='pending'" (click)="filterStatus='pending'; applyFilter()">Pending</button>
+      <button [class.active]="filterStatus==='active'" (click)="filterStatus='active'; applyFilter()">Active</button>
+      <button [class.active]="filterStatus==='suspended'" (click)="filterStatus='suspended'; applyFilter()">Suspendate</button>
+    </div>
+  </div>
+
+  <!-- LOADING -->
+  @if (isLoading) {
+    <div class="adm-loading">
+      <div class="adm-spinner"></div>
+      <span>Se încarcă clinicile...</span>
+    </div>
+  }
+
+  <!-- TABLE -->
+  @if (!isLoading) {
+    <div class="adm-table-wrap">
+      <table class="adm-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Clinică</th>
+            <th>Cont</th>
+            <th>Oraș</th>
+            <th>Status</th>
+            <th>Plan</th>
+            <th>Media</th>
+            <th>Înregistrat</th>
+            <th>Acțiuni</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (clinic of filtered; track clinic.id) {
+            <tr [class.row-pending]="clinic.status==='pending'" [class.row-suspended]="clinic.status==='suspended'">
+              <td class="adm-id">#{{ clinic.id }}</td>
+
+              <td class="adm-clinic-cell">
+                <div class="adm-clinic-info">
+                  @if (clinic.logo_url) {
+                    <img [src]="clinic.logo_url" class="adm-clinic-logo" alt="logo" />
+                  } @else {
+                    <div class="adm-clinic-initials">{{ clinic.name[0] }}</div>
+                  }
+                  <div>
+                    <div class="adm-clinic-name">{{ clinic.name }}</div>
+                    <div class="adm-clinic-email">{{ clinic.email }}</div>
+                  </div>
+                </div>
+              </td>
+
+              <td class="adm-user-cell">
+                @if (clinic.user_name) {
+                  <div class="adm-user-name">{{ clinic.user_name }}</div>
+                  <div class="adm-user-email">{{ clinic.user_email }}</div>
+                } @else {
+                  <span class="adm-no-user">Fără cont</span>
+                }
+              </td>
+
+              <td class="adm-city">{{ clinic.city || '—' }}</td>
+
+              <td>
+                <span class="adm-badge adm-badge-{{ clinic.status }}">
+                  {{ clinic.status }}
+                </span>
+              </td>
+
+              <td class="adm-plan">{{ clinic.plan }}</td>
+
+              <td class="adm-media">
+                <span class="adm-media-item"><i class="fal fa-image"></i> {{ clinic.image_count }}</span>
+                <span class="adm-media-item"><i class="fal fa-tooth"></i> {{ clinic.service_count }}</span>
+              </td>
+
+              <td class="adm-date">{{ formatDate(clinic.created_at) }}</td>
+
+              <td class="adm-actions">
+                @if (clinic.status === 'pending') {
+                  <button class="adm-btn adm-btn-approve" (click)="setStatus(clinic.id, 'active')" title="Aprobă">
+                    <i class="fal fa-check"></i>
+                  </button>
+                }
+                @if (clinic.status === 'active') {
+                  <button class="adm-btn adm-btn-suspend" (click)="setStatus(clinic.id, 'suspended')" title="Suspendă">
+                    <i class="fal fa-ban"></i>
+                  </button>
+                }
+                @if (clinic.status === 'suspended') {
+                  <button class="adm-btn adm-btn-approve" (click)="setStatus(clinic.id, 'active')" title="Reactivează">
+                    <i class="fal fa-redo"></i>
+                  </button>
+                }
+                <a class="adm-btn adm-btn-view" [href]="'/clinic-profile/' + clinic.id" target="_blank" title="Vizualizează">
+                  <i class="fal fa-external-link"></i>
+                </a>
+                <button class="adm-btn adm-btn-delete" (click)="confirmDelete(clinic.id)" title="Șterge">
+                  <i class="fal fa-trash"></i>
+                </button>
+              </td>
+            </tr>
+          }
+          @empty {
+            <tr>
+              <td colspan="9" class="adm-empty">Nicio clinică găsită.</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+
+</div>
+
+<!-- ACCOUNTS RESULT MODAL -->
+@if (accountsResult !== null) {
+  <div class="adm-modal-overlay" (click)="closeAccountsResult()">
+    <div class="adm-modal adm-modal-wide" (click)="$event.stopPropagation()">
+      <div class="adm-modal-header">
+        <h3><i class="fal fa-user-check"></i> Conturi create — {{ accountsResult.length }} clinici procesate</h3>
+        <button class="adm-btn adm-btn-view" (click)="closeAccountsResult()"><i class="fal fa-times"></i></button>
+      </div>
+
+      <div class="adm-accounts-table-wrap">
+        <table class="adm-accounts-table">
+          <thead>
+            <tr>
+              <th>Clinică</th>
+              <th>Email</th>
+              <th>Parolă generată</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (r of accountsResult; track r.clinicId) {
+              <tr>
+                <td>{{ r.clinicName }}</td>
+                <td class="adm-mono">{{ r.email }}</td>
+                <td class="adm-mono">{{ r.password ?? '—' }}</td>
+                <td>
+                  @if (r.action === 'created') {
+                    <span class="adm-badge adm-badge-active">Cont nou</span>
+                  } @else {
+                    <span class="adm-badge adm-badge-pending">Linkat</span>
+                  }
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <div class="adm-modal-actions" style="margin-top: 20px;">
+        <button class="adm-modal-cancel" (click)="closeAccountsResult()">Închide</button>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- CONFIRM DELETE MODAL -->
+@if (confirmDeleteId !== null) {
+  <div class="adm-modal-overlay" (click)="cancelDelete()">
+    <div class="adm-modal" (click)="$event.stopPropagation()">
+      <div class="adm-modal-icon">
+        <i class="fal fa-exclamation-triangle"></i>
+      </div>
+      <h3>Ștergi clinica #{{ confirmDeleteId }}?</h3>
+      <p>Această acțiune este ireversibilă. Toate datele clinicii vor fi șterse.</p>
+      <div class="adm-modal-actions">
+        <button class="adm-modal-cancel" (click)="cancelDelete()">Anulează</button>
+        <button class="adm-modal-confirm" (click)="deleteClinic(confirmDeleteId!)">Șterge definitiv</button>
+      </div>
+    </div>
+  </div>
+}

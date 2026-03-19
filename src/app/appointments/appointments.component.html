@@ -1,0 +1,151 @@
+<div class="appt-page">
+
+  <!-- ── PAGE HEADER ──────────────────────────────────────── -->
+  <div class="page-header">
+    <div class="header-icon">
+      <i class="fal fa-calendar-check"></i>
+    </div>
+    <div class="header-text">
+      <h1>Programările mele</h1>
+      <p>Urmărește toate programările tale la clinicile dentare</p>
+    </div>
+  </div>
+
+  <!-- ── NOT LOGGED IN ─────────────────────────────────────── -->
+  @if (!auth.isLoggedIn) {
+    <div class="state-card empty-state">
+      <div class="state-icon">
+        <i class="fal fa-lock"></i>
+      </div>
+      <h3>Autentifică-te pentru a vedea programările</h3>
+      <p>Creează un cont sau autentifică-te pentru a gestiona programările tale.</p>
+      <p class="login-hint"><i class="fal fa-arrow-up"></i> Apasă <strong>Autentificare</strong> din bara de sus</p>
+    </div>
+  }
+
+  @if (auth.isLoggedIn) {
+
+    <!-- ── FILTER TABS ────────────────────────────────────────── -->
+    <div class="filter-tabs">
+      <button class="tab-btn" [class.active]="filterStatus === 'all'" (click)="setFilter('all')">
+        Toate
+        <span class="tab-count">{{ appointments.length }}</span>
+      </button>
+      <button class="tab-btn" [class.active]="filterStatus === 'pending'" (click)="setFilter('pending')">
+        <i class="fal fa-clock"></i> În așteptare
+        <span class="tab-count">{{ countByStatus('pending') }}</span>
+      </button>
+      <button class="tab-btn" [class.active]="filterStatus === 'confirmed'" (click)="setFilter('confirmed')">
+        <i class="fal fa-check-circle"></i> Confirmate
+      </button>
+      <button class="tab-btn" [class.active]="filterStatus === 'cancelled'" (click)="setFilter('cancelled')">
+        <i class="fal fa-times-circle"></i> Anulate
+      </button>
+      <button class="tab-btn" [class.active]="filterStatus === 'completed'" (click)="setFilter('completed')">
+        <i class="fal fa-check-double"></i> Finalizate
+      </button>
+    </div>
+
+    <!-- ── SKELETON LOADING ────────────────────────────────────── -->
+    @if (isLoading) {
+      <div class="appt-list">
+        @for (item of [1,2,3,4]; track item) {
+          <div class="appt-card skeleton-card">
+            <div class="skeleton avatar-sk"></div>
+            <div class="appt-info">
+              <div class="skeleton text-sk name-sk"></div>
+              <div class="skeleton text-sk service-sk"></div>
+              <div class="skeleton text-sk date-sk"></div>
+            </div>
+            <div class="skeleton badge-sk"></div>
+          </div>
+        }
+      </div>
+    }
+
+    <!-- ── APPOINTMENTS LIST ─────────────────────────────────── -->
+    @if (!isLoading && filtered.length > 0) {
+      <div class="list-header">
+        <span>{{ filtered.length }} {{ filtered.length === 1 ? 'programare' : 'programări' }}</span>
+      </div>
+      <div class="appt-list">
+        @for (appt of filtered; track appt.id) {
+          <div class="appt-card">
+
+            <!-- Avatar: logo clinică sau avatar pacient -->
+            <div class="appt-avatar">
+              @if (auth.isPatient && appt.clinic_logo) {
+                <img [src]="appt.clinic_logo" [alt]="appt.clinic_name" class="avatar-img" />
+              } @else if (auth.isClinic && appt.patient_avatar) {
+                <img [src]="appt.patient_avatar" [alt]="appt.patient_name" class="avatar-img" />
+              } @else {
+                <span class="avatar-initials">
+                  {{ getInitials(auth.isPatient ? appt.clinic_name : appt.patient_name) }}
+                </span>
+              }
+            </div>
+
+            <!-- Info -->
+            <div class="appt-info">
+              <h4 class="appt-name">
+                {{ auth.isPatient ? appt.clinic_name : appt.patient_name }}
+              </h4>
+              <p class="appt-service">
+                <i class="fal fa-tooth"></i>
+                {{ appt.service_label || appt.custom_label || 'Serviciu neprecizat' }}
+              </p>
+              <p class="appt-datetime">
+                <i class="fal fa-calendar-alt"></i>
+                {{ formatDate(appt.date) }}
+                @if (appt.time) {
+                  <span class="appt-time"><i class="fal fa-clock"></i> {{ appt.time }}</span>
+                }
+              </p>
+              @if (appt.notes) {
+                <p class="appt-notes">
+                  <i class="fal fa-sticky-note"></i> {{ appt.notes }}
+                </p>
+              }
+            </div>
+
+            <!-- Status badge -->
+            <div class="appt-status">
+              <span class="status-badge status-{{ appt.status }}">
+                @if (appt.status === 'pending') { <i class="fal fa-hourglass-half"></i> }
+                @if (appt.status === 'confirmed') { <i class="fal fa-check-circle"></i> }
+                @if (appt.status === 'cancelled') { <i class="fal fa-times-circle"></i> }
+                @if (appt.status === 'completed') { <i class="fal fa-check-double"></i> }
+                {{ statusLabel(appt.status) }}
+              </span>
+            </div>
+
+          </div>
+        }
+      </div>
+    }
+
+    <!-- ── EMPTY STATE ───────────────────────────────────────── -->
+    @if (!isLoading && filtered.length === 0) {
+      <div class="state-card empty-state">
+        <div class="state-icon">
+          <i class="fal fa-calendar-times"></i>
+        </div>
+        @if (filterStatus === 'all') {
+          <h3>Nu ai nicio programare</h3>
+          <p>Caută o clinică și fă prima ta programare online.</p>
+          <a routerLink="/finder" class="btn-primary">
+            <i class="fal fa-search"></i> Găsește o clinică
+          </a>
+        } @else {
+          <h3>Nicio programare cu statusul selectat</h3>
+          <p>Încearcă să schimbi filtrul pentru a vedea alte programări.</p>
+          <button class="btn-primary" (click)="setFilter('all')">
+            <i class="fal fa-list"></i> Toate programările
+          </button>
+        }
+      </div>
+    }
+
+  }
+
+</div>

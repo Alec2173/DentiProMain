@@ -1,3 +1,8 @@
-<app-navbar></app-navbar>
+@if (!isClinicPortal) {
+  <app-navbar></app-navbar>
+}
+@if (isClinicPortal) {
+  <app-clinic-navbar></app-clinic-navbar>
+}
 
 <router-outlet />

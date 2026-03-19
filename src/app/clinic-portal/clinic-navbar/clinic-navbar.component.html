@@ -1,0 +1,125 @@
+<nav class="cn-navbar">
+  <div class="cn-left">
+    <!-- LOGO -->
+    <a routerLink="/clinici" class="cn-brand">
+      <img src="/logo-new.png" alt="DentiPro" class="cn-logo" />
+      <span class="cn-pro-badge">Pro</span>
+    </a>
+
+    <!-- NAV LINKS -->
+    <div class="cn-nav-links">
+      <a routerLink="/clinici" routerLinkActive="active" [routerLinkActiveOptions]="{exact:true}">
+        Beneficii
+      </a>
+      <a routerLink="/clinici/pricing" routerLinkActive="active">
+        Prețuri
+      </a>
+      <a routerLink="/clinici/inscriere" routerLinkActive="active">
+        Înregistrare
+      </a>
+    </div>
+  </div>
+
+  <!-- RIGHT -->
+  <div class="cn-right">
+    @if (!authService.isLoggedIn || authService.isPatient) {
+      <a routerLink="/clinici/autentificare" class="cn-btn cn-btn-login">
+        <i class="fal fa-sign-in-alt"></i>
+        <span>Autentificare</span>
+      </a>
+      <a routerLink="/clinici/autentificare" [queryParams]="{tab:'register'}" class="cn-btn cn-btn-register">
+        <i class="fal fa-clinic-medical"></i>
+        <span>Înregistrează clinica</span>
+      </a>
+    }
+
+    @if (authService.isLoggedIn && authService.isClinic) {
+      <a routerLink="/clinici/dashboard" class="cn-btn cn-btn-dashboard">
+        <i class="fal fa-th-large"></i>
+        <span>Dashboard</span>
+      </a>
+
+      <div class="cn-user-area" (click)="toggleUserMenu(); $event.stopPropagation()">
+        <div class="cn-avatar">
+          @if (authService.currentUser?.logoUrl) {
+            <img [src]="authService.currentUser!.logoUrl" class="cn-avatar-img" alt="logo" />
+          } @else {
+            <span class="cn-avatar-initials">{{ getInitials() }}</span>
+          }
+        </div>
+        <span class="cn-clinic-name">{{ authService.currentUser?.name }}</span>
+        <i class="fal fa-chevron-down cn-chevron" [class.open]="userMenuOpen"></i>
+
+        @if (userMenuOpen) {
+          <div class="cn-dropdown">
+            <div class="cn-dd-header">
+              <div class="cn-dd-avatar">{{ getInitials() }}</div>
+              <div>
+                <div class="cn-dd-name">{{ authService.currentUser?.name }}</div>
+                <div class="cn-dd-email">{{ authService.currentUser?.email }}</div>
+              </div>
+            </div>
+
+            <div class="cn-dd-divider"></div>
+
+            @if (authService.currentUser?.clinicId) {
+              <a class="cn-dd-item" [routerLink]="['/clinic-profile', authService.currentUser?.clinicId]" (click)="userMenuOpen = false">
+                <i class="fal fa-store"></i> Profil public
+              </a>
+            }
+            <a class="cn-dd-item" routerLink="/clinici/dashboard" (click)="userMenuOpen = false">
+              <i class="fal fa-th-large"></i> Dashboard
+            </a>
+            <a class="cn-dd-item" routerLink="/clinici/profil" (click)="userMenuOpen = false">
+              <i class="fal fa-edit"></i> Editează profilul
+            </a>
+            <a class="cn-dd-item" routerLink="/clinici/pricing" (click)="userMenuOpen = false">
+              <i class="fal fa-tag"></i> Plan & abonament
+            </a>
+
+            <div class="cn-dd-divider"></div>
+
+            <a class="cn-dd-item cn-dd-patient-link" routerLink="/" (click)="logout(); userMenuOpen = false">
+              <i class="fal fa-arrow-left"></i> Site pacienți
+            </a>
+
+            <div class="cn-dd-divider"></div>
+
+            <button class="cn-dd-item cn-dd-logout" (click)="logout()">
+              <i class="fal fa-sign-out-alt"></i> Deconectare
+            </button>
+          </div>
+        }
+      </div>
+    }
+
+    <!-- MOBILE BURGER -->
+    <button class="cn-burger" (click)="mobileMenuOpen = !mobileMenuOpen">
+      <i class="fal fa-bars"></i>
+    </button>
+  </div>
+</nav>
+
+<!-- MOBILE MENU -->
+@if (mobileMenuOpen) {
+  <div class="cn-mobile-menu">
+    <a routerLink="/clinici" (click)="mobileMenuOpen = false">Beneficii</a>
+    <a routerLink="/clinici/pricing" (click)="mobileMenuOpen = false">Prețuri</a>
+    <a routerLink="/clinici/inscriere" (click)="mobileMenuOpen = false">Înregistrare</a>
+
+    @if (!authService.isLoggedIn || authService.isPatient) {
+      <a routerLink="/clinici/autentificare" (click)="mobileMenuOpen = false" class="cn-mobile-auth-primary">
+        Autentificare / Cont nou
+      </a>
+    }
+    @if (authService.isLoggedIn && authService.isClinic) {
+      <a routerLink="/clinici/dashboard" (click)="mobileMenuOpen = false">Dashboard</a>
+      <a routerLink="/clinici/profil" (click)="mobileMenuOpen = false">Editează profilul</a>
+      <button class="cn-mobile-logout" (click)="logout(); mobileMenuOpen = false">Deconectare</button>
+    }
+
+    <a routerLink="/" (click)="logout(); mobileMenuOpen = false" class="cn-mobile-back">
+      <i class="fal fa-arrow-left"></i> Site pacienți
+    </a>
+  </div>
+}

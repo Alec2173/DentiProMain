@@ -7,7 +7,7 @@
   width: 100%;
   display: flex;
   flex-direction: column;
-  background: var(--bg-surface);
+  background: var(--bg-surface, #0a1628);
   overflow: hidden;
 }
 
@@ -19,7 +19,9 @@
   width: 100%;
   height: 100%;
   overflow-y: auto;
-  padding: 12px 10px 32px;
+  padding: 14px 12px 32px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255,255,255,0.08) transparent;
 }
 
 /* ════════════════════════════════════════
@@ -29,7 +31,7 @@
 .card-list-inner {
   display: flex;
   flex-direction: column;
-  gap: 7px;
+  gap: 8px;
 }
 
 /* ════════════════════════════════════════
@@ -40,27 +42,61 @@ button.card {
   all: unset;
   display: flex;
   width: 100%;
-  height: 120px;
-  border-radius: 14px;
+  height: 130px;
+  border-radius: 16px;
   overflow: hidden;
-  background: linear-gradient(135deg, rgba(14, 36, 68, 0.9), rgba(10, 26, 50, 0.95));
+  background: linear-gradient(135deg, rgba(14, 36, 68, 0.9), rgba(9, 22, 44, 0.97));
   border: 1px solid rgba(255, 255, 255, 0.07);
   cursor: pointer;
-  transition: border-color 0.25s, box-shadow 0.25s;
   position: relative;
   box-sizing: border-box;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.35);
+  /* All transitions in one place */
+  transition:
+    border-color 0.25s ease,
+    box-shadow 0.25s ease,
+    transform 0.22s ease,
+    background 0.25s ease;
 }
 
-.card:hover {
-  border-color: rgba(59, 130, 246, 0.25);
-  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.45);
+/* Left accent bar */
+button.card::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 8px;
+  bottom: 8px;
+  width: 3px;
+  background: linear-gradient(180deg, #2563eb, #0ea5e9);
+  border-radius: 0 3px 3px 0;
+  opacity: 0;
+  transition: opacity 0.25s ease;
+  z-index: 2;
+}
+
+button.card:hover {
+  border-color: rgba(59, 130, 246, 0.35);
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.5),
+    0 0 0 1px rgba(59, 130, 246, 0.12),
+    inset 0 0 0 1px rgba(59, 130, 246, 0.04);
+  transform: translateY(-2px);
+  background: linear-gradient(135deg, rgba(16, 40, 78, 0.95), rgba(11, 27, 55, 0.98));
+}
+
+button.card:hover::before {
+  opacity: 1;
+}
+
+button.card:active {
+  transform: translateY(0px);
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.4);
 }
 
 /* ─── IMAGE ─── */
 
 .card-image {
-  width: 115px;
+  width: 118px;
   height: 100%;
   flex-shrink: 0;
   overflow: hidden;
@@ -71,14 +107,21 @@ button.card {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  display: block;
+  transition: transform 0.45s ease;
 }
 
-/* image right-edge fade */
+button.card:hover .card-image img {
+  transform: scale(1.07);
+}
+
+/* Right-edge gradient fade on image */
 .card-image::after {
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(90deg, transparent 60%, rgba(10, 26, 50, 0.8) 100%);
+  background: linear-gradient(90deg, transparent 55%, rgba(9, 22, 44, 0.85) 100%);
+  pointer-events: none;
 }
 
 /* ─── INFO ─── */
@@ -88,8 +131,8 @@ button.card {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  padding: 12px 14px 12px 10px;
-  gap: 6px;
+  padding: 12px 14px 12px 12px;
+  gap: 5px;
   min-width: 0;
 }
 
@@ -98,7 +141,8 @@ button.card {
 .card-header {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 7px;
+  position: relative;
 }
 
 /* ─── LOGO ─── */
@@ -125,25 +169,60 @@ button.card {
 /* ─── CITY ─── */
 
 .city {
-  font-size: 11px;
-  color: rgba(255, 255, 255, 0.38);
-  letter-spacing: 0.04em;
+  font-size: 10.5px;
+  color: rgba(255, 255, 255, 0.35);
+  letter-spacing: 0.05em;
   text-transform: uppercase;
-  font-weight: 500;
+  font-weight: 600;
+}
+
+/* ─── FAV BUTTON ─── */
+
+.fav-btn {
+  all: unset;
+  margin-left: auto;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.06);
+  color: rgba(255, 255, 255, 0.3);
+  font-size: 11px;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s, transform 0.15s;
+  flex-shrink: 0;
+}
+
+.fav-btn:hover {
+  background: rgba(239, 68, 68, 0.15);
+  color: #ef4444;
+  transform: scale(1.15);
+}
+
+.fav-btn--active {
+  background: rgba(239, 68, 68, 0.18) !important;
+  color: #ef4444 !important;
 }
 
 /* ─── NAME ─── */
 
 .clinic-name {
-  font-size: 14px;
+  font-size: 14.5px;
   font-weight: 700;
-  color: rgba(255, 255, 255, 0.9);
+  color: rgba(255, 255, 255, 0.92);
   letter-spacing: -0.02em;
-  line-height: 1.3;
+  line-height: 1.25;
   margin: 0;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  transition: color 0.2s;
+}
+
+button.card:hover .clinic-name {
+  color: #fff;
 }
 
 /* ─── RATING ─── */
@@ -153,7 +232,7 @@ button.card {
   align-items: center;
   gap: 5px;
   font-size: 12px;
-  color: rgba(255, 255, 255, 0.45);
+  color: rgba(255, 255, 255, 0.4);
   font-weight: 400;
   width: fit-content;
 }
@@ -182,14 +261,28 @@ button.card {
 }
 
 /* ════════════════════════════════════════
+   RESPONSIVE
+════════════════════════════════════════ */
+
+@media (max-width: 480px) {
+  .viewport { padding: 10px 8px 24px; }
+
+  button.card { height: 112px; border-radius: 14px; }
+
+  .card-image { width: 96px; }
+
+  .skeleton-card { height: 112px; }
+}
+
+/* ════════════════════════════════════════
    SKELETON
 ════════════════════════════════════════ */
 
 .skeleton-card {
   width: 100%;
-  height: 120px;
+  height: 130px;
   display: flex;
-  border-radius: 14px;
+  border-radius: 16px;
   overflow: hidden;
   background: rgba(14, 36, 68, 0.7);
   border: 1px solid rgba(255, 255, 255, 0.05);

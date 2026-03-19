@@ -1,0 +1,375 @@
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.97); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+/* ── PAGE ──────────────────────────────────────────────────── */
+.fav-page {
+  min-height: 100vh;
+  background: #080b14;
+  padding: 40px 24px 80px;
+  max-width: 1200px;
+  margin: 0 auto;
+  animation: scaleIn 0.35s ease both;
+}
+
+/* ── HEADER ─────────────────────────────────────────────────── */
+.page-header {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 40px;
+}
+
+.header-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  color: #fff;
+  flex-shrink: 0;
+}
+
+.header-text h1 {
+  font-size: 28px;
+  font-weight: 700;
+  color: #f1f5f9;
+  margin: 0 0 4px;
+}
+
+.header-text p {
+  font-size: 14px;
+  color: #64748b;
+  margin: 0;
+}
+
+/* ── RESULTS BAR ─────────────────────────────────────────────── */
+.results-bar {
+  margin-bottom: 20px;
+  color: #64748b;
+  font-size: 13px;
+}
+
+/* ── GRID ────────────────────────────────────────────────────── */
+.clinics-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+/* ── CARD ────────────────────────────────────────────────────── */
+.clinic-card {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 20px;
+  backdrop-filter: blur(20px);
+  overflow: hidden;
+  transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+  animation: scaleIn 0.35s ease both;
+}
+
+.clinic-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(59, 130, 246, 0.3);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.4);
+}
+
+/* ── COVER ────────────────────────────────────────────────────── */
+.card-cover {
+  position: relative;
+  height: 160px;
+  background-color: #0f1629;
+  background-size: cover;
+  background-position: center;
+  overflow: hidden;
+}
+
+.cover-gradient {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(59,130,246,0.25), rgba(139,92,246,0.25));
+}
+
+/* ── PLAN BADGE ──────────────────────────────────────────────── */
+.plan-badge {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  backdrop-filter: blur(12px);
+}
+
+.plan-premium {
+  background: rgba(245, 158, 11, 0.2);
+  border: 1px solid rgba(245, 158, 11, 0.4);
+  color: #f59e0b;
+}
+
+.plan-basic {
+  background: rgba(59, 130, 246, 0.2);
+  border: 1px solid rgba(59, 130, 246, 0.4);
+  color: #3b82f6;
+}
+
+/* ── CARD BODY ────────────────────────────────────────────────── */
+.card-body {
+  padding: 0 20px 20px;
+  position: relative;
+}
+
+/* ── LOGO FLOATING ────────────────────────────────────────────── */
+.clinic-logo {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: #1a2235;
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  overflow: hidden;
+  margin-top: -22px;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  z-index: 2;
+}
+
+.clinic-logo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.logo-initials {
+  font-size: 14px;
+  font-weight: 700;
+  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ── CARD INFO ────────────────────────────────────────────────── */
+.card-info {
+  margin-bottom: 16px;
+}
+
+.clinic-name {
+  font-size: 15px;
+  font-weight: 600;
+  color: #f1f5f9;
+  margin: 0 0 6px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.clinic-city {
+  font-size: 13px;
+  color: #64748b;
+  margin: 0 0 4px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.clinic-spec {
+  font-size: 12px;
+  color: #475569;
+  margin: 0;
+}
+
+/* ── CARD ACTIONS ─────────────────────────────────────────────── */
+.card-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.btn-view {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 9px 14px;
+  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+  color: #fff;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.btn-view:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+.btn-remove {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.25);
+  color: #ef4444;
+  font-size: 15px;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.btn-remove:hover {
+  background: rgba(239, 68, 68, 0.2);
+  transform: scale(1.05);
+}
+
+/* ── EMPTY / AUTH STATES ─────────────────────────────────────── */
+.state-card {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 20px;
+  backdrop-filter: blur(20px);
+  padding: 60px 40px;
+  text-align: center;
+  animation: scaleIn 0.35s ease both;
+}
+
+.state-icon {
+  width: 72px;
+  height: 72px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  color: #475569;
+  margin: 0 auto 24px;
+}
+
+.empty-state h3 {
+  font-size: 20px;
+  font-weight: 600;
+  color: #f1f5f9;
+  margin: 0 0 10px;
+}
+
+.empty-state p {
+  font-size: 14px;
+  color: #64748b;
+  margin: 0 0 28px;
+  max-width: 360px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 24px;
+  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+  color: #fff;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.btn-primary:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+.login-hint {
+  font-size: 14px;
+  color: #64748b;
+  margin-top: 4px;
+}
+
+.login-hint strong { color: #94a3b8; }
+
+/* ── SKELETON ────────────────────────────────────────────────── */
+.skeleton {
+  background: linear-gradient(90deg, rgba(255,255,255,0.04) 25%, rgba(255,255,255,0.08) 50%, rgba(255,255,255,0.04) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s infinite;
+  border-radius: 8px;
+}
+
+@keyframes shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+.skeleton-card {
+  cursor: default;
+  pointer-events: none;
+}
+
+.cover-skeleton {
+  width: 100%;
+  height: 160px;
+  border-radius: 0;
+}
+
+.logo-skeleton {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  margin-top: -22px;
+  margin-bottom: 12px;
+}
+
+.text-skeleton { height: 14px; border-radius: 6px; margin-bottom: 8px; }
+.title-sk      { width: 70%; }
+.sub-sk        { width: 45%; }
+.badge-sk      { width: 55px; height: 22px; }
+
+.btn-skeleton {
+  height: 36px;
+  border-radius: 10px;
+  flex: 1;
+}
+.btn-sm-sk { flex: 0 0 38px; }
+
+/* ── RESPONSIVE ──────────────────────────────────────────────── */
+@media (max-width: 1024px) {
+  .clinics-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .fav-page {
+    padding: 24px 16px 60px;
+  }
+  .clinics-grid {
+    grid-template-columns: 1fr;
+  }
+  .page-header {
+    gap: 14px;
+  }
+  .header-text h1 {
+    font-size: 22px;
+  }
+}

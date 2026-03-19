@@ -258,12 +258,22 @@
   transform: translateX(3px);
 }
 
-@media (max-width: 768px) {
-  .clinic-grid {
-    grid-template-columns: 1fr;
-  }
+@media (max-width: 1024px) {
+  .pc-section { padding: 80px 24px; }
+}
 
-  .section-title {
-    font-size: 30px;
-  }
+@media (max-width: 768px) {
+  .pc-section { padding: 64px 20px; }
+  .clinic-grid { grid-template-columns: repeat(2, 1fr); gap: 16px; }
+  .section-title { font-size: 30px; }
+  .section-header { margin-bottom: 40px; gap: 12px; }
+  .section-subtitle { font-size: 15px; }
+}
+
+@media (max-width: 540px) {
+  .pc-section { padding: 52px 16px; }
+  .clinic-grid { grid-template-columns: 1fr; }
+  .section-title { font-size: 26px; }
+  .card-image { height: 160px; }
+  .view-all-btn { width: 100%; justify-content: center; }
 }

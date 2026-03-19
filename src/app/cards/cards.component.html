@@ -29,8 +29,8 @@
           <div class="promo-badge">PROMOVAT</div>
 
           <div class="card-image">
-            @if (clinic.clinic_images_parsed.length > 0) {
-              <img [src]="clinic.clinic_images_parsed[0]" loading="lazy" />
+            @if (clinic.images.length > 0) {
+              <img [src]="clinic.images[0]" loading="lazy" />
             } @else {
               <img src="no-img.jpg" />
             }
@@ -39,8 +39,8 @@
           <div class="card-info">
             <div class="card-header">
               <div class="logo">
-                @if (clinic.logo_path) {
-                  <img [src]="clinic.logo_path" />
+                @if (clinic.logo_url) {
+                  <img [src]="clinic.logo_url" />
                 } @else {
                   <img src="no-img.jpg" />
                 }
@@ -49,6 +49,13 @@
               <span class="city">
                 {{ clinic.city }}
               </span>
+
+              @if (auth.isLoggedIn && auth.isPatient) {
+                <button class="fav-btn" [class.fav-btn--active]="favoritedIds.has(clinic.id)"
+                  (click)="toggleFavorite(clinic.id, $event)" title="Adaugă la favorite">
+                  <i class="fal fa-heart"></i>
+                </button>
+              }
             </div>
 
             <h3 class="clinic-name">

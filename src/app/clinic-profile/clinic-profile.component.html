@@ -697,8 +697,8 @@
 
           <div class="modal-body">
 
-            <!-- Servicii predefinite -->
-            <p class="modal-label">Servicii disponibile — selectează ce oferi</p>
+            <!-- ── PASUL 1: Selectează serviciile ── -->
+            <p class="modal-label">1. Selectează serviciile oferite</p>
             <div class="svc-edit-grid">
               @for (s of servicesDraft; track s.id) {
                 @if (!s.isCustom) {
@@ -717,7 +717,7 @@
             </div>
 
             <!-- Servicii custom -->
-            <p class="modal-label" style="margin-top:24px;">Servicii personalizate</p>
+            <p class="modal-label" style="margin-top:20px;">Servicii personalizate</p>
             <div class="custom-svc-list">
               @for (s of servicesDraft; track s.id) {
                 @if (s.isCustom) {
@@ -743,6 +743,82 @@
                 <i class="fal fa-plus"></i> Adaugă
               </button>
             </div>
+
+            <!-- ── PASUL 2: Tarife pentru serviciile selectate ── -->
+            @if (selectedServicesCount > 0) {
+              <div class="svc-prices-section">
+                <p class="modal-label">2. Setează tariful pentru fiecare serviciu selectat</p>
+
+                <div class="svc-price-list">
+                  @for (s of servicesDraft; track s.id) {
+                    @if (s.selected) {
+                      <div class="svc-price-row">
+                        <div class="svc-price-row__name">
+                          @if (s.isCustom) {
+                            <i class="fal fa-star svc-star-icon"></i>
+                          } @else {
+                            <i class="fal fa-tooth svc-tooth-icon"></i>
+                          }
+                          <span>{{ s.label }}</span>
+                        </div>
+
+                        <div class="svc-price-row__controls">
+                          <div class="price-type-btns">
+                            <button
+                              class="price-type-btn"
+                              [class.active]="s.priceType === 'fixed'"
+                              (click)="s.priceType = 'fixed'; s.priceMax = ''"
+                            >
+                              <i class="fal fa-tag"></i> Fix
+                            </button>
+                            <button
+                              class="price-type-btn"
+                              [class.active]="s.priceType === 'range'"
+                              (click)="s.priceType = 'range'"
+                            >
+                              <i class="fal fa-arrows-h"></i> Interval
+                            </button>
+                          </div>
+
+                          <div class="price-inputs-row">
+                            @if (s.priceType === 'fixed') {
+                              <input
+                                type="number"
+                                class="price-edit-input"
+                                [(ngModel)]="s.price"
+                                [name]="'p_' + s.id"
+                                placeholder="0"
+                                min="0"
+                              />
+                              <span class="price-currency-label">RON</span>
+                            } @else {
+                              <input
+                                type="number"
+                                class="price-edit-input"
+                                [(ngModel)]="s.price"
+                                [name]="'pmin_' + s.id"
+                                placeholder="minim"
+                                min="0"
+                              />
+                              <span class="range-sep">–</span>
+                              <input
+                                type="number"
+                                class="price-edit-input"
+                                [(ngModel)]="s.priceMax"
+                                [name]="'pmax_' + s.id"
+                                placeholder="maxim"
+                                min="0"
+                              />
+                              <span class="price-currency-label">RON</span>
+                            }
+                          </div>
+                        </div>
+                      </div>
+                    }
+                  }
+                </div>
+              </div>
+            }
 
           </div>
 

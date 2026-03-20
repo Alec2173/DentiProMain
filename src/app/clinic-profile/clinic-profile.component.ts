@@ -482,6 +482,10 @@ export class ClinicProfileComponent implements OnInit, OnDestroy {
     this.servicesSaveError = '';
   }
 
+  get selectedServicesCount(): number {
+    return this.servicesDraft.filter(s => s.selected).length;
+  }
+
   toggleServiceInDraft(id: string) {
     const s = this.servicesDraft.find(x => x.id === id);
     if (s) s.selected = !s.selected;

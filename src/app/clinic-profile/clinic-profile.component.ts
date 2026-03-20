@@ -1,11 +1,13 @@
-import { Component, OnInit, OnDestroy, ElementRef, ViewChild, NgZone } from '@angular/core';
+import { Component, OnInit, OnDestroy, ElementRef, ViewChild, NgZone, inject } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { ClinicDataService, Clinic } from '../clinic-data.service';
+import { ClinicDataService, Clinic, ClinicService } from '../clinic-data.service';
 import { AuthService } from '../auth.service';
+import { ServiciiService } from '../servicii.service';
 import { FormsModule } from '@angular/forms';
 import { TitleCasePipe, DecimalPipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
+import { Meta } from '@angular/platform-browser';
 import * as maplibregl from 'maplibre-gl';
 
 const MAPTILER_KEY = 'cwyGOMCDF8zwmBEDJrCr';
@@ -33,6 +35,22 @@ export class ClinicProfileComponent implements OnInit, OnDestroy {
   editingGallery = false;
   newImagePreviews: string[] = [];
 
+  // ── SERVICES EDIT ─────────────────────────────────────
+  editingServices = false;
+  savingServices = false;
+  allServices: { id: string; label: string }[] = [];
+  servicesDraft: {
+    id: string; label: string; selected: boolean;
+    priceType: 'fixed' | 'range'; price: string; priceMax: string; isCustom: boolean;
+  }[] = [];
+  newCustomServiceInput = '';
+
+  // ── PRICE INLINE EDIT ─────────────────────────────────
+  editingPriceFor: string | null = null;
+  editPriceValue = '';
+  editPriceMaxValue = '';
+  editPriceType: 'fixed' | 'range' = 'fixed';
+
   private map: maplibregl.Map | null = null;
   private marker: maplibregl.Marker | null = null;
   geocodingInProgress = false;
@@ -50,15 +68,21 @@ export class ClinicProfileComponent implements OnInit, OnDestroy {
   private origLng: number | null = null;
   private origAddress = '';
 
+  private metaService = inject(Meta);
+
   constructor(
     private route: ActivatedRoute,
     private clinicService: ClinicDataService,
     private authService: AuthService,
+    private serviciiService: ServiciiService,
     private http: HttpClient,
     private zone: NgZone,
   ) {}
 
   ngOnInit(): void {
+    this.allServices = this.serviciiService.getServices();
+    // Pagina de management intern — nu trebuie indexată
+    this.metaService.updateTag({ name: 'robots', content: 'noindex, nofollow' });
     const paramId = Number(this.route.snapshot.paramMap.get('id'));
     const id = isNaN(paramId) || paramId === 0
       ? Number(this.authService.currentUser?.clinicId)
@@ -409,6 +433,138 @@ export class ClinicProfileComponent implements OnInit, OnDestroy {
         // No backend save here — waits for saveLocation()
       },
       error: () => { this.geocodingInProgress = false; },
+    });
+  }
+
+  // ── SERVICES EDIT METHODS ─────────────────────────────
+
+  openServicesEdit() {
+    const existing = this.clinic?.services ?? [];
+    const existingIds = new Set(existing.map(s => s.service_id ?? `custom_${s.label}`));
+
+    this.servicesDraft = this.allServices.map(s => {
+      const found = existing.find(e => e.service_id === s.id);
+      return {
+        id: s.id,
+        label: s.label,
+        selected: existingIds.has(s.id),
+        priceType: (found?.price_type as 'fixed' | 'range') ?? 'fixed',
+        price: found?.price_min?.toString() ?? '',
+        priceMax: found?.price_max?.toString() ?? '',
+        isCustom: false,
+      };
+    });
+
+    // Adaugă serviciile custom existente
+    existing
+      .filter(s => !s.service_id)
+      .forEach(s => {
+        this.servicesDraft.push({
+          id: `custom_${s.label}`,
+          label: s.label,
+          selected: true,
+          priceType: (s.price_type as 'fixed' | 'range') ?? 'fixed',
+          price: s.price_min?.toString() ?? '',
+          priceMax: s.price_max?.toString() ?? '',
+          isCustom: true,
+        });
+      });
+
+    this.newCustomServiceInput = '';
+    this.editingServices = true;
+  }
+
+  closeServicesEdit() {
+    this.editingServices = false;
+    this.servicesDraft = [];
+    this.newCustomServiceInput = '';
+  }
+
+  toggleServiceInDraft(id: string) {
+    const s = this.servicesDraft.find(x => x.id === id);
+    if (s) s.selected = !s.selected;
+  }
+
+  addCustomToDraft() {
+    const label = this.newCustomServiceInput.trim();
+    if (!label) return;
+    const id = `custom_${label.toLowerCase().replace(/\s+/g, '_')}_${Date.now()}`;
+    this.servicesDraft.push({ id, label, selected: true, priceType: 'fixed', price: '', priceMax: '', isCustom: true });
+    this.newCustomServiceInput = '';
+  }
+
+  removeCustomFromDraft(id: string) {
+    this.servicesDraft = this.servicesDraft.filter(s => s.id !== id);
+  }
+
+  saveServices() {
+    if (!this.clinic) return;
+    this.savingServices = true;
+    const selected = this.servicesDraft.filter(s => s.selected).map(s => ({
+      id: s.id,
+      label: s.label,
+      priceType: s.priceType,
+      price: s.price,
+      priceMax: s.priceMax,
+    }));
+    const token = this.authService.getToken() ?? '';
+    this.clinicService.updateServices(this.clinic.id, selected, token).subscribe({
+      next: (updated) => {
+        this.clinic!.services = updated.services;
+        this.savingServices = false;
+        this.closeServicesEdit();
+      },
+      error: (err) => {
+        console.error('Eroare la salvare servicii:', err);
+        this.savingServices = false;
+      },
+    });
+  }
+
+  // ── PRICE INLINE EDIT METHODS ─────────────────────────
+
+  startPriceEdit(service: ClinicService) {
+    const key = service.service_id ?? `custom_${service.label}`;
+    this.editingPriceFor = key;
+    this.editPriceType = (service.price_type as 'fixed' | 'range') ?? 'fixed';
+    this.editPriceValue = service.price_min?.toString() ?? '';
+    this.editPriceMaxValue = service.price_max?.toString() ?? '';
+  }
+
+  cancelPriceEdit() {
+    this.editingPriceFor = null;
+    this.editPriceValue = '';
+    this.editPriceMaxValue = '';
+  }
+
+  savePriceEdit() {
+    if (!this.clinic || !this.editingPriceFor) return;
+    const services = (this.clinic.services ?? []).map(s => {
+      const key = s.service_id ?? `custom_${s.label}`;
+      if (key === this.editingPriceFor) {
+        return {
+          id: s.service_id ?? `custom_${s.label}`,
+          label: s.label,
+          priceType: this.editPriceType,
+          price: this.editPriceValue,
+          priceMax: this.editPriceMaxValue,
+        };
+      }
+      return {
+        id: s.service_id ?? `custom_${s.label}`,
+        label: s.label,
+        priceType: s.price_type ?? 'fixed',
+        price: s.price_min?.toString() ?? '',
+        priceMax: s.price_max?.toString() ?? '',
+      };
+    });
+    const token = this.authService.getToken() ?? '';
+    this.clinicService.updateServices(this.clinic.id, services, token).subscribe({
+      next: (updated) => {
+        this.clinic!.services = updated.services;
+        this.cancelPriceEdit();
+      },
+      error: (err) => console.error('Eroare la salvare preț:', err),
     });
   }
 

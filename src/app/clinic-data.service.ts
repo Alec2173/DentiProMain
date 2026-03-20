@@ -49,4 +49,9 @@ export class ClinicDataService {
     const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
     return this.http.patch<Clinic>(`${this.apiUrl}/${id}`, data, { headers });
   }
+
+  updateServices(id: number, services: any[], token: string): Observable<Clinic> {
+    const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
+    return this.http.put<Clinic>(`${this.apiUrl}/${id}/services`, { services }, { headers });
+  }
 }

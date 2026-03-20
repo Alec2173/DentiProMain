@@ -111,7 +111,7 @@
         <!-- cover -->
         <div class="hero-cover">
           @if (clinicImages.length > 0) {
-            <img [src]="clinicImages[0]" class="cover-img" alt="" />
+            <img [src]="clinicImages[0]" class="cover-img" [alt]="clinic.name + ' — imagine de copertă'" />
           } @else {
             <div class="cover-gradient-bg"></div>
           }
@@ -133,7 +133,7 @@
           <div class="logo-area">
             <div class="logo-wrapper">
               @if (clinic.logo_url) {
-                <img [src]="clinic.logo_url" class="clinic-logo" alt="Logo" />
+                <img [src]="clinic.logo_url" class="clinic-logo" [alt]="'Logo ' + clinic.name" />
               } @else {
                 <div class="logo-placeholder">
                   <i class="fal fa-hospital"></i>
@@ -279,7 +279,7 @@
             <div class="card-header">
               <div class="card-title-group">
                 <div class="card-title-icon"><i class="fal fa-images"></i></div>
-                <h3 class="card-title">Galerie imagini</h3>
+                <h2 class="card-title">Galerie imagini</h2>
               </div>
               @if (isOwner) {
                 <button class="text-btn" (click)="openGalleryEdit()">
@@ -291,7 +291,7 @@
 
             @if (clinicImages.length > 0) {
               <div class="gallery-main-wrap">
-                <img [src]="clinicImages[activeImageIndex]" class="gallery-main-img" alt="" />
+                <img [src]="clinicImages[activeImageIndex]" class="gallery-main-img" [alt]="clinic.name + ' — imagine galerie ' + (activeImageIndex + 1)" />
                 <div class="gallery-count-badge">
                   <i class="fal fa-layer-group"></i>
                   {{ activeImageIndex + 1 }} / {{ clinicImages.length }}
@@ -300,7 +300,7 @@
               <div class="gallery-thumbs">
                 @for (img of clinicImages; track img; let i = $index) {
                   <div class="thumb-wrap" [class.active]="i === activeImageIndex" (click)="activeImageIndex = i">
-                    <img [src]="img" class="thumb-img" alt="" />
+                    <img [src]="img" class="thumb-img" [alt]="clinic.name + ' — thumbnail ' + (i + 1)" />
                   </div>
                 }
               </div>
@@ -320,35 +320,98 @@
             <div class="card-header">
               <div class="card-title-group">
                 <div class="card-title-icon"><i class="fal fa-tooth"></i></div>
-                <h3 class="card-title">Servicii & Prețuri</h3>
+                <h2 class="card-title">Servicii & Prețuri</h2>
               </div>
+              @if (isOwner) {
+                <button class="text-btn" (click)="openServicesEdit()">
+                  <i class="fal fa-pencil"></i>
+                  Editează servicii
+                </button>
+              }
             </div>
 
             @if (clinic.services && clinic.services.length > 0) {
-              <div class="chips-wrap">
-                @for (service of clinic.services; track service.service_id) {
-                  <div class="service-chip">
-                    <span class="service-label">{{ service.label }}</span>
-                    @if (clinic.show_prices && service.price_min !== null) {
-                      <span class="service-price">
-                        @if (service.price_type === 'fixed') {
-                          {{ service.price_min }} RON
-                        } @else if (service.price_type === 'range' && service.price_max !== null) {
-                          {{ service.price_min }} – {{ service.price_max }} RON
-                        } @else if (service.price_type === 'from') {
-                          De la {{ service.price_min }} RON
-                        } @else {
-                          {{ service.price_min }} RON
-                        }
-                      </span>
-                    }
-                  </div>
-                }
-              </div>
+              @if (isOwner) {
+                <!-- Owner view: rows cu preț inline editable -->
+                <div class="svc-rows">
+                  @for (service of clinic.services; track service.service_id) {
+                    <div class="svc-row">
+                      <div class="svc-row-main">
+                        <span class="svc-dot"></span>
+                        <span class="svc-row-label">{{ service.label }}</span>
+                        <div class="svc-row-actions">
+                          @if ((service.service_id ?? 'custom_' + service.label) !== editingPriceFor) {
+                            <span class="svc-row-price">
+                              @if (service.price_min !== null) {
+                                @if (service.price_type === 'range' && service.price_max !== null) {
+                                  {{ service.price_min }} – {{ service.price_max }} RON
+                                } @else {
+                                  {{ service.price_min }} RON
+                                }
+                              } @else {
+                                <span class="svc-no-price">fără preț</span>
+                              }
+                            </span>
+                            <button class="icon-btn sm" (click)="startPriceEdit(service)" title="Editează prețul">
+                              <i class="fal fa-pencil"></i>
+                            </button>
+                          }
+                        </div>
+                      </div>
+
+                      @if ((service.service_id ?? 'custom_' + service.label) === editingPriceFor) {
+                        <div class="svc-price-edit">
+                          <div class="price-type-btns">
+                            <button class="price-type-btn" [class.active]="editPriceType === 'fixed'" (click)="editPriceType = 'fixed'; editPriceMaxValue = ''">
+                              Preț fix
+                            </button>
+                            <button class="price-type-btn" [class.active]="editPriceType === 'range'" (click)="editPriceType = 'range'">
+                              Interval
+                            </button>
+                          </div>
+                          <div class="price-inputs-row">
+                            <input type="number" class="price-edit-input" [(ngModel)]="editPriceValue" placeholder="0" min="0" />
+                            @if (editPriceType === 'range') {
+                              <span class="range-sep">–</span>
+                              <input type="number" class="price-edit-input" [(ngModel)]="editPriceMaxValue" placeholder="max" min="0" />
+                            }
+                            <span class="price-currency-label">RON</span>
+                          </div>
+                          <div class="edit-actions">
+                            <button class="btn-save" (click)="savePriceEdit()"><i class="fal fa-check"></i> Salvează</button>
+                            <button class="btn-cancel" (click)="cancelPriceEdit()">Renunță</button>
+                          </div>
+                        </div>
+                      }
+                    </div>
+                  }
+                </div>
+              } @else {
+                <!-- Visitor view: chips -->
+                <div class="chips-wrap">
+                  @for (service of clinic.services; track service.service_id) {
+                    <div class="service-chip">
+                      <span class="service-label">{{ service.label }}</span>
+                      @if (clinic.show_prices && service.price_min !== null) {
+                        <span class="service-price">
+                          @if (service.price_type === 'range' && service.price_max !== null) {
+                            {{ service.price_min }} – {{ service.price_max }} RON
+                          } @else {
+                            {{ service.price_min }} RON
+                          }
+                        </span>
+                      }
+                    </div>
+                  }
+                </div>
+              }
             } @else {
               <div class="empty-state">
                 <i class="fal fa-tooth empty-icon"></i>
                 <p>Niciun serviciu adăugat.</p>
+                @if (isOwner) {
+                  <span class="empty-hint" (click)="openServicesEdit()" style="cursor:pointer;">Click pentru a adăuga servicii</span>
+                }
               </div>
             }
           </div>
@@ -363,7 +426,7 @@
             <div class="card-header">
               <div class="card-title-group">
                 <div class="card-title-icon"><i class="fal fa-address-card"></i></div>
-                <h3 class="card-title">Date de contact</h3>
+                <h2 class="card-title">Date de contact</h2>
               </div>
             </div>
 
@@ -484,7 +547,7 @@
             <div class="card-header">
               <div class="card-title-group">
                 <div class="card-title-icon"><i class="fal fa-crown"></i></div>
-                <h3 class="card-title">Plan & Abonament</h3>
+                <h2 class="card-title">Plan & Abonament</h2>
               </div>
             </div>
 
@@ -527,7 +590,7 @@
         <div class="card-header">
           <div class="card-title-group">
             <div class="card-title-icon map-icon-blue"><i class="fal fa-map-marked-alt"></i></div>
-            <h3 class="card-title">Localizare pe hartă</h3>
+            <h2 class="card-title">Localizare pe hartă</h2>
           </div>
 
           @if (isOwner && !isEditingLocation) {
@@ -615,6 +678,90 @@
     </div>
 
     <!-- ═══════════════════════════════════════════
+         SERVICES MODAL
+    ═══════════════════════════════════════════ -->
+
+    @if (editingServices) {
+      <div class="modal-backdrop" (click)="closeServicesEdit()">
+        <div class="modal-card modal-card--wide" (click)="$event.stopPropagation()">
+
+          <div class="modal-header">
+            <div class="modal-title-group">
+              <div class="modal-title-icon"><i class="fal fa-tooth"></i></div>
+              <h3>Editează servicii</h3>
+            </div>
+            <button class="icon-btn" (click)="closeServicesEdit()">
+              <i class="fal fa-times"></i>
+            </button>
+          </div>
+
+          <div class="modal-body">
+
+            <!-- Servicii predefinite -->
+            <p class="modal-label">Servicii disponibile — selectează ce oferi</p>
+            <div class="svc-edit-grid">
+              @for (s of servicesDraft; track s.id) {
+                @if (!s.isCustom) {
+                  <div
+                    class="svc-edit-chip"
+                    [class.selected]="s.selected"
+                    (click)="toggleServiceInDraft(s.id)"
+                  >
+                    @if (s.selected) {
+                      <i class="fal fa-check"></i>
+                    }
+                    {{ s.label }}
+                  </div>
+                }
+              }
+            </div>
+
+            <!-- Servicii custom -->
+            <p class="modal-label" style="margin-top:24px;">Servicii personalizate</p>
+            <div class="custom-svc-list">
+              @for (s of servicesDraft; track s.id) {
+                @if (s.isCustom) {
+                  <div class="custom-svc-tag">
+                    <i class="fal fa-star"></i>
+                    {{ s.label }}
+                    <button class="remove-img-btn" (click)="removeCustomFromDraft(s.id)">
+                      <i class="fal fa-times"></i>
+                    </button>
+                  </div>
+                }
+              }
+            </div>
+            <div class="custom-svc-add">
+              <input
+                type="text"
+                class="edit-input"
+                [(ngModel)]="newCustomServiceInput"
+                placeholder="ex. Implant zimmer, Aparat invizibil..."
+                (keydown.enter)="addCustomToDraft()"
+              />
+              <button class="btn-save" (click)="addCustomToDraft()">
+                <i class="fal fa-plus"></i> Adaugă
+              </button>
+            </div>
+
+          </div>
+
+          <div class="modal-footer">
+            <button class="btn-cancel-lg" (click)="closeServicesEdit()">Renunță</button>
+            <button class="btn-save-lg" (click)="saveServices()" [disabled]="savingServices">
+              @if (savingServices) {
+                <span class="map-spin"></span> Se salvează...
+              } @else {
+                <i class="fal fa-check"></i> Salvează serviciile
+              }
+            </button>
+          </div>
+
+        </div>
+      </div>
+    }
+
+    <!-- ═══════════════════════════════════════════
          GALLERY MODAL
     ═══════════════════════════════════════════ -->
 
@@ -640,7 +787,7 @@
                 <div class="modal-images-grid">
                   @for (img of clinicImages; track img; let i = $index) {
                     <div class="modal-img-wrap">
-                      <img [src]="img" class="modal-img" alt="" />
+                      <img [src]="img" class="modal-img" [alt]="clinic.name + ' — imagine ' + (i + 1)" />
                       <button class="remove-img-btn" (click)="removeExistingImage(i)">
                         <i class="fal fa-times"></i>
                       </button>
@@ -661,7 +808,7 @@
                 <div class="modal-images-grid" style="margin-top:16px;">
                   @for (preview of newImagePreviews; track preview; let i = $index) {
                     <div class="modal-img-wrap new-preview">
-                      <img [src]="preview" class="modal-img" alt="" />
+                      <img [src]="preview" class="modal-img" [alt]="clinic.name + ' — preview ' + (i + 1)" />
                       <button class="remove-img-btn" (click)="removeNewPreview(i)">
                         <i class="fal fa-times"></i>
                       </button>

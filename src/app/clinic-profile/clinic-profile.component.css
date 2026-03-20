@@ -1649,3 +1649,188 @@
     padding: 12px 18px;
   }
 }
+
+/* ── SERVICE ROWS (owner view) ────────────────────────── */
+.svc-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.svc-row {
+  border-radius: 10px;
+  transition: background 0.15s;
+}
+
+.svc-row-main {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 10px;
+  border-radius: 10px;
+}
+
+.svc-row:hover .svc-row-main {
+  background: rgba(255,255,255,0.04);
+}
+
+.svc-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #3b82f6;
+  flex-shrink: 0;
+}
+
+.svc-row-label {
+  flex: 1;
+  font-size: 13.5px;
+  color: #e2e8f0;
+}
+
+.svc-row-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.svc-row-price {
+  font-size: 12.5px;
+  color: #94a3b8;
+  white-space: nowrap;
+}
+
+.svc-no-price {
+  color: #475569;
+  font-style: italic;
+}
+
+/* Price inline edit */
+.svc-price-edit {
+  padding: 10px 10px 14px;
+  background: rgba(37,99,235,0.06);
+  border-radius: 10px;
+  margin-bottom: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.price-type-btns {
+  display: flex;
+  gap: 6px;
+}
+
+.price-type-btn {
+  padding: 4px 12px;
+  border-radius: 6px;
+  border: 1px solid rgba(255,255,255,0.12);
+  background: transparent;
+  color: #94a3b8;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.price-type-btn.active {
+  background: rgba(37,99,235,0.2);
+  border-color: rgba(59,130,246,0.4);
+  color: #93c5fd;
+}
+
+.price-inputs-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.price-edit-input {
+  width: 90px;
+  padding: 6px 10px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 8px;
+  color: #e2e8f0;
+  font-size: 13px;
+}
+
+.range-sep {
+  color: #64748b;
+  font-size: 14px;
+}
+
+.price-currency-label {
+  color: #64748b;
+  font-size: 12px;
+}
+
+/* ── SERVICES MODAL ───────────────────────────────────── */
+.modal-card--wide {
+  max-width: 680px;
+}
+
+.svc-edit-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.svc-edit-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: 100px;
+  border: 1px solid rgba(255,255,255,0.12);
+  background: rgba(255,255,255,0.04);
+  color: #94a3b8;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.15s;
+  user-select: none;
+}
+
+.svc-edit-chip:hover {
+  border-color: rgba(59,130,246,0.35);
+  color: #cbd5e1;
+}
+
+.svc-edit-chip.selected {
+  background: rgba(37,99,235,0.18);
+  border-color: rgba(59,130,246,0.45);
+  color: #93c5fd;
+}
+
+.svc-edit-chip .fal {
+  font-size: 11px;
+}
+
+.custom-svc-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 12px;
+  min-height: 8px;
+}
+
+.custom-svc-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 8px 5px 12px;
+  background: rgba(245,158,11,0.1);
+  border: 1px solid rgba(245,158,11,0.25);
+  border-radius: 100px;
+  color: #fbbf24;
+  font-size: 12.5px;
+}
+
+.custom-svc-add {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.custom-svc-add .edit-input {
+  flex: 1;
+}

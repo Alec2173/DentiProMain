@@ -12,9 +12,13 @@
       </div>
     </div>
     <div class="adm-header-actions">
+      <button class="adm-onboard-btn" (click)="runOnboarding()" [disabled]="onboarding">
+        <i class="fal fa-paper-plane"></i>
+        {{ onboarding ? 'Se trimite...' : 'Onboarding clinici' }}
+      </button>
       <button class="adm-create-accounts" (click)="createClinicAccounts()" [disabled]="creatingAccounts">
         <i class="fal fa-user-plus"></i>
-        {{ creatingAccounts ? 'Se procesează...' : 'Creează conturi clinici' }}
+        {{ creatingAccounts ? 'Se procesează...' : 'Creează conturi' }}
       </button>
       <button class="adm-refresh" (click)="load()">
         <i class="fal fa-sync-alt"></i> Reîncarcă
@@ -27,21 +31,33 @@
 
   <!-- STATS -->
   <div class="adm-stats">
-    <div class="adm-stat adm-stat-total" (click)="filterStatus='all'; applyFilter()">
+    <div class="adm-stat adm-stat-total" (click)="filterStatus='all'; filterOnboarding='all'; applyFilter()">
       <span class="adm-stat-num">{{ clinics.length }}</span>
       <span class="adm-stat-label">Total clinici</span>
     </div>
-    <div class="adm-stat adm-stat-pending" (click)="filterStatus='pending'; applyFilter()">
+    <div class="adm-stat adm-stat-pending" (click)="filterStatus='pending'; filterOnboarding='all'; applyFilter()">
       <span class="adm-stat-num">{{ pendingCount }}</span>
       <span class="adm-stat-label">În așteptare</span>
     </div>
-    <div class="adm-stat adm-stat-active" (click)="filterStatus='active'; applyFilter()">
+    <div class="adm-stat adm-stat-active" (click)="filterStatus='active'; filterOnboarding='all'; applyFilter()">
       <span class="adm-stat-num">{{ activeCount }}</span>
       <span class="adm-stat-label">Active</span>
     </div>
-    <div class="adm-stat adm-stat-suspended" (click)="filterStatus='suspended'; applyFilter()">
+    <div class="adm-stat adm-stat-suspended" (click)="filterStatus='suspended'; filterOnboarding='all'; applyFilter()">
       <span class="adm-stat-num">{{ suspendedCount }}</span>
       <span class="adm-stat-label">Suspendate</span>
+    </div>
+    <div class="adm-stat adm-stat-never" (click)="filterStatus='all'; filterOnboarding='never_logged'; applyFilter()">
+      <span class="adm-stat-num">{{ neverLoggedCount }}</span>
+      <span class="adm-stat-label">Niciodată logat</span>
+    </div>
+    <div class="adm-stat adm-stat-unverified" (click)="filterStatus='all'; filterOnboarding='not_verified'; applyFilter()">
+      <span class="adm-stat-num">{{ notVerifiedCount }}</span>
+      <span class="adm-stat-label">Email neverificat</span>
+    </div>
+    <div class="adm-stat adm-stat-incomplete" (click)="filterStatus='all'; filterOnboarding='incomplete'; applyFilter()">
+      <span class="adm-stat-num">{{ incompleteCount }}</span>
+      <span class="adm-stat-label">Profil incomplet</span>
     </div>
   </div>
 
@@ -57,6 +73,18 @@
       <button [class.active]="filterStatus==='pending'" (click)="filterStatus='pending'; applyFilter()">Pending</button>
       <button [class.active]="filterStatus==='active'" (click)="filterStatus='active'; applyFilter()">Active</button>
       <button [class.active]="filterStatus==='suspended'" (click)="filterStatus='suspended'; applyFilter()">Suspendate</button>
+    </div>
+    <div class="adm-filter-tabs" style="margin-top: 8px;">
+      <button [class.active]="filterOnboarding==='all'" (click)="filterOnboarding='all'; applyFilter()">Toți</button>
+      <button [class.active]="filterOnboarding==='never_logged'" (click)="filterOnboarding='never_logged'; applyFilter()" class="tab-warning">
+        Niciodată logat ({{ neverLoggedCount }})
+      </button>
+      <button [class.active]="filterOnboarding==='not_verified'" (click)="filterOnboarding='not_verified'; applyFilter()" class="tab-warning">
+        Email neverificat ({{ notVerifiedCount }})
+      </button>
+      <button [class.active]="filterOnboarding==='incomplete'" (click)="filterOnboarding='incomplete'; applyFilter()" class="tab-warning">
+        Profil incomplet ({{ incompleteCount }})
+      </button>
     </div>
   </div>
 
@@ -80,7 +108,8 @@
             <th>Oraș</th>
             <th>Status</th>
             <th>Plan</th>
-            <th>Media</th>
+            <th>Profil</th>
+            <th>Ultima autentificare</th>
             <th>Înregistrat</th>
             <th>Acțiuni</th>
           </tr>
@@ -108,6 +137,13 @@
                 @if (clinic.user_name) {
                   <div class="adm-user-name">{{ clinic.user_name }}</div>
                   <div class="adm-user-email">{{ clinic.user_email }}</div>
+                  <div class="adm-verify-row">
+                    @if (clinic.email_verified) {
+                      <span class="adm-verify-ok"><i class="fal fa-check-circle"></i> Email verificat</span>
+                    } @else {
+                      <span class="adm-verify-no"><i class="fal fa-times-circle"></i> Neverificat</span>
+                    }
+                  </div>
                 } @else {
                   <span class="adm-no-user">Fără cont</span>
                 }
@@ -123,9 +159,36 @@
 
               <td class="adm-plan">{{ clinic.plan }}</td>
 
-              <td class="adm-media">
-                <span class="adm-media-item"><i class="fal fa-image"></i> {{ clinic.image_count }}</span>
-                <span class="adm-media-item"><i class="fal fa-tooth"></i> {{ clinic.service_count }}</span>
+              <!-- PROFIL SCORE -->
+              <td class="adm-profile-cell">
+                <div class="adm-profile-dots">
+                  <span class="adm-dot" [class.filled]="clinic.image_count > 0" title="Poze ({{ clinic.image_count }})">
+                    <i class="fal fa-image"></i>
+                  </span>
+                  <span class="adm-dot" [class.filled]="clinic.service_count > 0" title="Servicii ({{ clinic.service_count }})">
+                    <i class="fal fa-tooth"></i>
+                  </span>
+                  <span class="adm-dot" [class.filled]="clinic.has_address" title="Adresă">
+                    <i class="fal fa-map-marker-alt"></i>
+                  </span>
+                  <span class="adm-dot" [class.filled]="clinic.has_description" title="Descriere">
+                    <i class="fal fa-align-left"></i>
+                  </span>
+                </div>
+                <span class="adm-profile-score" [class.complete]="profileScore(clinic) === 4">
+                  {{ profileScore(clinic) }}/4
+                </span>
+              </td>
+
+              <!-- ULTIMA AUTENTIFICARE -->
+              <td class="adm-login-cell">
+                @if (!clinic.last_login_at) {
+                  <span class="adm-never-logged">
+                    <i class="fal fa-clock"></i> Niciodată
+                  </span>
+                } @else {
+                  <span class="adm-last-login">{{ formatLoginDate(clinic.last_login_at) }}</span>
+                }
               </td>
 
               <td class="adm-date">{{ formatDate(clinic.created_at) }}</td>
@@ -157,7 +220,7 @@
           }
           @empty {
             <tr>
-              <td colspan="9" class="adm-empty">Nicio clinică găsită.</td>
+              <td colspan="10" class="adm-empty">Nicio clinică găsită.</td>
             </tr>
           }
         </tbody>
@@ -166,6 +229,45 @@
   }
 
 </div>
+
+<!-- ONBOARD RESULT MODAL -->
+@if (onboardResult !== null) {
+  <div class="adm-modal-overlay" (click)="closeOnboardResult()">
+    <div class="adm-modal adm-modal-wide" (click)="$event.stopPropagation()">
+      <div class="adm-modal-header">
+        <h3><i class="fal fa-paper-plane"></i> Onboarding — {{ onboardResult.length }} clinici procesate</h3>
+        <button class="adm-btn adm-btn-view" (click)="closeOnboardResult()"><i class="fal fa-times"></i></button>
+      </div>
+      <div class="adm-accounts-table-wrap">
+        <table class="adm-accounts-table">
+          <thead>
+            <tr><th>Clinică</th><th>Email</th><th>Acțiune</th><th>Email trimis</th></tr>
+          </thead>
+          <tbody>
+            @for (r of onboardResult; track r.clinicId) {
+              <tr>
+                <td>{{ r.clinicName }}</td>
+                <td class="adm-mono">{{ r.email }}</td>
+                <td>
+                  @if (r.action === 'created') { <span class="adm-badge adm-badge-active">Cont nou</span> }
+                  @else if (r.action === 'linked_existing') { <span class="adm-badge adm-badge-pending">Linkat</span> }
+                  @else { <span class="adm-badge adm-badge-suspended">Eroare</span> }
+                </td>
+                <td>
+                  @if (r.emailSent) { <span class="adm-verify-ok"><i class="fal fa-check"></i> Trimis</span> }
+                  @else { <span class="adm-verify-no"><i class="fal fa-times"></i> Nu</span> }
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+      <div class="adm-modal-actions" style="margin-top: 20px;">
+        <button class="adm-modal-cancel" (click)="closeOnboardResult()">Închide</button>
+      </div>
+    </div>
+  </div>
+}
 
 <!-- ACCOUNTS RESULT MODAL -->
 @if (accountsResult !== null) {

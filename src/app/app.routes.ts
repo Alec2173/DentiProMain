@@ -95,6 +95,18 @@ export const routes: Routes = [
     loadComponent: () => import('./appointments/appointments.component').then(m => m.AppointmentsComponent),
   },
   {
+    path: 'feed',
+    loadComponent: () => import('./feed/feed.component').then(m => m.FeedComponent),
+  },
+  {
+    path: 'profile',
+    loadComponent: () => import('./profile/profile.component').then(m => m.ProfileComponent),
+  },
+  {
+    path: 'services',
+    loadComponent: () => import('./services-page/services-page.component').then(m => m.ServicesPageComponent),
+  },
+  {
     path: '**',
     loadComponent: () => import('./not-found/not-found.component').then((m) => m.NotFoundComponent),
   },

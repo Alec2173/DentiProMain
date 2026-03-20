@@ -16,6 +16,7 @@ export class AppointmentsComponent implements OnInit {
   appointments: any[] = [];
   isLoading = true;
   filterStatus: 'all' | 'pending' | 'confirmed' | 'cancelled' | 'completed' = 'all';
+  cancellingId: number | null = null;
 
   constructor(private http: HttpClient, public auth: AuthService, private router: Router) {}
 
@@ -31,9 +32,26 @@ export class AppointmentsComponent implements OnInit {
   ngOnInit() {
     if (this.auth.isClinic || this.auth.isAdmin) { this.router.navigate(['/clinici/dashboard']); return; }
     if (!this.auth.isLoggedIn) { this.isLoading = false; return; }
+    this.load();
+  }
+
+  load() {
     this.http.get<any[]>(`${API}/appointments`, { headers: this.headers }).subscribe({
       next: (data) => { this.appointments = data; this.isLoading = false; },
       error: () => { this.isLoading = false; }
+    });
+  }
+
+  cancelAppointment(id: number) {
+    if (this.cancellingId) return;
+    this.cancellingId = id;
+    this.http.patch(`${API}/appointments/${id}/status`, { status: 'cancelled' }, { headers: this.headers }).subscribe({
+      next: () => {
+        const appt = this.appointments.find(a => a.id === id);
+        if (appt) appt.status = 'cancelled';
+        this.cancellingId = null;
+      },
+      error: () => { this.cancellingId = null; }
     });
   }
 

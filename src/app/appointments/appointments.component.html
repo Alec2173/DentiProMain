@@ -96,9 +96,9 @@
               </p>
               <p class="appt-datetime">
                 <i class="fal fa-calendar-alt"></i>
-                {{ formatDate(appt.date) }}
-                @if (appt.time) {
-                  <span class="appt-time"><i class="fal fa-clock"></i> {{ appt.time }}</span>
+                {{ formatDate(appt.appointment_date) }}
+                @if (appt.appointment_time) {
+                  <span class="appt-time"><i class="fal fa-clock"></i> {{ appt.appointment_time }}</span>
                 }
               </p>
               @if (appt.notes) {
@@ -108,7 +108,7 @@
               }
             </div>
 
-            <!-- Status badge -->
+            <!-- Status badge + cancel -->
             <div class="appt-status">
               <span class="status-badge status-{{ appt.status }}">
                 @if (appt.status === 'pending') { <i class="fal fa-hourglass-half"></i> }
@@ -117,6 +117,11 @@
                 @if (appt.status === 'completed') { <i class="fal fa-check-double"></i> }
                 {{ statusLabel(appt.status) }}
               </span>
+              @if (auth.isPatient && (appt.status === 'pending' || appt.status === 'confirmed')) {
+                <button class="cancel-btn" (click)="cancelAppointment(appt.id)" [disabled]="cancellingId === appt.id">
+                  <i class="fal fa-times"></i> Anulează
+                </button>
+              }
             </div>
 
           </div>

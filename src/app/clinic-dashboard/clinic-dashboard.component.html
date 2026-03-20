@@ -11,7 +11,7 @@
         </div>
       </div>
       <div class="stats-grid">
-        @for (i of [1,2,3]; track i) {
+        @for (i of [1,2,3,4]; track i) {
           <div class="skeleton stat-card-sk"></div>
         }
       </div>
@@ -86,6 +86,16 @@
         </div>
       </div>
 
+      <div class="stat-card stat-appointments">
+        <div class="stat-icon">
+          <i class="fal fa-calendar-check"></i>
+        </div>
+        <div class="stat-body">
+          <span class="stat-value">{{ data.stats?.pendingAppointments ?? 0 }}</span>
+          <span class="stat-label">Programări în așteptare</span>
+        </div>
+      </div>
+
     </div>
 
     <!-- ── PROFILE COMPLETION ─────────────────────────────────── -->
@@ -143,6 +153,17 @@
         </a>
       }
 
+      <a routerLink="/feed" class="action-card action-feed">
+        <div class="action-icon">
+          <i class="fal fa-comments-alt"></i>
+        </div>
+        <div class="action-text">
+          <span class="action-label">Cereri pacienți</span>
+          <span class="action-sub">Trimite oferte și câștigă pacienți noi</span>
+        </div>
+        <i class="fal fa-chevron-right action-arrow"></i>
+      </a>
+
       <a routerLink="/clinici/pricing" class="action-card action-plan">
         <div class="action-icon">
           <i class="fal fa-crown"></i>
@@ -155,6 +176,93 @@
       </a>
 
     </div>
+
+    <!-- ── APPOINTMENTS ───────────────────────────────────────── -->
+    <div class="section-title">
+      <i class="fal fa-calendar-check"></i> Programări
+      @if (data.stats?.pendingAppointments > 0) {
+        <span class="pending-badge">{{ data.stats.pendingAppointments }} noi</span>
+      }
+    </div>
+
+    <div class="appt-tabs">
+      <button class="appt-tab" [class.active]="apptTab === 'pending'" (click)="apptTab = 'pending'">
+        În așteptare
+        @if (data.stats?.pendingAppointments > 0) {
+          <span class="atab-count">{{ data.stats.pendingAppointments }}</span>
+        }
+      </button>
+      <button class="appt-tab" [class.active]="apptTab === 'all'" (click)="apptTab = 'all'">
+        Toate
+        <span class="atab-count">{{ data.recentAppointments?.length ?? 0 }}</span>
+      </button>
+    </div>
+
+    @if (filteredAppointments.length === 0) {
+      <div class="appt-empty">
+        <i class="fal fa-calendar-times"></i>
+        <span>
+          {{ apptTab === 'pending' ? 'Nicio programare în așteptare' : 'Nicio programare încă' }}
+        </span>
+      </div>
+    } @else {
+      <div class="appt-list">
+        @for (appt of filteredAppointments; track appt.id) {
+          <div class="appt-row" [class.appt-updating]="updatingApptId === appt.id">
+
+            <!-- Avatar pacient -->
+            <div class="appt-avatar">
+              @if (appt.patient_avatar) {
+                <img [src]="appt.patient_avatar" [alt]="appt.patient_name" />
+              } @else {
+                <span>{{ getFavoriteUserInitials(appt.patient_name) }}</span>
+              }
+            </div>
+
+            <!-- Info -->
+            <div class="appt-info">
+              <span class="appt-patient">{{ appt.patient_name }}</span>
+              <span class="appt-service">{{ appt.service_label || 'Serviciu neprecizat' }}</span>
+              <span class="appt-date">
+                <i class="fal fa-calendar-alt"></i> {{ formatDate(appt.appointment_date) }}
+                @if (appt.appointment_time) {
+                  &nbsp;<i class="fal fa-clock"></i> {{ appt.appointment_time }}
+                }
+              </span>
+              @if (appt.notes) {
+                <span class="appt-notes">{{ appt.notes }}</span>
+              }
+            </div>
+
+            <!-- Status + Actions -->
+            <div class="appt-actions">
+              <span class="appt-status-badge appt-status-{{ appt.status }}">
+                {{ statusLabel(appt.status) }}
+              </span>
+              @if (appt.status === 'pending') {
+                <div class="appt-btns">
+                  <button class="appt-btn confirm" (click)="updateApptStatus(appt.id, 'confirmed')"
+                    [disabled]="updatingApptId === appt.id">
+                    <i class="fal fa-check"></i> Confirmă
+                  </button>
+                  <button class="appt-btn cancel" (click)="updateApptStatus(appt.id, 'cancelled')"
+                    [disabled]="updatingApptId === appt.id">
+                    <i class="fal fa-times"></i>
+                  </button>
+                </div>
+              }
+              @if (appt.status === 'confirmed') {
+                <button class="appt-btn complete" (click)="updateApptStatus(appt.id, 'completed')"
+                  [disabled]="updatingApptId === appt.id">
+                  <i class="fal fa-check-double"></i> Finalizează
+                </button>
+              }
+            </div>
+
+          </div>
+        }
+      </div>
+    }
 
     <!-- ── RECENT ACTIVITY ────────────────────────────────────── -->
     @if (data.recentFavorites && data.recentFavorites.length > 0) {

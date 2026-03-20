@@ -1,0 +1,534 @@
+<div class="feed-page">
+
+  <!-- ── HERO ─────────────────────────────────────────────── -->
+  <div class="feed-hero">
+    <div class="hero-badge">
+      <span class="hero-badge-dot"></span>
+      Cereri active de tratament
+    </div>
+    <h1 class="hero-title">
+      Postează-ți nevoile,<br>
+      <span class="title-gradient">primești oferte</span>
+    </h1>
+    <p class="hero-subtitle">
+      Descrie problema dentară, atașează radiografii și lasă clinicile să vină la tine cu oferte personalizate.
+    </p>
+
+    <div class="hero-actions">
+      @if (auth.isPatient) {
+        <button class="btn-primary" (click)="openCreate()">
+          <i class="fal fa-plus"></i> Publică o cerere
+        </button>
+      }
+      @if (!auth.isLoggedIn) {
+        <p class="hero-login-hint">
+          <i class="fal fa-info-circle"></i>
+          Autentifică-te ca pacient pentru a posta o cerere sau ca clinică pentru a trimite oferte.
+        </p>
+      }
+    </div>
+  </div>
+
+  <!-- ── TABS + FILTER ─────────────────────────────────────── -->
+  <div class="feed-controls">
+    <div class="feed-tabs">
+      <button class="feed-tab" [class.active]="tab === 'all'" (click)="switchTab('all')">
+        <i class="fal fa-list"></i> Toate cererile
+      </button>
+      @if (auth.isPatient) {
+        <button class="feed-tab" [class.active]="tab === 'mine'" (click)="switchTab('mine')">
+          <i class="fal fa-user"></i> Cererile mele
+        </button>
+      }
+    </div>
+
+    @if (tab === 'all') {
+      <div class="filter-wrap">
+        <div class="filter-input-wrap">
+          <i class="fal fa-map-marker-alt filter-icon"></i>
+          <input class="filter-input" type="text" placeholder="Filtrează după oraș..."
+            [(ngModel)]="filterCity" (keydown.enter)="applyFilter()" />
+          @if (appliedCity) {
+            <button class="filter-clear" (click)="clearFilter()">
+              <i class="fal fa-times"></i>
+            </button>
+          }
+        </div>
+        <button class="filter-btn" (click)="applyFilter()">
+          <i class="fal fa-search"></i>
+        </button>
+      </div>
+    }
+  </div>
+
+  <!-- ── ALL POSTS ─────────────────────────────────────────── -->
+  @if (tab === 'all') {
+    @if (loading) {
+      <div class="posts-grid">
+        @for (_ of [1,2,3,4,5,6]; track $index) {
+          <div class="post-card skeleton-card">
+            <div class="sk-line sk-title"></div>
+            <div class="sk-line sk-tags"></div>
+            <div class="sk-line sk-body"></div>
+            <div class="sk-line sk-footer"></div>
+          </div>
+        }
+      </div>
+    } @else if (posts.length === 0) {
+      <div class="empty-state">
+        <i class="fal fa-inbox empty-icon"></i>
+        <p>Nicio cerere activă momentan.</p>
+        @if (auth.isPatient) {
+          <button class="btn-primary sm" (click)="openCreate()">Fii primul care postează</button>
+        }
+      </div>
+    } @else {
+      <div class="posts-grid">
+        @for (post of posts; track post.id) {
+          <div class="post-card" (click)="openPost(post)">
+            <div class="post-header">
+              <div class="post-avatar">
+                {{ post.patient_name.charAt(0) }}
+              </div>
+              <div class="post-meta">
+                <span class="post-author">{{ post.patient_name }}</span>
+                @if (post.city) {
+                  <span class="post-city"><i class="fal fa-map-marker-alt"></i> {{ post.city }}</span>
+                }
+              </div>
+              <span class="post-time">{{ timeAgo(post.created_at) }}</span>
+            </div>
+
+            <h3 class="post-title">{{ post.title }}</h3>
+
+            @if (post.description) {
+              <p class="post-desc">{{ post.description }}</p>
+            }
+
+            <div class="post-services">
+              @for (svc of post.services.slice(0, 4); track svc) {
+                <span class="svc-chip">{{ serviceLabel(svc) }}</span>
+              }
+              @if (post.services.length > 4) {
+                <span class="svc-chip more">+{{ post.services.length - 4 }}</span>
+              }
+            </div>
+
+            <div class="post-footer">
+              <div class="post-footer-left">
+                @if (post.image_count > 0) {
+                  <span class="post-stat">
+                    <i class="fal fa-image"></i> {{ post.image_count }} {{ post.image_count === 1 ? 'imagine' : 'imagini' }}
+                  </span>
+                }
+                @if (post.budget_max) {
+                  <span class="post-stat budget">
+                    <i class="fal fa-tag"></i> max {{ post.budget_max | number }} RON
+                  </span>
+                }
+              </div>
+              <div class="post-offers-badge" [class.has-offers]="post.offers_count > 0">
+                <i class="fal fa-comment-alt"></i>
+                {{ post.offers_count }} {{ post.offers_count === 1 ? 'ofertă' : 'oferte' }}
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+
+      @if (hasMore) {
+        <div class="load-more-wrap">
+          <button class="load-more-btn" (click)="loadMore()" [disabled]="loadingMore">
+            @if (loadingMore) { <i class="fal fa-spinner fa-spin"></i> Se încarcă... }
+            @else { <i class="fal fa-chevron-down"></i> Încarcă mai multe }
+          </button>
+        </div>
+      }
+    }
+  }
+
+  <!-- ── MY POSTS ────────────────────────────────────────── -->
+  @if (tab === 'mine' && auth.isPatient) {
+    @if (myPostsLoading) {
+      <div class="posts-grid">
+        @for (_ of [1,2]; track $index) {
+          <div class="post-card skeleton-card">
+            <div class="sk-line sk-title"></div>
+            <div class="sk-line sk-tags"></div>
+            <div class="sk-line sk-body"></div>
+          </div>
+        }
+      </div>
+    } @else if (myPosts.length === 0) {
+      <div class="empty-state">
+        <i class="fal fa-file-medical empty-icon"></i>
+        <p>Nu ai nicio cerere publicată.</p>
+        <button class="btn-primary sm" (click)="openCreate()">Publică prima ta cerere</button>
+      </div>
+    } @else {
+      <div class="posts-grid">
+        @for (post of myPosts; track post.id) {
+          <div class="post-card mine-card" [class.closed]="post.status === 'closed'">
+            <div class="post-header">
+              <div class="post-meta" style="flex:1">
+                <h3 class="post-title" style="margin:0">{{ post.title }}</h3>
+                <span class="post-time">{{ timeAgo(post.created_at) }}</span>
+              </div>
+              <span class="status-pill" [class.open]="post.status === 'open'" [class.closed]="post.status === 'closed'">
+                @if (post.status === 'open') { <i class="fal fa-circle"></i> Activă }
+                @else { <i class="fal fa-ban"></i> Închisă }
+              </span>
+            </div>
+
+            @if (post.description) {
+              <p class="post-desc">{{ post.description }}</p>
+            }
+
+            <div class="post-services">
+              @for (svc of post.services.slice(0, 4); track svc) {
+                <span class="svc-chip">{{ serviceLabel(svc) }}</span>
+              }
+            </div>
+
+            <div class="post-footer">
+              <div class="post-offers-badge" [class.has-offers]="post.offers_count > 0"
+                   (click)="openPost(post); $event.stopPropagation()">
+                <i class="fal fa-comment-alt"></i>
+                {{ post.offers_count }} {{ post.offers_count === 1 ? 'ofertă' : 'oferte' }}
+              </div>
+              <div class="mine-actions">
+                <button class="mine-btn" (click)="toggleMyPostStatus(post); $event.stopPropagation()"
+                        [title]="post.status === 'open' ? 'Închide cererea' : 'Redeschide cererea'">
+                  <i [class]="post.status === 'open' ? 'fal fa-lock' : 'fal fa-lock-open'"></i>
+                </button>
+                <button class="mine-btn delete" (click)="deleteMyPost(post); $event.stopPropagation()" title="Șterge">
+                  <i class="fal fa-trash"></i>
+                </button>
+                <button class="mine-btn view" (click)="openPost(post); $event.stopPropagation()">
+                  <i class="fal fa-eye"></i> Vezi ofertele
+                </button>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    }
+  }
+
+</div>
+
+
+<!-- ══ CREATE POST MODAL ═══════════════════════════════════ -->
+@if (showCreate) {
+  <div class="modal-overlay" (click)="closeCreate()">
+    <div class="modal-panel create-panel" (click)="$event.stopPropagation()">
+
+      <div class="modal-header">
+        <div class="modal-title-wrap">
+          <div class="modal-icon-wrap"><i class="fal fa-file-medical-alt"></i></div>
+          <div>
+            <h2 class="modal-title">Publică o cerere</h2>
+            <p class="modal-subtitle">Descrie tratamentul de care ai nevoie</p>
+          </div>
+        </div>
+        <button class="modal-close-btn" (click)="closeCreate()"><i class="fal fa-times"></i></button>
+      </div>
+
+      <div class="modal-body">
+
+        <!-- TITLU -->
+        <div class="field-group">
+          <label class="field-label">Ce tratament cauți? <span class="req">*</span></label>
+          <input class="field-input" type="text" [(ngModel)]="createTitle"
+            placeholder="ex: Am nevoie de 5 obturații și aparat dentar"
+            maxlength="200" />
+          <span class="field-hint">{{ createTitle.length }}/200</span>
+        </div>
+
+        <!-- SERVICII -->
+        <div class="field-group">
+          <label class="field-label">Servicii necesare <span class="req">*</span></label>
+          <div class="services-select-grid">
+            @for (s of allServices; track s.id) {
+              <button class="svc-toggle" [class.selected]="isServiceSelected(s.id)"
+                      (click)="toggleCreateService(s.id)">
+                @if (isServiceSelected(s.id)) { <i class="fal fa-check"></i> }
+                {{ s.label }}
+              </button>
+            }
+          </div>
+        </div>
+
+        <!-- DESCRIERE -->
+        <div class="field-group">
+          <label class="field-label">Detalii suplimentare</label>
+          <textarea class="field-input field-textarea" [(ngModel)]="createDescription"
+            placeholder="Descrie problema mai detaliat: simptome, diagnostic anterior, întrebări pentru clinici..."
+            rows="4"></textarea>
+        </div>
+
+        <!-- ORAS + BUGET -->
+        <div class="field-row">
+          <div class="field-group" style="flex:1">
+            <label class="field-label"><i class="fal fa-map-marker-alt"></i> Orașul tău</label>
+            <input class="field-input" type="text" [(ngModel)]="createCity" placeholder="ex: Cluj-Napoca" />
+          </div>
+          <div class="field-group" style="flex:1">
+            <label class="field-label"><i class="fal fa-tag"></i> Buget maxim (RON)</label>
+            <input class="field-input" type="number" [(ngModel)]="createBudget" placeholder="optional" min="0" />
+          </div>
+        </div>
+
+        <!-- POZE -->
+        <div class="field-group">
+          <label class="field-label"><i class="fal fa-x-ray"></i> Radiografii / Poze (max 4, 3MB fiecare)</label>
+          <div class="images-upload-area">
+            @for (img of createImages; track $index) {
+              <div class="image-preview">
+                <img [src]="img" alt="preview" />
+                <button class="img-remove" (click)="removeCreateImage($index)">
+                  <i class="fal fa-times"></i>
+                </button>
+              </div>
+            }
+            @if (createImages.length < 4) {
+              <label class="image-add-btn">
+                <i class="fal fa-plus"></i>
+                <input type="file" accept="image/*" multiple style="display:none"
+                  (change)="onImagesSelected($event)" />
+              </label>
+            }
+          </div>
+        </div>
+
+        @if (createError) {
+          <div class="field-error"><i class="fal fa-exclamation-circle"></i> {{ createError }}</div>
+        }
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn-cancel" (click)="closeCreate()">Renunță</button>
+        <button class="btn-primary" (click)="submitCreate()" [disabled]="createLoading">
+          @if (createLoading) { <i class="fal fa-spinner fa-spin"></i> Se publică... }
+          @else { <i class="fal fa-paper-plane"></i> Publică cererea }
+        </button>
+      </div>
+
+    </div>
+  </div>
+}
+
+
+<!-- ══ VIEW POST MODAL ══════════════════════════════════════ -->
+@if (showPost) {
+  <div class="modal-overlay" (click)="closePost()">
+    <div class="modal-panel view-panel" (click)="$event.stopPropagation()">
+
+      <button class="modal-close-btn floating" (click)="closePost()"><i class="fal fa-times"></i></button>
+
+      @if (postLoading) {
+        <div class="post-loading">
+          <i class="fal fa-spinner fa-spin"></i>
+        </div>
+      } @else if (activePost) {
+
+        <div class="view-scroll">
+
+          <!-- POST INFO -->
+          <div class="view-post-header">
+            <div class="post-avatar lg">{{ activePost.patient_name.charAt(0) }}</div>
+            <div class="view-meta">
+              <span class="post-author">{{ activePost.patient_name }}</span>
+              <div class="view-meta-row">
+                @if (activePost.city) {
+                  <span class="post-city"><i class="fal fa-map-marker-alt"></i> {{ activePost.city }}</span>
+                }
+                <span class="post-time">{{ timeAgo(activePost.created_at) }}</span>
+                <span class="status-pill sm" [class.open]="activePost.status === 'open'" [class.closed]="activePost.status === 'closed'">
+                  @if (activePost.status === 'open') { Activă } @else { Închisă }
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <h2 class="view-title">{{ activePost.title }}</h2>
+
+          @if (activePost.description) {
+            <p class="view-desc">{{ activePost.description }}</p>
+          }
+
+          <!-- SERVICII -->
+          <div class="view-services">
+            @for (svc of activePost.services; track svc) {
+              <span class="svc-chip lg">{{ serviceLabel(svc) }}</span>
+            }
+          </div>
+
+          @if (activePost.budget_max) {
+            <div class="view-budget">
+              <i class="fal fa-tag"></i>
+              Buget maxim: <strong>{{ activePost.budget_max | number }} RON</strong>
+            </div>
+          }
+
+          <!-- IMAGINI -->
+          @if (activePost.images && activePost.images.length > 0) {
+            <div class="view-images">
+              @for (img of activePost.images; track $index) {
+                <div class="view-image-thumb" (click)="openViewer(activePost.images!, $index)">
+                  <img [src]="img" alt="radiografie" />
+                  <div class="view-image-overlay"><i class="fal fa-search-plus"></i></div>
+                </div>
+              }
+            </div>
+          }
+
+          <div class="view-divider"></div>
+
+          <!-- ── ZONA CLINICĂ: TRIMITE OFERTĂ ── -->
+          @if (auth.isClinic && activePost.status === 'open') {
+            @if (alreadyOffered && existingOffer) {
+              <div class="offer-sent-state">
+                <div class="offer-sent-icon"><i class="fal fa-check-circle"></i></div>
+                <div>
+                  <p class="offer-sent-title">Ai trimis deja o ofertă</p>
+                  <p class="offer-sent-preview">{{ existingOffer.message }}</p>
+                  @if (existingOffer.price_estimate) {
+                    <p class="offer-sent-price">Estimare: <strong>~{{ existingOffer.price_estimate | number }} RON</strong></p>
+                  }
+                </div>
+              </div>
+            } @else {
+              <div class="offer-form">
+                <h3 class="offer-form-title"><i class="fal fa-comment-medical"></i> Trimite ofertă pacientului</h3>
+
+                <div class="field-group">
+                  <label class="field-label">Mesajul tău <span class="req">*</span></label>
+                  <textarea class="field-input field-textarea" [(ngModel)]="offerMessage"
+                    placeholder="Descrie tratamentul recomandat, experiența clinicii, disponibilitate..."
+                    rows="4"></textarea>
+                </div>
+
+                <div class="field-group">
+                  <label class="field-label"><i class="fal fa-tag"></i> Estimare preț (RON, opțional)</label>
+                  <input class="field-input" type="number" [(ngModel)]="offerPrice"
+                    placeholder="ex: 1500" min="0" />
+                </div>
+
+                @if (offerError) {
+                  <div class="field-error"><i class="fal fa-exclamation-circle"></i> {{ offerError }}</div>
+                }
+                @if (offerSuccess) {
+                  <div class="field-success"><i class="fal fa-check-circle"></i> Ofertă trimisă! Pacientul va fi notificat.</div>
+                }
+
+                <button class="btn-primary full" (click)="sendOffer()" [disabled]="offerLoading || offerSuccess">
+                  @if (offerLoading) { <i class="fal fa-spinner fa-spin"></i> Se trimite... }
+                  @else { <i class="fal fa-paper-plane"></i> Trimite oferta }
+                </button>
+              </div>
+            }
+          }
+
+          @if (auth.isClinic && activePost.status === 'closed') {
+            <div class="closed-notice">
+              <i class="fal fa-lock"></i> Această cerere este închisă — pacientul nu mai acceptă oferte.
+            </div>
+          }
+
+          <!-- ── ZONA PACIENT: OFERTELE PRIMITE ── -->
+          @if (auth.isPatient && isOwnPost(activePost)) {
+            <h3 class="offers-section-title">
+              <i class="fal fa-comment-alt"></i>
+              Oferte primite ({{ postOffers.length }})
+            </h3>
+
+            @if (offersLoading) {
+              <div class="offers-loading"><i class="fal fa-spinner fa-spin"></i></div>
+            } @else if (postOffers.length === 0) {
+              <div class="offers-empty">
+                <i class="fal fa-hourglass-half"></i>
+                <p>Nicio ofertă primită încă. Clinicile vor vedea cererea ta în feed.</p>
+              </div>
+            } @else {
+              <div class="offers-list">
+                @for (offer of postOffers; track offer.id) {
+                  <div class="offer-card">
+                    <div class="offer-clinic-header">
+                      <div class="offer-clinic-logo">
+                        @if (offer.logo_url) {
+                          <img [src]="offer.logo_url" [alt]="offer.clinic_name" />
+                        } @else {
+                          <span class="offer-clinic-initials">{{ offer.clinic_name.charAt(0) }}</span>
+                        }
+                      </div>
+                      <div class="offer-clinic-info">
+                        <a [routerLink]="['/descripton', offer.clinic_id]" class="offer-clinic-name" (click)="closePost()">
+                          {{ offer.clinic_name }}
+                          @if (offer.plan === 'premium') {
+                            <span class="premium-badge"><i class="fal fa-star"></i></span>
+                          }
+                        </a>
+                        @if (offer.clinic_city) {
+                          <span class="offer-clinic-city"><i class="fal fa-map-marker-alt"></i> {{ offer.clinic_city }}</span>
+                        }
+                      </div>
+                      <span class="offer-time">{{ timeAgo(offer.created_at) }}</span>
+                    </div>
+
+                    <p class="offer-message">{{ offer.message }}</p>
+
+                    @if (offer.price_estimate) {
+                      <div class="offer-price">
+                        <i class="fal fa-tag"></i> Estimare: <strong>~{{ offer.price_estimate | number }} RON</strong>
+                      </div>
+                    }
+
+                    <a [routerLink]="['/descripton', offer.clinic_id]" class="offer-cta" (click)="closePost()">
+                      <i class="fal fa-arrow-right"></i> Vezi profilul clinicii
+                    </a>
+                  </div>
+                }
+              </div>
+            }
+          }
+
+          <!-- Vizitator nelogat -->
+          @if (!auth.isLoggedIn) {
+            <div class="login-prompt">
+              <i class="fal fa-lock login-prompt-icon"></i>
+              <p>Autentifică-te ca <strong>clinică</strong> pentru a trimite o ofertă acestui pacient.</p>
+            </div>
+          }
+
+        </div>
+      }
+
+    </div>
+  </div>
+}
+
+
+<!-- ══ IMAGE VIEWER ══════════════════════════════════════════ -->
+@if (showViewer) {
+  <div class="viewer-overlay" (click)="closeViewer()">
+    <button class="viewer-close" (click)="closeViewer()"><i class="fal fa-times"></i></button>
+
+    @if (viewerImages.length > 1) {
+      <button class="viewer-nav prev" (click)="prevImage(); $event.stopPropagation()">
+        <i class="fal fa-chevron-left"></i>
+      </button>
+    }
+
+    <div class="viewer-img-wrap" (click)="$event.stopPropagation()">
+      <img [src]="viewerImages[viewerIndex]" alt="imagine" class="viewer-img" />
+    </div>
+
+    @if (viewerImages.length > 1) {
+      <button class="viewer-nav next" (click)="nextImage(); $event.stopPropagation()">
+        <i class="fal fa-chevron-right"></i>
+      </button>
+      <div class="viewer-counter">{{ viewerIndex + 1 }} / {{ viewerImages.length }}</div>
+    }
+  </div>
+}

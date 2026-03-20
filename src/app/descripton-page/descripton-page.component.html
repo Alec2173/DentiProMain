@@ -106,7 +106,7 @@
 
           <!-- Butoane -->
           <div class="dp-info__actions">
-            <button class="dp-btn-book">
+            <button class="dp-btn-book" (click)="openBooking()">
               <i class="fal fa-calendar-check"></i> Programează consultație
             </button>
             @if (auth.isLoggedIn && auth.isPatient) {
@@ -236,3 +236,101 @@
     }
   </div>
 </div>
+
+<!-- ══════════════════════════ BOOKING MODAL ═══ -->
+@if (showBooking) {
+  <div class="booking-overlay" (click)="closeBooking()">
+    <div class="booking-modal" (click)="$event.stopPropagation()">
+
+      <!-- Header -->
+      <div class="booking-header">
+        <div class="booking-header-left">
+          <div class="booking-icon"><i class="fal fa-calendar-check"></i></div>
+          <div>
+            <h3>Programare online</h3>
+            <p>{{ clinics.name }}</p>
+          </div>
+        </div>
+        <button class="booking-close" (click)="closeBooking()">
+          <i class="fal fa-times"></i>
+        </button>
+      </div>
+
+      @if (!auth.isLoggedIn) {
+        <!-- Not logged in -->
+        <div class="booking-login-prompt">
+          <div class="blp-icon"><i class="fal fa-lock"></i></div>
+          <h4>Autentifică-te pentru a face o programare</h4>
+          <p>Creează un cont gratuit sau autentifică-te din bara de navigație.</p>
+        </div>
+      } @else if (!auth.isPatient) {
+        <!-- Clinic user -->
+        <div class="booking-login-prompt">
+          <div class="blp-icon"><i class="fal fa-info-circle"></i></div>
+          <h4>Rezervările sunt disponibile doar pentru pacienți</h4>
+          <p>Ești autentificat ca reprezentant al unei clinici.</p>
+        </div>
+      } @else if (bookingStep === 'success') {
+        <!-- Success -->
+        <div class="booking-success">
+          <div class="bs-icon"><i class="fal fa-check-circle"></i></div>
+          <h4>Programare trimisă!</h4>
+          <p>Clinica va confirma programarea în cel mai scurt timp. Vei putea urmări statusul în secțiunea <strong>Programările mele</strong>.</p>
+          <button class="booking-btn-primary" (click)="closeBooking()">
+            <i class="fal fa-check"></i> Închide
+          </button>
+        </div>
+      } @else {
+        <!-- Booking form -->
+        <div class="booking-form">
+
+          <!-- Service select -->
+          <div class="bf-field">
+            <label class="bf-label"><i class="fal fa-tooth"></i> Serviciu (opțional)</label>
+            <select class="bf-select" [(ngModel)]="bookingServiceId">
+              <option value="">— Selectează serviciul —</option>
+              @for (s of clinics.services; track s.id) {
+                <option [value]="s.id">{{ s.label }}</option>
+              }
+            </select>
+          </div>
+
+          <!-- Date -->
+          <div class="bf-field">
+            <label class="bf-label"><i class="fal fa-calendar-alt"></i> Data *</label>
+            <input type="date" class="bf-input" [(ngModel)]="bookingDate" [min]="todayDate" />
+          </div>
+
+          <!-- Time -->
+          <div class="bf-field">
+            <label class="bf-label"><i class="fal fa-clock"></i> Ora preferată (opțional)</label>
+            <input type="time" class="bf-input" [(ngModel)]="bookingTime" />
+          </div>
+
+          <!-- Notes -->
+          <div class="bf-field">
+            <label class="bf-label"><i class="fal fa-sticky-note"></i> Observații (opțional)</label>
+            <textarea class="bf-textarea" [(ngModel)]="bookingNotes" rows="3"
+              placeholder="Ex: prefer dimineața, am anxietate dentară..."></textarea>
+          </div>
+
+          @if (bookingError) {
+            <div class="booking-error">
+              <i class="fal fa-exclamation-circle"></i> {{ bookingError }}
+            </div>
+          }
+
+          <div class="booking-footer">
+            <button class="booking-btn-secondary" (click)="closeBooking()">Renunță</button>
+            <button class="booking-btn-primary" (click)="submitBooking()" [disabled]="bookingLoading">
+              @if (bookingLoading) { <i class="fal fa-spinner fa-spin"></i> Se trimite... }
+              @else { <i class="fal fa-paper-plane"></i> Trimite programarea }
+            </button>
+          </div>
+
+        </div>
+      }
+
+    </div>
+  </div>
+}

@@ -459,6 +459,87 @@
 }
 .adm-modal-confirm:hover { background: #dc2626; }
 
+/* ── ONBOARD BUTTON ──────────────────────────────────────── */
+.adm-onboard-btn {
+  display: flex; align-items: center; gap: 7px;
+  padding: 9px 16px;
+  border-radius: 10px;
+  border: none;
+  background: linear-gradient(135deg, #8b5cf6, #6366f1);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.adm-onboard-btn:hover { opacity: 0.88; }
+.adm-onboard-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* ── EXTRA STAT CARDS ────────────────────────────────────── */
+.adm-stat-never { border-top-color: #f59e0b !important; }
+.adm-stat-never .adm-stat-num { color: #f59e0b !important; }
+.adm-stat-unverified { border-top-color: #ef4444 !important; }
+.adm-stat-unverified .adm-stat-num { color: #ef4444 !important; }
+.adm-stat-incomplete { border-top-color: #64748b !important; }
+.adm-stat-incomplete .adm-stat-num { color: #94a3b8 !important; }
+
+/* ── EMAIL VERIFY ROW ────────────────────────────────────── */
+.adm-verify-row { margin-top: 4px; }
+.adm-verify-ok {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-size: 11px; color: #10b981;
+}
+.adm-verify-no {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-size: 11px; color: #ef4444;
+}
+
+/* ── PROFILE COMPLETENESS ────────────────────────────────── */
+.adm-profile-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.adm-profile-dots {
+  display: flex;
+  gap: 5px;
+}
+.adm-dot {
+  width: 22px; height: 22px;
+  border-radius: 6px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px;
+  background: rgba(255,255,255,0.04);
+  color: #334155;
+  transition: all 0.15s;
+}
+.adm-dot.filled {
+  background: rgba(59,130,246,0.15);
+  color: #60a5fa;
+}
+.adm-profile-score {
+  font-size: 11px;
+  color: #475569;
+  font-variant-numeric: tabular-nums;
+}
+.adm-profile-score.complete { color: #10b981; }
+
+/* ── LAST LOGIN ──────────────────────────────────────────── */
+.adm-login-cell { white-space: nowrap; }
+.adm-never-logged {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: 12px; color: #ef4444;
+}
+.adm-last-login { font-size: 12px; color: #94a3b8; }
+
+/* ── ONBOARDING FILTER TABS ──────────────────────────────── */
+.tab-warning { color: #f59e0b !important; }
+.tab-warning.active {
+  background: rgba(245,158,11,0.15) !important;
+  color: #f59e0b !important;
+  border-color: rgba(245,158,11,0.3) !important;
+}
+
 /* ── RESPONSIVE ─────────────────────────────────────────── */
 @media (max-width: 768px) {
   .adm-wrap { padding: 16px; }

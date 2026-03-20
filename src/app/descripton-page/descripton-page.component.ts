@@ -4,15 +4,18 @@ import { FavoritesService } from '../favorites.service';
 import { AuthService } from '../auth.service';
 import { ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { HttpClient } from '@angular/common/http';
+import { FormsModule } from '@angular/forms';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import * as maplibregl from 'maplibre-gl';
 import { SeoService } from '../seo.service';
+
+const API = 'https://www.dentipro.ro/api';
 
 const MAPTILER_KEY = 'cwyGOMCDF8zwmBEDJrCr';
 
 @Component({
   selector: 'app-descripton-page',
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './descripton-page.component.html',
   styleUrl: './descripton-page.component.css',
 })
@@ -139,6 +142,55 @@ export class DescriptonPageComponent implements OnInit, OnDestroy {
 
   get isFavorited(): boolean {
     return this.clinics?.id ? this.favorites.isFavorited(this.clinics.id) : false;
+  }
+
+  // ── BOOKING MODAL ────────────────────────────────────────────
+  showBooking = false;
+  bookingStep: 'form' | 'success' = 'form';
+  bookingServiceId: string = '';
+  bookingDate = '';
+  bookingTime = '';
+  bookingNotes = '';
+  bookingLoading = false;
+  bookingError = '';
+  todayDate = new Date().toISOString().split('T')[0];
+
+  get headers(): HttpHeaders {
+    return new HttpHeaders({ Authorization: `Bearer ${this.auth.getToken()}` });
+  }
+
+  openBooking() {
+    this.showBooking = true;
+    this.bookingStep = 'form';
+    this.bookingServiceId = '';
+    this.bookingDate = '';
+    this.bookingTime = '';
+    this.bookingNotes = '';
+    this.bookingError = '';
+    this.bookingLoading = false;
+  }
+
+  closeBooking() {
+    this.showBooking = false;
+  }
+
+  submitBooking() {
+    if (!this.bookingDate) { this.bookingError = 'Selectează o dată.'; return; }
+    this.bookingLoading = true;
+    this.bookingError = '';
+    this.http.post(`${API}/appointments`, {
+      clinicId: this.clinics.id,
+      date: this.bookingDate,
+      time: this.bookingTime || null,
+      notes: this.bookingNotes || '',
+      serviceId: this.bookingServiceId ? Number(this.bookingServiceId) : null,
+    }, { headers: this.headers }).subscribe({
+      next: () => { this.bookingStep = 'success'; this.bookingLoading = false; },
+      error: (err) => {
+        this.bookingError = err.error?.error || 'A apărut o eroare. Încearcă din nou.';
+        this.bookingLoading = false;
+      }
+    });
   }
 
   ngOnDestroy() {

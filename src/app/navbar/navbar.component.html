@@ -14,6 +14,9 @@
       <a routerLink="/services" routerLinkActive="active">
         <i class="fal fa-tooth"></i><span>Servicii</span>
       </a>
+      <a routerLink="/feed" routerLinkActive="active">
+        <i class="fal fa-comments-alt"></i><span>Cereri</span>
+      </a>
       <a routerLink="/favorites" routerLinkActive="active">
         <i class="fal fa-heart"></i><span>Favorite</span>
       </a>
@@ -139,6 +142,9 @@
               <a class="udd-item" routerLink="/clinici/profil" (click)="userMenuOpen = false">
                 <i class="fal fa-edit"></i> Editează profilul
               </a>
+              <a class="udd-item" routerLink="/feed" (click)="userMenuOpen = false">
+                <i class="fal fa-comments-alt"></i> Cereri pacienți
+              </a>
               <div class="udd-divider"></div>
             }
 
@@ -174,6 +180,7 @@
     <a routerLink="/" (click)="closeMobileMenu()"><i class="fal fa-home"></i> Acasă</a>
     <a routerLink="/finder" (click)="closeMobileMenu()"><i class="fal fa-search"></i> Caută clinici</a>
     <a routerLink="/services" (click)="closeMobileMenu()"><i class="fal fa-tooth"></i> Servicii</a>
+    <a routerLink="/feed" (click)="closeMobileMenu()"><i class="fal fa-comments-alt"></i> Cereri pacienți</a>
     <a routerLink="/favorites" (click)="closeMobileMenu()"><i class="fal fa-heart"></i> Favorite</a>
     <a routerLink="/clinici" (click)="closeMobileMenu()" class="mobile-clinic-link">
       <i class="fal fa-clinic-medical"></i> Portal clinici

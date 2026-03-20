@@ -1,0 +1,38 @@
+<div class="services-page">
+
+  <!-- ── HERO ──────────────────────────────────────────────── -->
+  <div class="services-hero">
+    <div class="hero-badge">
+      <span class="hero-badge-dot"></span>
+      26 servicii disponibile
+    </div>
+    <h1 class="hero-title">
+      Toate serviciile<br>
+      <span class="title-gradient">stomatologice</span>
+    </h1>
+    <p class="hero-subtitle">
+      Găsește rapid clinici din România specializate în orice serviciu dentar.
+      Click pe un serviciu pentru a vedea clinicile disponibile.
+    </p>
+  </div>
+
+  <!-- ── SERVICES GRID ──────────────────────────────────────── -->
+  <div class="services-grid">
+    @for (s of services; track s.id) {
+      <div class="service-card color-{{ s.color }}" (click)="navigate(s.id)">
+        <div class="sc-icon-wrap">
+          <i class="fal {{ s.icon }}"></i>
+        </div>
+        <div class="sc-body">
+          <h3 class="sc-title">{{ s.label }}</h3>
+          <p class="sc-desc">{{ s.desc }}</p>
+        </div>
+        <div class="sc-footer">
+          <span class="sc-cta">Caută clinici</span>
+          <i class="fal fa-arrow-right sc-arrow"></i>
+        </div>
+      </div>
+    }
+  </div>
+
+</div>

@@ -1,0 +1,213 @@
+<div class="profile-page">
+
+  <!-- ── HEADER ──────────────────────────────────────────── -->
+  <div class="page-header">
+    <div class="header-icon">
+      <i class="fal fa-user-circle"></i>
+    </div>
+    <div class="header-text">
+      <h1>Profilul meu</h1>
+      <p>Gestionează contul și preferințele tale</p>
+    </div>
+  </div>
+
+  <!-- ── AVATAR + INFO ───────────────────────────────────── -->
+  <div class="profile-hero">
+    <div class="profile-avatar">
+      {{ getInitials() }}
+    </div>
+    <div class="profile-hero-info">
+      <h2 class="profile-name">{{ auth.currentUser?.name }}</h2>
+      <p class="profile-email">{{ auth.currentUser?.email }}</p>
+      <div class="profile-role-badge">
+        <i class="fal fa-user"></i> Pacient
+      </div>
+    </div>
+  </div>
+
+  <!-- ── STATS ───────────────────────────────────────────── -->
+  <div class="stats-row">
+    <div class="stat-pill">
+      <i class="fal fa-calendar-check"></i>
+      <div class="stat-pill-body">
+        <span class="stat-pill-val">{{ appointmentsCount }}</span>
+        <span class="stat-pill-label">Programări</span>
+      </div>
+    </div>
+    <div class="stat-pill">
+      <i class="fal fa-heart"></i>
+      <div class="stat-pill-body">
+        <span class="stat-pill-val">{{ favoritesCount }}</span>
+        <span class="stat-pill-label">Clinici favorite</span>
+      </div>
+    </div>
+    <a routerLink="/appointments" class="stat-pill stat-pill-link">
+      <i class="fal fa-arrow-right"></i>
+      <div class="stat-pill-body">
+        <span class="stat-pill-val">Vezi</span>
+        <span class="stat-pill-label">Programările mele</span>
+      </div>
+    </a>
+  </div>
+
+  <!-- ── SECȚIUNI CONT ───────────────────────────────────── -->
+  <div class="section-title"><i class="fal fa-id-card"></i> Informații cont</div>
+
+  <!-- NUME -->
+  <div class="info-card">
+    <div class="info-row">
+      <div class="info-row-left">
+        <div class="info-icon"><i class="fal fa-user"></i></div>
+        <div class="info-text">
+          <span class="info-label">Nume complet</span>
+          @if (!editingName) {
+            <span class="info-value">{{ auth.currentUser?.name }}</span>
+          }
+        </div>
+      </div>
+      @if (!editingName) {
+        <button class="info-edit-btn" (click)="openNameEdit()">
+          <i class="fal fa-pencil"></i> Editează
+        </button>
+      }
+    </div>
+
+    @if (editingName) {
+      <div class="edit-form">
+        <input class="edit-input" type="text" [(ngModel)]="nameValue"
+          placeholder="Numele tău complet" (keydown.enter)="saveName()" autofocus />
+        @if (nameError) {
+          <div class="edit-error"><i class="fal fa-exclamation-circle"></i> {{ nameError }}</div>
+        }
+        @if (nameSuccess) {
+          <div class="edit-success"><i class="fal fa-check-circle"></i> Salvat!</div>
+        }
+        <div class="edit-actions">
+          <button class="edit-btn-cancel" (click)="editingName = false">Renunță</button>
+          <button class="edit-btn-save" (click)="saveName()" [disabled]="nameSaving">
+            @if (nameSaving) { <i class="fal fa-spinner fa-spin"></i> Salvează... }
+            @else { <i class="fal fa-check"></i> Salvează }
+          </button>
+        </div>
+      </div>
+    }
+  </div>
+
+  <!-- EMAIL (read-only) -->
+  <div class="info-card">
+    <div class="info-row">
+      <div class="info-row-left">
+        <div class="info-icon"><i class="fal fa-envelope"></i></div>
+        <div class="info-text">
+          <span class="info-label">Adresă de email</span>
+          <span class="info-value">{{ auth.currentUser?.email }}</span>
+        </div>
+      </div>
+      <span class="info-readonly-badge"><i class="fal fa-lock"></i> Neschimbabil</span>
+    </div>
+  </div>
+
+  <!-- PAROLĂ -->
+  <div class="info-card">
+    <div class="info-row">
+      <div class="info-row-left">
+        <div class="info-icon"><i class="fal fa-lock"></i></div>
+        <div class="info-text">
+          <span class="info-label">Parolă</span>
+          @if (!editingPassword) {
+            <span class="info-value pw-dots">••••••••••</span>
+          }
+        </div>
+      </div>
+      @if (!editingPassword) {
+        <button class="info-edit-btn" (click)="openPasswordEdit()">
+          <i class="fal fa-key"></i> Schimbă
+        </button>
+      }
+    </div>
+
+    @if (editingPassword) {
+      <div class="edit-form">
+        <div class="pw-field">
+          <label class="pw-label">Parola curentă</label>
+          <div class="pw-wrap">
+            <input [type]="showCurrentPw ? 'text' : 'password'" class="edit-input"
+              [(ngModel)]="currentPassword" placeholder="Parola actuală" />
+            <button class="pw-toggle" (click)="showCurrentPw = !showCurrentPw">
+              <i [class]="showCurrentPw ? 'fal fa-eye-slash' : 'fal fa-eye'"></i>
+            </button>
+          </div>
+        </div>
+        <div class="pw-field">
+          <label class="pw-label">Parola nouă</label>
+          <div class="pw-wrap">
+            <input [type]="showNewPw ? 'text' : 'password'" class="edit-input"
+              [(ngModel)]="newPassword" placeholder="Minim 6 caractere" />
+            <button class="pw-toggle" (click)="showNewPw = !showNewPw">
+              <i [class]="showNewPw ? 'fal fa-eye-slash' : 'fal fa-eye'"></i>
+            </button>
+          </div>
+        </div>
+        <div class="pw-field">
+          <label class="pw-label">Confirmă parola nouă</label>
+          <input type="password" class="edit-input"
+            [(ngModel)]="confirmPassword" placeholder="Repetă parola"
+            (keydown.enter)="savePassword()" />
+        </div>
+
+        @if (passwordError) {
+          <div class="edit-error"><i class="fal fa-exclamation-circle"></i> {{ passwordError }}</div>
+        }
+        @if (passwordSuccess) {
+          <div class="edit-success"><i class="fal fa-check-circle"></i> Parola a fost schimbată!</div>
+        }
+        <div class="edit-actions">
+          <button class="edit-btn-cancel" (click)="editingPassword = false">Renunță</button>
+          <button class="edit-btn-save" (click)="savePassword()" [disabled]="passwordSaving">
+            @if (passwordSaving) { <i class="fal fa-spinner fa-spin"></i> Salvează... }
+            @else { <i class="fal fa-check"></i> Salvează }
+          </button>
+        </div>
+      </div>
+    }
+  </div>
+
+  <!-- ── LINK-URI RAPIDE ─────────────────────────────────── -->
+  <div class="section-title" style="margin-top: 32px;"><i class="fal fa-bolt"></i> Acțiuni rapide</div>
+
+  <div class="quick-links">
+    <a routerLink="/finder" class="quick-link">
+      <div class="ql-icon"><i class="fal fa-search"></i></div>
+      <div class="ql-text">
+        <span class="ql-label">Caută clinici</span>
+        <span class="ql-sub">Găsește clinica potrivită pentru tine</span>
+      </div>
+      <i class="fal fa-chevron-right ql-arrow"></i>
+    </a>
+    <a routerLink="/feed" class="quick-link">
+      <div class="ql-icon"><i class="fal fa-comments-alt"></i></div>
+      <div class="ql-text">
+        <span class="ql-label">Cereri de tratament</span>
+        <span class="ql-sub">Publică nevoile tale, primești oferte de la clinici</span>
+      </div>
+      <i class="fal fa-chevron-right ql-arrow"></i>
+    </a>
+    <a routerLink="/appointments" class="quick-link">
+      <div class="ql-icon"><i class="fal fa-calendar-check"></i></div>
+      <div class="ql-text">
+        <span class="ql-label">Programările mele</span>
+        <span class="ql-sub">{{ appointmentsCount }} programări înregistrate</span>
+      </div>
+      <i class="fal fa-chevron-right ql-arrow"></i>
+    </a>
+    <a routerLink="/favorites" class="quick-link">
+      <div class="ql-icon"><i class="fal fa-heart"></i></div>
+      <div class="ql-text">
+        <span class="ql-label">Clinici favorite</span>
+        <span class="ql-sub">{{ favoritesCount }} clinici salvate</span>
+      </div>
+      <i class="fal fa-chevron-right ql-arrow"></i>
+    </a>
+  </div>
+
+</div>

@@ -1,5 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { SeoService } from '../seo.service';
 
 @Component({
   selector: 'app-pricing',
@@ -8,8 +9,30 @@ import { RouterLink } from '@angular/router';
   templateUrl: './pricing.component.html',
   styleUrl: './pricing.component.css',
 })
-export class PricingComponent {
+export class PricingComponent implements OnInit {
+  private seo = inject(SeoService);
+
   billingAnnual = false;
+
+  ngOnInit() {
+    this.seo.set({
+      title: 'Prețuri și pachete pentru clinici dentare | DentiPro',
+      description: 'Alege planul potrivit pentru clinica ta. Starter gratuit, Pro și Enterprise cu funcții avansate: vizibilitate crescută, programări online, statistici pacienți.',
+      canonical: 'https://dentipro.ro/clinici/pricing',
+      schema: {
+        '@context': 'https://schema.org',
+        '@type': 'FAQPage',
+        mainEntity: this.faqs.map((faq) => ({
+          '@type': 'Question',
+          name: faq.q,
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: faq.a,
+          },
+        })),
+      },
+    });
+  }
 
   readonly plans = [
     {

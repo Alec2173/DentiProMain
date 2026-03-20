@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { AuthService } from '../auth.service';
-import { RouterLink } from '@angular/router';
+import { RouterLink, Router } from '@angular/router';
 
 const API = 'https://www.dentipro.ro/api';
 
@@ -17,7 +17,7 @@ export class AppointmentsComponent implements OnInit {
   isLoading = true;
   filterStatus: 'all' | 'pending' | 'confirmed' | 'cancelled' | 'completed' = 'all';
 
-  constructor(private http: HttpClient, public auth: AuthService) {}
+  constructor(private http: HttpClient, public auth: AuthService, private router: Router) {}
 
   get headers(): HttpHeaders {
     return new HttpHeaders({ Authorization: `Bearer ${this.auth.getToken()}` });
@@ -29,6 +29,7 @@ export class AppointmentsComponent implements OnInit {
   }
 
   ngOnInit() {
+    if (this.auth.isClinic || this.auth.isAdmin) { this.router.navigate(['/clinici/dashboard']); return; }
     if (!this.auth.isLoggedIn) { this.isLoading = false; return; }
     this.http.get<any[]>(`${API}/appointments`, { headers: this.headers }).subscribe({
       next: (data) => { this.appointments = data; this.isLoading = false; },

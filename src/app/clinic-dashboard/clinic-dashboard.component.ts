@@ -24,6 +24,7 @@ export class ClinicDashboardComponent implements OnInit {
 
   ngOnInit() {
     if (!this.auth.isClinic) { this.router.navigate(['/clinici']); return; }
+    if (!this.auth.currentUser?.clinicId) { this.router.navigate(['/clinici/inscriere']); return; }
     this.http.get<any>(`${API}/clinic-dashboard`, { headers: this.headers }).subscribe({
       next: (d) => { this.data = d; this.isLoading = false; },
       error: () => { this.isLoading = false; }

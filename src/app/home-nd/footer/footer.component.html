@@ -14,10 +14,10 @@
           compară servicii și programează-te online.
         </p>
         <div class="social-row">
-          <a class="social-btn" aria-label="Website">
+          <a class="social-btn" href="https://dentipro.ro" aria-label="Website DentiPro">
             <span class="material-symbols-outlined">public</span>
           </a>
-          <a class="social-btn" aria-label="Email">
+          <a class="social-btn" href="mailto:contact@dentipro.ro" aria-label="Email DentiPro">
             <span class="material-symbols-outlined">alternate_email</span>
           </a>
         </div>
@@ -27,26 +27,32 @@
       <div class="footer-column">
         <h4 class="col-title">Pentru pacienți</h4>
         <a routerLink="/finder" class="col-link">Caută clinici</a>
-        <a routerLink="/finder" class="col-link">Servicii dentare</a>
-        <a class="col-link">Recenzii</a>
-        <a class="col-link">Întrebări frecvente</a>
+        <a routerLink="/finder" [queryParams]="{city: 'București'}" class="col-link">Clinici dentare București</a>
+        <a routerLink="/finder" [queryParams]="{city: 'Cluj-Napoca'}" class="col-link">Clinici dentare Cluj</a>
+        <a routerLink="/finder" [queryParams]="{city: 'Timișoara'}" class="col-link">Clinici dentare Timișoara</a>
+        <a routerLink="/finder" [queryParams]="{city: 'Iași'}" class="col-link">Clinici dentare Iași</a>
+        <a routerLink="/finder" [queryParams]="{city: 'Brașov'}" class="col-link">Clinici dentare Brașov</a>
+        <a routerLink="/finder" [queryParams]="{city: 'Constanța'}" class="col-link">Clinici dentare Constanța</a>
       </div>
 
       <!-- CLINICI -->
       <div class="footer-column">
         <h4 class="col-title">Pentru clinici</h4>
-        <a routerLink="/Inscriere" class="col-link">Adaugă clinica</a>
-        <a routerLink="/pricing" class="col-link">Planuri & prețuri</a>
-        <a class="col-link">Beneficii</a>
-        <a class="col-link">Parteneriate</a>
+        <a routerLink="/clinici" class="col-link">De ce DentiPro?</a>
+        <a routerLink="/clinici/inscriere" class="col-link">Adaugă clinica</a>
+        <!-- HIDDEN_PRICING — de readus când lansăm
+             Data ascuns: 2026-03-20
+             Locație originală: footer > coloana "Pentru clinici" -->
+        <!-- <a routerLink="/clinici/pricing" class="col-link">Planuri & prețuri</a> -->
+        <a routerLink="/clinici/autentificare" class="col-link">Autentificare clinică</a>
       </div>
 
       <!-- LEGAL -->
       <div class="footer-column">
         <h4 class="col-title">Legal</h4>
-        <a class="col-link">Termeni și condiții</a>
-        <a class="col-link">Politica de confidențialitate</a>
-        <a class="col-link">Cookie policy</a>
+        <a routerLink="/GDPR" class="col-link">Politica de confidențialitate</a>
+        <a routerLink="/GDPR" class="col-link">Cookie policy</a>
+        <a routerLink="/termeni" class="col-link">Termeni și condiții</a>
       </div>
 
     </div>

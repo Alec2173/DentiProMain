@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { RouterLink, Router } from '@angular/router';
 import { FavoritesService } from '../favorites.service';
 import { AuthService } from '../auth.service';
 
@@ -14,9 +14,10 @@ export class FavoritesComponent implements OnInit {
   clinics: any[] = [];
   isLoading = true;
 
-  constructor(private favService: FavoritesService, public auth: AuthService) {}
+  constructor(private favService: FavoritesService, public auth: AuthService, private router: Router) {}
 
   ngOnInit() {
+    if (this.auth.isClinic || this.auth.isAdmin) { this.router.navigate(['/clinici/dashboard']); return; }
     if (!this.auth.isLoggedIn) { this.isLoading = false; return; }
     this.favService.getFavorites().subscribe({
       next: (data) => { this.clinics = data; this.isLoading = false; },

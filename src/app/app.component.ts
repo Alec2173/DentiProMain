@@ -50,35 +50,39 @@ export class AppComponent implements OnInit, AfterViewInit {
         analytics: {},
       },
       language: {
-        default: 'en',
+        default: 'ro',
         translations: {
-          en: {
+          ro: {
             consentModal: {
-              title: 'Folosim cookie-uri',
-              description: '',
-              acceptAllBtn: 'Accepta toate',
-              acceptNecessaryBtn: 'Refuz',
-              showPreferencesBtn: 'Vreau sa schimb setarile',
+              title: '🍪 Folosim cookie-uri',
+              description:
+                'Folosim cookie-uri strict necesare pentru funcționarea platformei și, opțional, cookie-uri de analiză (Google Analytics) pentru a înțelege cum este utilizat site-ul. Poți alege ce accepți. <a href="/GDPR" class="cc-link">Politică confidențialitate</a> · <a href="/termeni" class="cc-link">Termeni și condiții</a>',
+              acceptAllBtn: 'Acceptă toate',
+              acceptNecessaryBtn: 'Doar necesare',
+              showPreferencesBtn: 'Setări cookie-uri',
             },
             preferencesModal: {
-              title: 'Preferințe pentru Cookie-uri',
-              acceptAllBtn: 'Sunt de acord',
-              acceptNecessaryBtn: 'Refuz',
-              savePreferencesBtn: 'Salveaza setarile',
-              closeIconLabel: 'Close modal',
+              title: 'Preferințe cookie-uri',
+              acceptAllBtn: 'Acceptă toate',
+              acceptNecessaryBtn: 'Doar necesare',
+              savePreferencesBtn: 'Salvează preferințele',
+              closeIconLabel: 'Închide',
               sections: [
                 {
-                  title: 'Confidențialitatea ta este importantă pentru noi',
-                  description: 'Cookie-urile sunt fișiere text foarte mici ce sunt salvate în browser-ul tău atunci când vizitezi un website.',
+                  title: 'Confidențialitatea ta contează',
+                  description:
+                    'Poți alege ce tipuri de cookie-uri accepți. Cookie-urile strict necesare nu pot fi dezactivate deoarece sunt esențiale pentru funcționarea platformei.',
                 },
                 {
                   title: 'Cookie-uri strict necesare',
-                  description: 'Aceste cookie-uri sunt esențiale pentru a putea beneficia de serviciile disponibile pe website-ul nostru.',
+                  description:
+                    'Necesare pentru autentificare, sesiune și navigare. Nu stochează date personale în afara platformei.',
                   linkedCategory: 'necessary',
                 },
                 {
-                  title: 'Cookie-uri de analiza si performanta',
-                  description: 'Folosite pentru a colecta informații despre traficul pe website-ul nostru.',
+                  title: 'Cookie-uri de analiză (Google Analytics)',
+                  description:
+                    'Ne ajută să înțelegem cum este utilizat site-ul (număr vizitatori, pagini populare). Datele sunt anonimizate și procesate de Google LLC.',
                   linkedCategory: 'analytics',
                 },
               ],

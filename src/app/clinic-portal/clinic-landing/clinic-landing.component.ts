@@ -1,7 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { RouterLink, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../../auth.service';
+import { SeoService } from '../../seo.service';
 
 @Component({
   selector: 'app-clinic-landing',
@@ -13,16 +14,22 @@ import { AuthService } from '../../auth.service';
 export class ClinicLandingComponent implements OnInit {
   activeFaq: number | null = null;
 
+  private seo = inject(SeoService);
+
   constructor(private auth: AuthService, private router: Router) {}
 
   ngOnInit() {
     if (this.auth.isAdmin) this.router.navigate(['/administrator']);
+
+    this.seo.set({
+      title: 'Înscrie-ți clinica dentară pe DentiPro | Găsești pacienți noi',
+      description: 'Adaugă clinica ta pe DentiPro și fii descoperit de mii de pacienți din orașul tău. Profil complet, marker pe hartă, programări online. Starter gratuit.',
+      canonical: 'https://dentipro.ro/clinici',
+    });
   }
 
   readonly stats = [
-    { value: '500+', label: 'Clinici înscrise' },
-    { value: '50k+', label: 'Pacienți activi' },
-    { value: '4.8★', label: 'Rating mediu' },
+    { value: '70+', label: 'Clinici înscrise' },
     { value: '98%', label: 'Satisfacție clinici' },
   ];
 

@@ -1,12 +1,38 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ro">
   <head>
     <meta charset="utf-8" />
 
-    <title>Dental</title>
+    <title>DentiPro — Găsește clinica dentară potrivită</title>
     <base href="/" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <!-- Primary SEO -->
+    <meta name="description" content="DentiPro — platforma nr. 1 pentru găsirea clinicilor dentare din România. Caută dentist în București, Cluj, Timișoara, Iași și alte orașe. Rezervă rapid online." />
+    <meta name="robots" content="index, follow" />
+    <meta name="theme-color" content="#060f1e" />
+
+    <!-- Canonical (default — componentele suprascriu per pagină) -->
+    <link rel="canonical" href="https://dentipro.ro/" />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="DentiPro" />
+    <meta property="og:locale" content="ro_RO" />
+    <meta property="og:title" content="DentiPro — Găsește clinica dentară potrivită" />
+    <meta property="og:description" content="Platforma nr. 1 pentru găsirea clinicilor dentare din România. Caută dentist în orașul tău și rezervă rapid online." />
+    <meta property="og:image" content="https://dentipro.ro/logo-new.png" />
+    <meta property="og:url" content="https://dentipro.ro/" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="DentiPro — Găsește clinica dentară potrivită" />
+    <meta name="twitter:description" content="Platforma nr. 1 pentru găsirea clinicilor dentare din România." />
+    <meta name="twitter:image" content="https://dentipro.ro/logo-new.png" />
+
+    <!-- Favicon & icons -->
     <link rel="icon" type="image/x-icon" href="logo.ico" />
+    <link rel="apple-touch-icon" href="logo-new.png" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -15,27 +41,15 @@
       integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p"
       crossorigin="anonymous"
     />
+    <!-- Toate fonturile Google consolidate într-un singur request -->
     <link
-      href="https://fonts.googleapis.com/css2?family=Cal+Sans&family=Liter&family=PT+Serif:wght@700&display=swap"
-      rel="stylesheet"
-    />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Cal+Sans&family=Liter&family=PT+Serif:wght@700&family=Rowdies:wght@300;400;700&display=swap"
-      rel="stylesheet"
-    />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Bree+Serif&family=Cal+Sans&family=Liter&family=PT+Serif:wght@700&family=Paytone+One&family=Rowdies:wght@300;400;700&display=swap"
-      rel="stylesheet"
-    />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Bree+Serif&family=Cal+Sans&family=Liter&family=PT+Serif:wght@700&family=Paytone+One&family=Roboto:wght@300;400;500&family=Rowdies:wght@300;400;700&display=swap"
       rel="stylesheet"
     />
     <link
       href="https://fonts.googleapis.com/icon?family=Material+Icons"
       rel="stylesheet"
     />
-    <!-- Folosește un singur link pentru Material Symbols Outlined, fără icon_names -->
     <link
       rel="stylesheet"
       href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"
@@ -44,17 +58,13 @@
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/primeng/resources/themes/saga-blue/theme.css"
     />
-    <script
-      async
-      src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXX"
-    ></script>
-    <script>
+    <!-- Google Analytics — se încarcă DOAR după acceptarea cookie-urilor analytics -->
+    <script type="text/plain" data-category="analytics" async src="https://www.googletagmanager.com/gtag/js?id=G-GE9LGRXGXF"></script>
+    <script type="text/plain" data-category="analytics">
       window.dataLayer = window.dataLayer || [];
-      function gtag() {
-        dataLayer.push(arguments);
-      }
-      gtag("js", new Date());
-      gtag("config", "G-W03ZLW2PQ0");
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-GE9LGRXGXF');
     </script>
 
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBcvUOWb-pIUoAXUh3YTrXeMKVN_8tKQz0&libraries=places"></script>

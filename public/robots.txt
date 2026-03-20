@@ -1,0 +1,14 @@
+User-agent: *
+Allow: /
+
+Disallow: /clinici/dashboard
+Disallow: /clinici/profil
+Disallow: /clinici/autentificare
+Disallow: /administrator
+Disallow: /calendar
+Disallow: /favorites
+Disallow: /appointments
+Disallow: /sidebar
+Disallow: /viewer
+
+Sitemap: https://dentipro.ro/sitemap.xml

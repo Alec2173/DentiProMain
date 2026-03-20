@@ -24,7 +24,9 @@ export class NavbarComponent implements OnInit {
 
   // ── AUTH MODAL (patients only) ────────────────────────────
   showModal = false;
+  showWrongAccountAlert = false;
   modalTab: 'login' | 'register' = 'login';
+  modalStep: 'auth' | 'verify' | 'forgot' | 'reset' = 'auth';
   modalLoading = false;
   modalError = '';
 
@@ -36,6 +38,22 @@ export class NavbarComponent implements OnInit {
   regEmail = '';
   regPassword = '';
   regConfirm = '';
+
+  // Verificare email
+  pendingEmail = '';
+  verifyCode = '';
+  resendLoading = false;
+  resendSuccess = false;
+  resendCooldown = 0;
+  private resendTimer: any;
+
+  // Resetare parolă
+  forgotEmail = '';
+  resetCode = '';
+  resetNewPassword = '';
+  resetConfirm = '';
+  resetShowPw = false;
+  resetSuccess = false;
 
   constructor(
     public authService: AuthService,
@@ -106,6 +124,13 @@ export class NavbarComponent implements OnInit {
 
   // ── MODAL ─────────────────────────────────────────────────
   openModal(tab: 'login' | 'register') {
+    if (this.authService.isClinic || this.authService.isAdmin) {
+      this.showWrongAccountAlert = true;
+      this.userMenuOpen = false;
+      this.mobileMenuOpen = false;
+      setTimeout(() => { this.showWrongAccountAlert = false; }, 4000);
+      return;
+    }
     this.modalTab = tab;
     this.showModal = true;
     this.modalError = '';
@@ -115,6 +140,7 @@ export class NavbarComponent implements OnInit {
 
   closeModal() {
     this.showModal = false;
+    this.modalStep = 'auth';
     this.modalError = '';
     this.loginEmail = '';
     this.loginPassword = '';
@@ -122,6 +148,16 @@ export class NavbarComponent implements OnInit {
     this.regEmail = '';
     this.regPassword = '';
     this.regConfirm = '';
+    this.verifyCode = '';
+    this.pendingEmail = '';
+    this.resendSuccess = false;
+    this.resendCooldown = 0;
+    clearInterval(this.resendTimer);
+    this.forgotEmail = '';
+    this.resetCode = '';
+    this.resetNewPassword = '';
+    this.resetConfirm = '';
+    this.resetSuccess = false;
   }
 
   switchTab(tab: 'login' | 'register') {
@@ -134,9 +170,13 @@ export class NavbarComponent implements OnInit {
     this.modalLoading = true;
     const result = await this.authService.login(this.loginEmail, this.loginPassword);
     this.modalLoading = false;
+    if (result.requiresVerification) {
+      this.pendingEmail = result.email ?? this.loginEmail;
+      this.modalStep = 'verify';
+      return;
+    }
     if (result.success) {
       if (!this.authService.isPatient) {
-        // Clinic or admin account — not allowed on patient site
         this.authService.logout();
         this.modalError = 'Acest cont aparține unei clinici. Folosiți portalul clinicilor pentru autentificare.';
         return;
@@ -150,15 +190,100 @@ export class NavbarComponent implements OnInit {
   async submitRegister() {
     this.modalError = '';
     this.modalLoading = true;
-    // Patient-only registration from the main site
     const result = await this.authService.registerPatient(
       this.regName, this.regEmail, this.regPassword, this.regConfirm,
     );
     this.modalLoading = false;
+    if (result.requiresVerification) {
+      this.pendingEmail = result.email ?? this.regEmail;
+      this.modalStep = 'verify';
+      return;
+    }
+    if (!result.success) {
+      this.modalError = result.error ?? 'Eroare la înregistrare.';
+    }
+  }
+
+  async submitVerify() {
+    this.modalError = '';
+    this.modalLoading = true;
+    const result = await this.authService.verifyEmail(this.pendingEmail, this.verifyCode.trim());
+    this.modalLoading = false;
     if (result.success) {
+      if (!this.authService.isPatient) {
+        this.authService.logout();
+        this.modalError = 'Acest cont aparține unei clinici.';
+        this.modalStep = 'auth';
+        return;
+      }
       this.closeModal();
     } else {
-      this.modalError = result.error ?? 'Eroare la înregistrare.';
+      this.modalError = result.error ?? 'Cod incorect.';
+    }
+  }
+
+  async resendCode() {
+    if (this.resendCooldown > 0 || this.resendLoading) return;
+    this.resendLoading = true;
+    this.resendSuccess = false;
+    await this.authService.resendVerification(this.pendingEmail);
+    this.resendLoading = false;
+    this.resendSuccess = true;
+    this.resendCooldown = 60;
+    this.resendTimer = setInterval(() => {
+      this.resendCooldown--;
+      if (this.resendCooldown <= 0) clearInterval(this.resendTimer);
+    }, 1000);
+  }
+
+  backToAuth() {
+    this.modalStep = 'auth';
+    this.verifyCode = '';
+    this.modalError = '';
+    this.resendSuccess = false;
+    this.resendCooldown = 0;
+    clearInterval(this.resendTimer);
+  }
+
+  goToForgot() {
+    this.modalStep = 'forgot';
+    this.forgotEmail = this.loginEmail;
+    this.modalError = '';
+    this.resetSuccess = false;
+  }
+
+  async submitForgot() {
+    this.modalError = '';
+    this.modalLoading = true;
+    const res = await this.authService.forgotPassword(this.forgotEmail);
+    this.modalLoading = false;
+    if (res.success) {
+      this.modalStep = 'reset';
+    } else {
+      this.modalError = res.error ?? 'Eroare. Încearcă din nou.';
+    }
+  }
+
+  async submitReset() {
+    this.modalError = '';
+    if (this.resetNewPassword !== this.resetConfirm) {
+      this.modalError = 'Parolele nu se potrivesc.';
+      return;
+    }
+    this.modalLoading = true;
+    const res = await this.authService.resetPassword(this.forgotEmail, this.resetCode.trim(), this.resetNewPassword);
+    this.modalLoading = false;
+    if (res.success) {
+      this.resetSuccess = true;
+      setTimeout(() => {
+        this.modalStep = 'auth';
+        this.resetSuccess = false;
+        this.resetCode = '';
+        this.resetNewPassword = '';
+        this.resetConfirm = '';
+      }, 2000);
+    } else {
+      this.modalError = res.error ?? 'Eroare. Încearcă din nou.';
     }
   }
 

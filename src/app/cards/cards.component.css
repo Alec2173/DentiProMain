@@ -38,7 +38,7 @@
    CLINIC CARD
 ════════════════════════════════════════ */
 
-button.card {
+a.card {
   all: unset;
   display: flex;
   width: 100%;
@@ -60,7 +60,7 @@ button.card {
 }
 
 /* Left accent bar */
-button.card::before {
+a.card::before {
   content: '';
   position: absolute;
   left: 0;
@@ -74,7 +74,7 @@ button.card::before {
   z-index: 2;
 }
 
-button.card:hover {
+a.card:hover {
   border-color: rgba(59, 130, 246, 0.35);
   box-shadow:
     0 8px 32px rgba(0, 0, 0, 0.5),
@@ -84,11 +84,11 @@ button.card:hover {
   background: linear-gradient(135deg, rgba(16, 40, 78, 0.95), rgba(11, 27, 55, 0.98));
 }
 
-button.card:hover::before {
+a.card:hover::before {
   opacity: 1;
 }
 
-button.card:active {
+a.card:active {
   transform: translateY(0px);
   box-shadow: 0 3px 12px rgba(0, 0, 0, 0.4);
 }
@@ -111,7 +111,7 @@ button.card:active {
   transition: transform 0.45s ease;
 }
 
-button.card:hover .card-image img {
+a.card:hover .card-image img {
   transform: scale(1.07);
 }
 
@@ -221,7 +221,7 @@ button.card:hover .card-image img {
   transition: color 0.2s;
 }
 
-button.card:hover .clinic-name {
+a.card:hover .clinic-name {
   color: #fff;
 }
 
@@ -267,7 +267,7 @@ button.card:hover .clinic-name {
 @media (max-width: 480px) {
   .viewport { padding: 10px 8px 24px; }
 
-  button.card { height: 112px; border-radius: 14px; }
+  a.card { height: 112px; border-radius: 14px; }
   .card-image { width: 96px; }
   .skeleton-card { height: 112px; }
   .clinic-name { font-size: 13.5px; }
@@ -276,7 +276,7 @@ button.card:hover .clinic-name {
 
 @media (max-width: 380px) {
   .viewport { padding: 8px 6px 20px; }
-  button.card { height: 100px; }
+  a.card { height: 100px; }
   .card-image { width: 84px; }
   .skeleton-card { height: 100px; }
   .clinic-name { font-size: 12.5px; }

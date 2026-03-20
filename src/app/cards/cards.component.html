@@ -18,7 +18,7 @@
   @if (!isLoading) {
     <cdk-virtual-scroll-viewport class="viewport" itemSize="136">
       <div class="card-list-inner">
-        <button
+        <a
           *cdkVirtualFor="
             let clinic of filteredClinics;
             trackBy: trackByClinicId
@@ -30,9 +30,9 @@
 
           <div class="card-image">
             @if (clinic.images.length > 0) {
-              <img [src]="clinic.images[0]" loading="lazy" />
+              <img [src]="clinic.images[0]" [alt]="clinic.name + ' — clinică dentară din ' + clinic.city" loading="lazy" />
             } @else {
-              <img src="no-img.jpg" />
+              <img src="no-img.jpg" alt="Clinică dentară DentiPro" />
             }
           </div>
 
@@ -40,9 +40,9 @@
             <div class="card-header">
               <div class="logo">
                 @if (clinic.logo_url) {
-                  <img [src]="clinic.logo_url" />
+                  <img [src]="clinic.logo_url" [alt]="'Logo ' + clinic.name" loading="lazy" />
                 } @else {
-                  <img src="no-img.jpg" />
+                  <img src="no-img.jpg" alt="Logo clinică" />
                 }
               </div>
 
@@ -66,7 +66,7 @@
               <span class="material-symbols-outlined">star</span> 4.5
             </div>
           </div>
-        </button>
+        </a>
       </div>
     </cdk-virtual-scroll-viewport>
   }

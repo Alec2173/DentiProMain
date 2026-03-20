@@ -1594,3 +1594,170 @@ input::placeholder, textarea::placeholder { color: rgba(255, 255, 255, 0.2); }
 }
 
 .success-btn:hover { opacity: 0.9; transform: translateY(-1px); }
+
+/* ════════════════════════════════════════
+   RESPONSIVE
+════════════════════════════════════════ */
+
+@media (max-width: 768px) {
+
+  .main {
+    padding: 24px 16px 60px;
+  }
+
+  .form-wrapper {
+    gap: 24px;
+  }
+
+  .page-title {
+    font-size: 26px;
+  }
+
+  .page-sub {
+    font-size: 13px;
+  }
+
+  /* Progress — ascunde labelurile, arată doar cercurile */
+  .ps-labels { display: none; }
+  .ps-line   { margin: 0 6px; }
+  .ps-circle { width: 30px; height: 30px; font-size: 12px; }
+
+  .form-card {
+    padding: 28px 20px;
+    border-radius: 16px;
+    gap: 20px;
+  }
+
+  .step-header {
+    gap: 12px;
+    padding-bottom: 16px;
+  }
+
+  .step-num   { font-size: 26px; }
+  .step-title { font-size: 18px; }
+  .step-sub   { font-size: 13px; }
+
+  /* 2 coloane → 1 coloană */
+  .two-cols {
+    grid-template-columns: 1fr;
+  }
+
+  /* Servicii — 2 coloane pe tabletă */
+  .services-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  /* Prețuri — stack vertical */
+  .price-row-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .price-service-name {
+    width: 100%;
+  }
+
+  .price-input-wrap,
+  .price-type-toggle,
+  .price-range-wrap {
+    width: 100%;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .price-input {
+    width: 100%;
+    text-align: left;
+  }
+
+  /* Planuri — 1 coloană */
+  .plan-cards {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  /* Sumar — 1 coloană */
+  .summary-grid {
+    grid-template-columns: 1fr;
+  }
+
+  /* Butoane nav */
+  .btn-back,
+  .btn-next,
+  .btn-submit {
+    font-size: 13px;
+    padding: 11px 18px;
+  }
+
+  /* Success card */
+  .success-overlay {
+    padding: 20px 16px;
+    align-items: flex-end;
+  }
+
+  .success-card {
+    padding: 36px 24px;
+    border-radius: 20px;
+    gap: 16px;
+  }
+
+  .success-card h2 { font-size: 20px; }
+}
+
+@media (max-width: 480px) {
+
+  .main {
+    padding: 16px 12px 48px;
+  }
+
+  .form-card {
+    padding: 20px 16px;
+    border-radius: 14px;
+  }
+
+  .page-title { font-size: 22px; }
+
+  /* Servicii — 1 coloană pe telefon mic */
+  .services-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 6px;
+  }
+
+  .service-chip {
+    font-size: 11.5px;
+    padding: 7px 10px;
+  }
+
+  /* Custom service add — stack */
+  .custom-service-add {
+    flex-direction: column;
+  }
+
+  .add-service-btn {
+    width: 100%;
+    justify-content: center;
+    padding: 10px;
+  }
+
+  /* Radio row — 1 coloană */
+  .radio-row {
+    grid-template-columns: 1fr;
+  }
+
+  /* Nav row — full width buttons */
+  .nav-row {
+    flex-direction: row;
+    gap: 10px;
+  }
+
+  .btn-back  { padding: 11px 14px; }
+  .btn-next  { flex: 1; justify-content: center; }
+  .btn-submit{ width: 100%; justify-content: center; }
+
+  .billing-toggle-wrap {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+  }
+}

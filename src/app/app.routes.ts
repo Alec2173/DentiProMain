@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router';
+import { pricingGuard } from './guards/pricing.guard';
 
 export const routes: Routes = [
   // ── PATIENT SITE ──────────────────────────────────────────
@@ -27,6 +28,10 @@ export const routes: Routes = [
     loadComponent: () => import('./gdpr/gdpr.component').then((m) => m.GDPRComponent),
   },
   {
+    path: 'termeni',
+    loadComponent: () => import('./termeni/termeni.component').then((m) => m.TermeniComponent),
+  },
+  {
     path: 'calendar',
     loadComponent: () => import('./calendar/calendar.component').then((m) => m.CalendarComponent),
   },
@@ -47,7 +52,10 @@ export const routes: Routes = [
     loadComponent: () => import('./form/form.component').then((m) => m.FormComponent),
   },
   {
+    // HIDDEN_PRICING — de readus când lansăm (scoate canActivate)
+    // Data ascuns: 2026-03-20
     path: 'clinici/pricing',
+    canActivate: [pricingGuard],
     loadComponent: () => import('./pricing/pricing.component').then((m) => m.PricingComponent),
   },
   {
@@ -62,7 +70,9 @@ export const routes: Routes = [
 
   // ── LEGACY REDIRECTS ──────────────────────────────────────
   { path: 'Inscriere', redirectTo: 'clinici/inscriere', pathMatch: 'full' },
-  { path: 'pricing',   redirectTo: 'clinici/pricing',   pathMatch: 'full' },
+  // HIDDEN_PRICING — de readus când lansăm (schimbă redirectTo înapoi la 'clinici/pricing' și scoate guard-ul)
+  // Data ascuns: 2026-03-20
+  { path: 'pricing', redirectTo: '', pathMatch: 'full' },
   {
     path: 'viewer',
     loadComponent: () => import('./form/viewer/viewer.component').then((m) => m.ViewerComponent),
@@ -84,5 +94,8 @@ export const routes: Routes = [
     path: 'appointments',
     loadComponent: () => import('./appointments/appointments.component').then(m => m.AppointmentsComponent),
   },
-  { path: '**', redirectTo: '', pathMatch: 'full' },
+  {
+    path: '**',
+    loadComponent: () => import('./not-found/not-found.component').then((m) => m.NotFoundComponent),
+  },
 ];

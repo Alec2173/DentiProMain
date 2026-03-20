@@ -15,6 +15,7 @@ import { Meta } from '@angular/platform-browser';
 })
 export class ClinicAuthComponent implements OnInit {
   tab: 'login' | 'register' = 'login';
+  step: 'auth' | 'verify' | 'forgot' | 'reset' = 'auth';
   loading = false;
   error = '';
   private returnUrl = '/clinici/dashboard';
@@ -29,11 +30,27 @@ export class ClinicAuthComponent implements OnInit {
   regConfirm = '';
   regShowPw = false;
 
+  // Verificare email
+  pendingEmail = '';
+  verifyCode = '';
+  resendLoading = false;
+  resendSuccess = false;
+  resendCooldown = 0;
+  private resendTimer: any;
+
+  // Resetare parolă
+  forgotEmail = '';
+  resetCode = '';
+  resetNewPassword = '';
+  resetConfirm = '';
+  resetShowPw = false;
+  resetSuccess = false;
+
   private seo = inject(SeoService);
   private metaService = inject(Meta);
 
   constructor(
-    private authService: AuthService,
+    public authService: AuthService,
     private route: ActivatedRoute,
     private router: Router,
   ) {}
@@ -56,6 +73,7 @@ export class ClinicAuthComponent implements OnInit {
     } else if (this.authService.isLoggedIn && this.authService.isClinic) {
       this.router.navigate([this.returnUrl]);
     }
+    // Dacă e logat ca pacient, NU redirectăm — afișăm alert în pagină
   }
 
   switchTab(t: 'login' | 'register') {
@@ -68,9 +86,20 @@ export class ClinicAuthComponent implements OnInit {
     this.loading = true;
     const res = await this.authService.login(this.loginEmail, this.loginPassword);
     this.loading = false;
+    if (res.requiresVerification) {
+      this.pendingEmail = res.email ?? this.loginEmail;
+      this.step = 'verify';
+      return;
+    }
     if (res.success) {
       if (this.authService.isAdmin) {
         this.router.navigate(['/administrator']);
+      } else if (this.authService.isPatient) {
+        // Pacient a încercat să se logheze prin portalul clinicilor
+        this.authService.logout();
+        this.error = 'Acesta este un cont de pacient. Folosiți autentificarea de pe site.';
+      } else if (!this.authService.currentUser?.clinicId) {
+        this.router.navigate(['/clinici/inscriere']);
       } else {
         this.router.navigate([this.returnUrl]);
       }
@@ -86,10 +115,104 @@ export class ClinicAuthComponent implements OnInit {
       this.regName, this.regEmail, this.regPassword, this.regConfirm,
     );
     this.loading = false;
-    if (res.success) {
-      this.router.navigate([this.returnUrl]);
-    } else {
+    if (res.requiresVerification) {
+      this.pendingEmail = res.email ?? this.regEmail;
+      this.step = 'verify';
+      return;
+    }
+    if (!res.success) {
       this.error = res.error ?? 'Eroare la înregistrare.';
+    }
+  }
+
+  async submitVerify() {
+    this.error = '';
+    this.loading = true;
+    const res = await this.authService.verifyEmail(this.pendingEmail, this.verifyCode.trim());
+    this.loading = false;
+    if (res.success) {
+      if (this.authService.isAdmin) {
+        this.router.navigate(['/administrator']);
+      } else if (!this.authService.currentUser?.clinicId) {
+        this.router.navigate(['/clinici/inscriere']);
+      } else {
+        this.router.navigate([this.returnUrl]);
+      }
+    } else {
+      this.error = res.error ?? 'Cod incorect.';
+    }
+  }
+
+  async resendCode() {
+    if (this.resendCooldown > 0 || this.resendLoading) return;
+    this.resendLoading = true;
+    this.resendSuccess = false;
+    await this.authService.resendVerification(this.pendingEmail);
+    this.resendLoading = false;
+    this.resendSuccess = true;
+    this.resendCooldown = 60;
+    this.resendTimer = setInterval(() => {
+      this.resendCooldown--;
+      if (this.resendCooldown <= 0) clearInterval(this.resendTimer);
+    }, 1000);
+  }
+
+  backToAuth() {
+    this.step = 'auth';
+    this.verifyCode = '';
+    this.error = '';
+    this.resendSuccess = false;
+    this.resendCooldown = 0;
+    clearInterval(this.resendTimer);
+  }
+
+  get isPatientLoggedIn(): boolean {
+    return this.authService.isLoggedIn && this.authService.isPatient;
+  }
+
+  logoutAndStay() {
+    this.authService.logout();
+  }
+
+  goToForgot() {
+    this.step = 'forgot';
+    this.forgotEmail = this.loginEmail;
+    this.error = '';
+    this.resetSuccess = false;
+  }
+
+  async submitForgot() {
+    this.error = '';
+    this.loading = true;
+    const res = await this.authService.forgotPassword(this.forgotEmail);
+    this.loading = false;
+    if (res.success) {
+      this.step = 'reset';
+    } else {
+      this.error = res.error ?? 'Eroare. Încearcă din nou.';
+    }
+  }
+
+  async submitReset() {
+    this.error = '';
+    if (this.resetNewPassword !== this.resetConfirm) {
+      this.error = 'Parolele nu se potrivesc.';
+      return;
+    }
+    this.loading = true;
+    const res = await this.authService.resetPassword(this.forgotEmail, this.resetCode.trim(), this.resetNewPassword);
+    this.loading = false;
+    if (res.success) {
+      this.resetSuccess = true;
+      setTimeout(() => {
+        this.step = 'auth';
+        this.resetSuccess = false;
+        this.resetCode = '';
+        this.resetNewPassword = '';
+        this.resetConfirm = '';
+      }, 2000);
+    } else {
+      this.error = res.error ?? 'Eroare. Încearcă din nou.';
     }
   }
 }

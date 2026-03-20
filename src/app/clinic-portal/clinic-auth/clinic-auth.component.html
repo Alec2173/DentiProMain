@@ -8,6 +8,171 @@
       <span class="ca-brand-badge">Pro</span>
     </a>
 
+    <!-- ── STEP: VERIFY EMAIL ── -->
+    @if (!isPatientLoggedIn && step === 'verify') {
+      <div class="ca-verify-wrap">
+        <div class="ca-verify-icon">
+          <span class="material-symbols-outlined">mark_email_unread</span>
+        </div>
+        <h1 class="ca-title">Verifică emailul</h1>
+        <p class="ca-sub">Am trimis un cod de 6 cifre la <strong>{{ pendingEmail }}</strong>. Introdu-l mai jos pentru a-ți activa contul.</p>
+
+        <div class="ca-field">
+          <label class="ca-label"><i class="fal fa-key"></i> Cod de verificare</label>
+          <input type="text" class="ca-input ca-input--code" [(ngModel)]="verifyCode"
+            placeholder="123456" maxlength="6" inputmode="numeric"
+            autocomplete="one-time-code" (keydown.enter)="submitVerify()" />
+        </div>
+
+        @if (error) {
+          <div class="ca-error"><i class="fal fa-exclamation-circle"></i> {{ error }}</div>
+        }
+
+        @if (resendSuccess) {
+          <div class="ca-info-note ca-info-note--success">
+            <span class="material-symbols-outlined">check_circle</span> Cod retrimis cu succes!
+          </div>
+        }
+
+        <button class="ca-submit" (click)="submitVerify()" [disabled]="loading || verifyCode.length < 6">
+          @if (loading) {
+            <span class="ca-spinner"></span> Se verifică...
+          } @else {
+            <i class="fal fa-check-circle"></i> Confirmă codul
+          }
+        </button>
+
+        <div class="ca-verify-footer">
+          <span>Nu ai primit codul?</span>
+          <button class="ca-switch-btn" (click)="resendCode()"
+            [disabled]="resendCooldown > 0 || resendLoading">
+            @if (resendLoading) { Se trimite... }
+            @else if (resendCooldown > 0) { Retrimite ({{ resendCooldown }}s) }
+            @else { Retrimite codul }
+          </button>
+        </div>
+
+        <button class="ca-back-btn" (click)="backToAuth()">
+          <i class="fal fa-arrow-left"></i> Înapoi
+        </button>
+      </div>
+    }
+
+    <!-- ── ALERT: PACIENT LOGAT ── -->
+    @if (isPatientLoggedIn) {
+      <div class="ca-wrong-account">
+        <div class="ca-wrong-icon">
+          <span class="material-symbols-outlined">block</span>
+        </div>
+        <div class="ca-wrong-body">
+          <p class="ca-wrong-title">Cont de pacient activ</p>
+          <p class="ca-wrong-desc">
+            Ești autentificat ca <strong>{{ authService.currentUser?.name }}</strong> (cont de pacient).
+            Trebuie să te deconectezi înainte de a accesa portalul clinicilor.
+          </p>
+          <button class="ca-wrong-btn" (click)="logoutAndStay()">
+            <span class="material-symbols-outlined">logout</span>
+            Deconectează-te
+          </button>
+        </div>
+      </div>
+    }
+
+    <!-- ── STEP: FORGOT PASSWORD ── -->
+    @if (!isPatientLoggedIn && step === 'forgot') {
+      <div class="ca-verify-wrap">
+        <div class="ca-verify-icon">
+          <span class="material-symbols-outlined">lock_reset</span>
+        </div>
+        <h1 class="ca-title">Resetare parolă</h1>
+        <p class="ca-sub">Introdu emailul contului tău. Îți vom trimite un cod de resetare.</p>
+
+        <div class="ca-field">
+          <label class="ca-label"><i class="fal fa-envelope"></i> Email</label>
+          <input type="email" class="ca-input" [(ngModel)]="forgotEmail"
+            placeholder="clinica@exemplu.ro" autocomplete="email"
+            (keydown.enter)="submitForgot()" />
+        </div>
+
+        @if (error) {
+          <div class="ca-error"><i class="fal fa-exclamation-circle"></i> {{ error }}</div>
+        }
+
+        <button class="ca-submit" (click)="submitForgot()" [disabled]="loading || !forgotEmail">
+          @if (loading) {
+            <span class="ca-spinner"></span> Se trimite...
+          } @else {
+            <i class="fal fa-paper-plane"></i> Trimite codul
+          }
+        </button>
+
+        <button class="ca-back-btn" (click)="backToAuth()">
+          <i class="fal fa-arrow-left"></i> Înapoi la autentificare
+        </button>
+      </div>
+    }
+
+    <!-- ── STEP: RESET PASSWORD ── -->
+    @if (!isPatientLoggedIn && step === 'reset') {
+      <div class="ca-verify-wrap">
+        <div class="ca-verify-icon">
+          <span class="material-symbols-outlined">key</span>
+        </div>
+        <h1 class="ca-title">Parolă nouă</h1>
+        <p class="ca-sub">Am trimis un cod de 6 cifre la <strong>{{ forgotEmail }}</strong>. Introdu-l împreună cu noua parolă.</p>
+
+        @if (resetSuccess) {
+          <div class="ca-info-note ca-info-note--success">
+            <span class="material-symbols-outlined">check_circle</span> Parola a fost schimbată! Redirecționare...
+          </div>
+        } @else {
+          <div class="ca-field">
+            <label class="ca-label"><i class="fal fa-key"></i> Cod de verificare</label>
+            <input type="text" class="ca-input ca-input--code" [(ngModel)]="resetCode"
+              placeholder="123456" maxlength="6" inputmode="numeric" autocomplete="one-time-code" />
+          </div>
+
+          <div class="ca-field">
+            <label class="ca-label"><i class="fal fa-lock"></i> Parolă nouă</label>
+            <div class="ca-pw-wrap">
+              <input [type]="resetShowPw ? 'text' : 'password'" class="ca-input"
+                [(ngModel)]="resetNewPassword" placeholder="Minim 6 caractere"
+                autocomplete="new-password" />
+              <button class="ca-pw-toggle" (click)="resetShowPw = !resetShowPw">
+                <i [class]="resetShowPw ? 'fal fa-eye-slash' : 'fal fa-eye'"></i>
+              </button>
+            </div>
+          </div>
+
+          <div class="ca-field">
+            <label class="ca-label"><i class="fal fa-check-circle"></i> Confirmă parola</label>
+            <input type="password" class="ca-input" [(ngModel)]="resetConfirm"
+              placeholder="Repetă parola" autocomplete="new-password"
+              (keydown.enter)="submitReset()" />
+          </div>
+
+          @if (error) {
+            <div class="ca-error"><i class="fal fa-exclamation-circle"></i> {{ error }}</div>
+          }
+
+          <button class="ca-submit" (click)="submitReset()" [disabled]="loading || resetCode.length < 6 || !resetNewPassword">
+            @if (loading) {
+              <span class="ca-spinner"></span> Se salvează...
+            } @else {
+              <i class="fal fa-lock"></i> Setează parola nouă
+            }
+          </button>
+
+          <button class="ca-back-btn" (click)="goToForgot()">
+            <i class="fal fa-arrow-left"></i> Retrimite codul
+          </button>
+        }
+      </div>
+    }
+
+    <!-- ── STEP: AUTH (login / register) ── -->
+    @if (!isPatientLoggedIn && step === 'auth') {
+
     <h1 class="ca-title">
       {{ tab === 'login' ? 'Bine ai revenit' : 'Creează cont clinică' }}
     </h1>
@@ -64,6 +229,9 @@
         <p class="ca-switch">
           Nu ai cont?
           <button class="ca-switch-btn" (click)="switchTab('register')">Înregistrează-te</button>
+        </p>
+        <p class="ca-switch">
+          <button class="ca-switch-btn" (click)="goToForgot()">Ai uitat parola?</button>
         </p>
       </div>
     }
@@ -130,6 +298,8 @@
     <a routerLink="/" class="ca-patient-link">
       <i class="fal fa-arrow-left"></i> Înapoi la site-ul pentru pacienți
     </a>
+
+    } <!-- end @if step === 'auth' -->
 
   </div>
 

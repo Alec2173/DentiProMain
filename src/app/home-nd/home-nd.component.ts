@@ -1,5 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { ClinicDataService } from '../clinic-data.service';
+import { SeoService } from '../seo.service';
 
 import { SearchBoardNdComponent } from './search-board-nd/search-board-nd.component';
 import { AppInstallComponent } from './app-install/app-install.component';
@@ -28,9 +29,27 @@ import { CtaComponent } from './cta/cta.component';
 export class HomeNdComponent implements OnInit {
   clinics: any[] = [];
 
+  private seo = inject(SeoService);
+
   constructor(private clinicData: ClinicDataService) {}
 
   ngOnInit() {
+    this.seo.set({
+      title: 'DentiPro — Găsește clinica dentară potrivită',
+      description: 'Caută și rezervă la clinici dentare din România. Dentist în București, Cluj, Timișoara, Iași, Brașov și alte orașe. Servicii: implant, detartraj, albire, aparat dentar.',
+      canonical: 'https://dentipro.ro/',
+      schema: {
+        '@context': 'https://schema.org',
+        '@type': 'Organization',
+        name: 'DentiPro',
+        url: 'https://dentipro.ro',
+        logo: 'https://dentipro.ro/logo-new.png',
+        description: 'Marketplace dentar — găsește și rezervă la clinici dentare din România.',
+        areaServed: 'Romania',
+        sameAs: ['https://dentipro.ro'],
+      },
+    });
+
     this.clinicData.loadClinicsAuto().subscribe({
       next: (data) => {
         this.clinics = data;

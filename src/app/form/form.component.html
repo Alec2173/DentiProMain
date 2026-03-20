@@ -14,17 +14,17 @@
         </div>
         <h2>Cerere trimisă cu succes!</h2>
         <p>
-          Mulțumim! Am primit înregistrarea clinicii tale. Te vom contacta
-          în cel mai scurt timp la adresa de email furnizată.
+          Mulțumim! Înregistrarea clinicii tale a fost primită și este <strong>în curs de verificare</strong>.
+          Echipa DentiPro va analiza profilul și îl va activa în cel mai scurt timp.
         </p>
         <div class="success-details">
           <div class="success-detail-item">
-            <span class="material-symbols-outlined">mail</span>
-            Verifică inbox-ul pentru confirmare
+            <span class="material-symbols-outlined">hourglass_empty</span>
+            Status: <strong>În așteptarea aprobării</strong>
           </div>
           <div class="success-detail-item">
             <span class="material-symbols-outlined">schedule</span>
-            Timp de răspuns: 24–48 ore
+            Timp de activare: 24–48 ore
           </div>
           <div class="success-detail-item">
             <span class="material-symbols-outlined">workspace_premium</span>
@@ -426,14 +426,14 @@
       }
 
       <!-- ═══════════════════════════════════════
-           STEP 5 — PREȚURI
+           STEP 5 — TARIFE SERVICII
       ═══════════════════════════════════════ -->
       @if (currentStep === 5) {
         <div class="step-header">
           <div class="step-num">05</div>
           <div>
-            <h2 class="step-title">Prețuri servicii</h2>
-            <p class="step-sub">Introduceți prețul pentru fiecare serviciu selectat (în RON)</p>
+            <h2 class="step-title">Tarife servicii</h2>
+            <p class="step-sub">Introduceți tariful pentru fiecare serviciu selectat (în RON)</p>
           </div>
         </div>
 
@@ -516,18 +516,22 @@
       }
 
       <!-- ═══════════════════════════════════════
-           STEP 6 — FINALIZARE (pachet + revizuire + confirmare)
+           STEP 6 — FINALIZARE (revizuire + confirmare)
       ═══════════════════════════════════════ -->
       @if (currentStep === 6) {
         <div class="step-header">
           <div class="step-num">06</div>
           <div>
             <h2 class="step-title">Finalizare</h2>
-            <p class="step-sub">Alege pachetul, verifică datele și trimite cererea</p>
+            <p class="step-sub">Verifică datele și trimite cererea</p>
           </div>
         </div>
 
-        <!-- BILLING TOGGLE -->
+        <!-- PRICING_HIDDEN_START
+             HIDDEN_PRICING — de readus când lansăm
+             Data ascuns: 2026-03-20
+             Locație originală: form.component.html — step 6, billing toggle + plan cards + plan note -->
+        <!--
         <div class="billing-toggle-wrap">
           <span class="billing-opt" [class.active]="!billingAnnual">Lunar</span>
           <button class="billing-toggle" (click)="toggleBilling()">
@@ -539,26 +543,16 @@
           </span>
         </div>
 
-        <!-- PLAN CARDS -->
         <div class="plan-cards">
           @for (plan of plans; track plan.id) {
-            <div
-              class="plan-card"
-              [class.featured]="plan.featured"
-              [class.selected]="formData.selectedPlan === plan.id"
-              (click)="selectPlan(plan.id)"
-            >
-              @if (plan.badge) {
-                <div class="plan-badge">{{ plan.badge }}</div>
-              }
+            <div class="plan-card" [class.featured]="plan.featured"
+              [class.selected]="formData.selectedPlan === plan.id" (click)="selectPlan(plan.id)">
+              @if (plan.badge) { <div class="plan-badge">{{ plan.badge }}</div> }
               @if (formData.selectedPlan === plan.id) {
-                <div class="plan-selected-mark">
-                  <span class="material-symbols-outlined">check_circle</span>
-                </div>
+                <div class="plan-selected-mark"><span class="material-symbols-outlined">check_circle</span></div>
               }
               <div class="plan-name">{{ plan.name }}</div>
               <div class="plan-tagline">{{ plan.tagline }}</div>
-
               <div class="plan-price-row">
                 @if (getDisplayPrice(plan) === 0) {
                   <span class="plan-price">Gratuit</span>
@@ -570,33 +564,21 @@
               @if (billingAnnual && plan.annualTotal > 0) {
                 <div class="plan-annual-note">facturat {{ plan.annualTotal }}€/an</div>
               }
-
               <div class="plan-divider"></div>
-
               <ul class="plan-features">
                 @for (feat of plan.features; track feat.text) {
                   <li class="plan-feat" [class.excluded]="!feat.included">
-                    <span class="material-symbols-outlined feat-icon">
-                      {{ feat.included ? 'check' : 'remove' }}
-                    </span>
+                    <span class="material-symbols-outlined feat-icon">{{ feat.included ? 'check' : 'remove' }}</span>
                     <span class="feat-text">{{ feat.text }}</span>
-                    @if (feat.tag) {
-                      <span class="feat-tag" [class]="'tag-' + feat.tag.toLowerCase()">{{ feat.tag }}</span>
-                    }
+                    @if (feat.tag) { <span class="feat-tag" [class]="'tag-' + feat.tag.toLowerCase()">{{ feat.tag }}</span> }
                   </li>
                 }
               </ul>
-
-              <button
-                class="plan-cta"
-                [class.active]="formData.selectedPlan === plan.id"
-                (click)="$event.stopPropagation(); selectPlan(plan.id)"
-              >
+              <button class="plan-cta" [class.active]="formData.selectedPlan === plan.id"
+                (click)="$event.stopPropagation(); selectPlan(plan.id)">
                 @if (formData.selectedPlan === plan.id) {
                   <span class="material-symbols-outlined">check</span> Selectat
-                } @else {
-                  {{ plan.cta }}
-                }
+                } @else { {{ plan.cta }} }
               </button>
             </div>
           }
@@ -606,6 +588,8 @@
           <span class="material-symbols-outlined">info</span>
           Planul Starter este permanent gratuit. La plata anuală economisești echivalentul a 2 luni.
         </p>
+        -->
+        <!-- PRICING_HIDDEN_END -->
 
         <!-- SUMMARY -->
         <div class="section-label" style="margin-top: 24px;">Rezumat înregistrare</div>
@@ -665,9 +649,9 @@
             </div>
             <span>
               Am citit și accept
-              <a routerLink="/GDPR" class="terms-link">Termenii și condițiile</a>
+              <a routerLink="/termeni" target="_blank" class="terms-link">Termenii și condițiile</a>
               și
-              <a routerLink="/GDPR" class="terms-link">Politica de confidențialitate</a>
+              <a routerLink="/GDPR" target="_blank" class="terms-link">Politica de confidențialitate</a>
             </span>
           </label>
 

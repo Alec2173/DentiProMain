@@ -22,13 +22,13 @@
         <div class="dp-gallery">
           @if (clinicImages.length > 0) {
             <div class="dp-gallery__main">
-              <img [src]="clinicImages[activeImageIndex]" class="dp-gallery__img" alt="Imagine clinică" />
+              <img [src]="clinicImages[activeImageIndex]" class="dp-gallery__img" [alt]="clinics.name + ' — imagine clinică'" loading="lazy" />
               <div class="dp-gallery__counter">{{ activeImageIndex + 1 }} / {{ clinicImages.length }}</div>
             </div>
             <div class="dp-gallery__thumbs">
               @for (img of clinicImages; track img; let i = $index) {
                 <img [src]="img" class="dp-thumb" [class.active]="i === activeImageIndex"
-                  (click)="activeImageIndex = i" alt="Thumbnail {{ i + 1 }}" />
+                  (click)="activeImageIndex = i" [alt]="clinics.name + ' — imagine ' + (i + 1)" loading="lazy" />
               }
             </div>
           } @else {
@@ -46,7 +46,7 @@
           <!-- Logo + Nume -->
           <div class="dp-info__header">
             @if (clinics.logo_url) {
-              <img [src]="clinics.logo_url" class="dp-info__logo" alt="Logo clinică" />
+              <img [src]="clinics.logo_url" class="dp-info__logo" [alt]="'Logo ' + clinics.name" loading="lazy" />
             } @else {
               <div class="dp-info__logo dp-info__logo--initials">
                 {{ clinics.name ? clinics.name.charAt(0).toUpperCase() : 'C' }}

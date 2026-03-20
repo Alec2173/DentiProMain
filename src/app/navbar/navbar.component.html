@@ -200,6 +200,20 @@
   </div>
 }
 
+<!-- ══ WRONG ACCOUNT ALERT ══ -->
+@if (showWrongAccountAlert) {
+  <div class="wrong-account-alert">
+    <span class="material-symbols-outlined waa-icon">block</span>
+    <div class="waa-body">
+      <p class="waa-title">Cont de clinică activ</p>
+      <p class="waa-desc">Ești autentificat ca <strong>{{ authService.currentUser?.name }}</strong> (cont de clinică). Deconectează-te pentru a accesa zona pacienților.</p>
+    </div>
+    <button class="waa-close" (click)="showWrongAccountAlert = false">
+      <span class="material-symbols-outlined">close</span>
+    </button>
+  </div>
+}
+
 <!-- ══ AUTH MODAL (pacienți only) ══ -->
 @if (showModal) {
   <div class="modal-overlay" (click)="closeModal()">
@@ -214,6 +228,135 @@
         <span class="modal-logo-text">DentiPro</span>
       </div>
 
+      <!-- ── VERIFY EMAIL STEP ── -->
+      @if (modalStep === 'verify') {
+        <div class="modal-body">
+          <div style="text-align:center;margin-bottom:8px;">
+            <span class="material-symbols-outlined" style="font-size:44px;color:#60a5fa;">mark_email_unread</span>
+          </div>
+          <p class="modal-sub" style="text-align:center;">
+            Am trimis un cod de 6 cifre la <strong>{{ pendingEmail }}</strong>.<br>Introdu-l mai jos pentru a-ți activa contul.
+          </p>
+
+          <div class="modal-field">
+            <label class="modal-label"><i class="fal fa-key"></i> Cod de verificare</label>
+            <input type="text" class="modal-input modal-input--code" [(ngModel)]="verifyCode"
+              placeholder="123456" maxlength="6" inputmode="numeric"
+              autocomplete="one-time-code" (keydown.enter)="submitVerify()" />
+          </div>
+
+          @if (modalError) {
+            <div class="modal-error"><i class="fal fa-exclamation-circle"></i> {{ modalError }}</div>
+          }
+          @if (resendSuccess) {
+            <div class="modal-info-ok"><span class="material-symbols-outlined" style="font-size:15px;vertical-align:middle;">check_circle</span> Cod retrimis!</div>
+          }
+
+          <button class="modal-submit" (click)="submitVerify()" [disabled]="modalLoading || verifyCode.length < 6">
+            @if (modalLoading) { <span class="modal-spinner"></span> Se verifică... }
+            @else { <i class="fal fa-check-circle"></i> Confirmă codul }
+          </button>
+
+          <div class="modal-verify-footer">
+            <span>Nu ai primit codul?</span>
+            <button class="modal-switch-btn" (click)="resendCode()" [disabled]="resendCooldown > 0 || resendLoading">
+              @if (resendLoading) { Se trimite... }
+              @else if (resendCooldown > 0) { Retrimite ({{ resendCooldown }}s) }
+              @else { Retrimite codul }
+            </button>
+          </div>
+
+          <button class="modal-back-btn" (click)="backToAuth()">
+            <i class="fal fa-arrow-left"></i> Înapoi
+          </button>
+        </div>
+      }
+
+      <!-- ── FORGOT PASSWORD STEP ── -->
+      @if (modalStep === 'forgot') {
+        <div class="modal-body">
+          <div style="text-align:center;margin-bottom:8px;">
+            <span class="material-symbols-outlined" style="font-size:44px;color:#60a5fa;">lock_reset</span>
+          </div>
+          <p class="modal-sub" style="text-align:center;">Introdu emailul contului tău și îți trimitem un cod de resetare.</p>
+
+          <div class="modal-field">
+            <label class="modal-label"><i class="fal fa-envelope"></i> Email</label>
+            <input type="email" class="modal-input" [(ngModel)]="forgotEmail"
+              placeholder="email@exemplu.ro" autocomplete="email"
+              (keydown.enter)="submitForgot()" />
+          </div>
+
+          @if (modalError) {
+            <div class="modal-error"><i class="fal fa-exclamation-circle"></i> {{ modalError }}</div>
+          }
+
+          <button class="modal-submit" (click)="submitForgot()" [disabled]="modalLoading || !forgotEmail">
+            @if (modalLoading) { <span class="modal-spinner"></span> Se trimite... }
+            @else { <i class="fal fa-paper-plane"></i> Trimite codul }
+          </button>
+
+          <button class="modal-back-btn" (click)="backToAuth()">
+            <i class="fal fa-arrow-left"></i> Înapoi la autentificare
+          </button>
+        </div>
+      }
+
+      <!-- ── RESET PASSWORD STEP ── -->
+      @if (modalStep === 'reset') {
+        <div class="modal-body">
+          <div style="text-align:center;margin-bottom:8px;">
+            <span class="material-symbols-outlined" style="font-size:44px;color:#60a5fa;">key</span>
+          </div>
+          <p class="modal-sub" style="text-align:center;">
+            Am trimis un cod la <strong>{{ forgotEmail }}</strong>. Introdu-l împreună cu noua parolă.
+          </p>
+
+          @if (resetSuccess) {
+            <div class="modal-info-ok"><span class="material-symbols-outlined" style="font-size:15px;vertical-align:middle;">check_circle</span> Parola a fost schimbată! Redirecționare...</div>
+          } @else {
+            <div class="modal-field">
+              <label class="modal-label"><i class="fal fa-key"></i> Cod de verificare</label>
+              <input type="text" class="modal-input modal-input--code" [(ngModel)]="resetCode"
+                placeholder="123456" maxlength="6" inputmode="numeric" autocomplete="one-time-code" />
+            </div>
+
+            <div class="modal-field">
+              <label class="modal-label"><i class="fal fa-lock"></i> Parolă nouă</label>
+              <div class="modal-pw-wrap">
+                <input [type]="resetShowPw ? 'text' : 'password'" class="modal-input"
+                  [(ngModel)]="resetNewPassword" placeholder="Minim 6 caractere"
+                  autocomplete="new-password" />
+                <button class="pw-toggle" (click)="resetShowPw = !resetShowPw">
+                  <i [class]="resetShowPw ? 'fal fa-eye-slash' : 'fal fa-eye'"></i>
+                </button>
+              </div>
+            </div>
+
+            <div class="modal-field">
+              <label class="modal-label"><i class="fal fa-check-circle"></i> Confirmă parola</label>
+              <input type="password" class="modal-input" [(ngModel)]="resetConfirm"
+                placeholder="Repetă parola" autocomplete="new-password"
+                (keydown.enter)="submitReset()" />
+            </div>
+
+            @if (modalError) {
+              <div class="modal-error"><i class="fal fa-exclamation-circle"></i> {{ modalError }}</div>
+            }
+
+            <button class="modal-submit" (click)="submitReset()" [disabled]="modalLoading || resetCode.length < 6 || !resetNewPassword">
+              @if (modalLoading) { <span class="modal-spinner"></span> Se salvează... }
+              @else { <i class="fal fa-lock"></i> Setează parola nouă }
+            </button>
+
+            <button class="modal-back-btn" (click)="goToForgot()">
+              <i class="fal fa-arrow-left"></i> Retrimite codul
+            </button>
+          }
+        </div>
+      }
+
+      @if (modalStep === 'auth') {
       <div class="modal-tabs">
         <button class="modal-tab" [class.active]="modalTab === 'login'" (click)="switchTab('login')">
           Autentificare
@@ -262,6 +405,9 @@
           <p class="modal-switch">
             Nu ai cont?
             <button class="modal-switch-btn" (click)="switchTab('register')">Înregistrează-te</button>
+          </p>
+          <p class="modal-switch">
+            <button class="modal-switch-btn" (click)="goToForgot()">Ai uitat parola?</button>
           </p>
 
           <div class="modal-clinic-redirect">
@@ -334,6 +480,8 @@
           </div>
         </div>
       }
+
+      } <!-- end @if modalStep === 'auth' -->
 
     </div>
   </div>

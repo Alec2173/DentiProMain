@@ -49,7 +49,7 @@ export class AuthService {
   }
 
   // ── LOGIN ────────────────────────────────────────────────
-  async login(email: string, password: string): Promise<{ success: boolean; error?: string }> {
+  async login(email: string, password: string): Promise<{ success: boolean; requiresVerification?: boolean; email?: string; error?: string }> {
     if (!email || !password) {
       return { success: false, error: 'Completați toate câmpurile.' };
     }
@@ -57,6 +57,9 @@ export class AuthService {
       const res: any = await firstValueFrom(
         this.http.post(`${API}/auth/login`, { email, password })
       );
+      if (res.requiresVerification) {
+        return { success: false, requiresVerification: true, email: res.email };
+      }
       this.setSession(res.token, res.user);
       return { success: true };
     } catch (err: any) {
@@ -70,7 +73,7 @@ export class AuthService {
     email: string,
     password: string,
     confirmPassword: string,
-  ): Promise<{ success: boolean; error?: string }> {
+  ): Promise<{ success: boolean; requiresVerification?: boolean; email?: string; error?: string }> {
     const validation = this.validateRegister(name, email, password, confirmPassword);
     if (!validation.valid) return { success: false, error: validation.error };
 
@@ -83,8 +86,7 @@ export class AuthService {
           role: 'patient',
         })
       );
-      this.setSession(res.token, res.user);
-      return { success: true };
+      return { success: true, requiresVerification: true, email: res.email };
     } catch (err: any) {
       return { success: false, error: err?.error?.error ?? 'Eroare la înregistrare.' };
     }
@@ -96,7 +98,7 @@ export class AuthService {
     email: string,
     password: string,
     confirmPassword: string,
-  ): Promise<{ success: boolean; error?: string }> {
+  ): Promise<{ success: boolean; requiresVerification?: boolean; email?: string; error?: string }> {
     const validation = this.validateRegister(clinicName, email, password, confirmPassword);
     if (!validation.valid) return { success: false, error: validation.error };
 
@@ -109,10 +111,54 @@ export class AuthService {
           role: 'clinic',
         })
       );
+      return { success: true, requiresVerification: true, email: res.email };
+    } catch (err: any) {
+      return { success: false, error: err?.error?.error ?? 'Eroare la înregistrare.' };
+    }
+  }
+
+  // ── VERIFY EMAIL ─────────────────────────────────────────
+  async verifyEmail(email: string, code: string): Promise<{ success: boolean; error?: string }> {
+    try {
+      const res: any = await firstValueFrom(
+        this.http.post(`${API}/auth/verify-email`, { email, code })
+      );
       this.setSession(res.token, res.user);
       return { success: true };
     } catch (err: any) {
-      return { success: false, error: err?.error?.error ?? 'Eroare la înregistrare.' };
+      return { success: false, error: err?.error?.error ?? 'Cod incorect sau expirat.' };
+    }
+  }
+
+  // ── RESEND VERIFICATION ──────────────────────────────────
+  async forgotPassword(email: string): Promise<{ success: boolean; error?: string }> {
+    if (!email) return { success: false, error: 'Introduceți emailul.' };
+    try {
+      await firstValueFrom(this.http.post(`${API}/auth/forgot-password`, { email }));
+      return { success: true };
+    } catch (err: any) {
+      return { success: false, error: err?.error?.error ?? 'Eroare. Încearcă din nou.' };
+    }
+  }
+
+  async resetPassword(email: string, code: string, newPassword: string): Promise<{ success: boolean; error?: string }> {
+    if (!email || !code || !newPassword) return { success: false, error: 'Completați toate câmpurile.' };
+    try {
+      await firstValueFrom(this.http.post(`${API}/auth/reset-password`, { email, code, newPassword }));
+      return { success: true };
+    } catch (err: any) {
+      return { success: false, error: err?.error?.error ?? 'Eroare. Încearcă din nou.' };
+    }
+  }
+
+  async resendVerification(email: string): Promise<{ success: boolean; error?: string }> {
+    try {
+      await firstValueFrom(
+        this.http.post(`${API}/auth/resend-verification`, { email })
+      );
+      return { success: true };
+    } catch (err: any) {
+      return { success: false, error: err?.error?.error ?? 'Eroare la trimiterea codului.' };
     }
   }
 

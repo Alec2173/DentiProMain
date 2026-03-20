@@ -11,9 +11,10 @@
       <a routerLink="/clinici" routerLinkActive="active" [routerLinkActiveOptions]="{exact:true}">
         Beneficii
       </a>
-      <a routerLink="/clinici/pricing" routerLinkActive="active">
-        Prețuri
-      </a>
+      <!-- HIDDEN_PRICING — de readus când lansăm
+           Data ascuns: 2026-03-20
+           Locație originală: clinic-navbar > nav links -->
+      <!-- <a routerLink="/clinici/pricing" routerLinkActive="active">Prețuri</a> -->
       <a routerLink="/clinici/inscriere" routerLinkActive="active">
         Înregistrare
       </a>
@@ -73,9 +74,12 @@
             <a class="cn-dd-item" routerLink="/clinici/profil" (click)="userMenuOpen = false">
               <i class="fal fa-edit"></i> Editează profilul
             </a>
-            <a class="cn-dd-item" routerLink="/clinici/pricing" (click)="userMenuOpen = false">
+            <!-- HIDDEN_PRICING — de readus când lansăm
+                 Data ascuns: 2026-03-20
+                 Locație originală: clinic-navbar > user dropdown -->
+            <!-- <a class="cn-dd-item" routerLink="/clinici/pricing" (click)="userMenuOpen = false">
               <i class="fal fa-tag"></i> Plan & abonament
-            </a>
+            </a> -->
 
             <div class="cn-dd-divider"></div>
 
@@ -104,7 +108,10 @@
 @if (mobileMenuOpen) {
   <div class="cn-mobile-menu">
     <a routerLink="/clinici" (click)="mobileMenuOpen = false">Beneficii</a>
-    <a routerLink="/clinici/pricing" (click)="mobileMenuOpen = false">Prețuri</a>
+    <!-- HIDDEN_PRICING — de readus când lansăm
+         Data ascuns: 2026-03-20
+         Locație originală: clinic-navbar > mobile menu -->
+    <!-- <a routerLink="/clinici/pricing" (click)="mobileMenuOpen = false">Prețuri</a> -->
     <a routerLink="/clinici/inscriere" (click)="mobileMenuOpen = false">Înregistrare</a>
 
     @if (!authService.isLoggedIn || authService.isPatient) {

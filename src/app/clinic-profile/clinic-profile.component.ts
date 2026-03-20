@@ -5,7 +5,7 @@ import { AuthService } from '../auth.service';
 import { ServiciiService } from '../servicii.service';
 import { FormsModule } from '@angular/forms';
 import { TitleCasePipe, DecimalPipe } from '@angular/common';
-import { RouterLink } from '@angular/router';
+import { RouterLink, Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { Meta } from '@angular/platform-browser';
 import * as maplibregl from 'maplibre-gl';
@@ -78,9 +78,14 @@ export class ClinicProfileComponent implements OnInit, OnDestroy {
     private serviciiService: ServiciiService,
     private http: HttpClient,
     private zone: NgZone,
+    private router: Router,
   ) {}
 
   ngOnInit(): void {
+    if (!this.authService.isClinic) {
+      this.router.navigate(['/clinici/autentificare']);
+      return;
+    }
     this.allServices = this.serviciiService.getServices();
     // Pagina de management intern — nu trebuie indexată
     this.metaService.updateTag({ name: 'robots', content: 'noindex, nofollow' });

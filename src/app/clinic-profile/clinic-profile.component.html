@@ -746,6 +746,13 @@
 
           </div>
 
+          @if (servicesSaveError) {
+            <div class="svc-save-error">
+              <i class="fal fa-exclamation-circle"></i>
+              {{ servicesSaveError }}
+            </div>
+          }
+
           <div class="modal-footer">
             <button class="btn-cancel-lg" (click)="closeServicesEdit()">Renunță</button>
             <button class="btn-save-lg" (click)="saveServices()" [disabled]="savingServices">

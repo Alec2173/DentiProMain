@@ -38,6 +38,7 @@ export class ClinicProfileComponent implements OnInit, OnDestroy {
   // ── SERVICES EDIT ─────────────────────────────────────
   editingServices = false;
   savingServices = false;
+  servicesSaveError = '';
   allServices: { id: string; label: string }[] = [];
   servicesDraft: {
     id: string; label: string; selected: boolean;
@@ -478,6 +479,7 @@ export class ClinicProfileComponent implements OnInit, OnDestroy {
     this.editingServices = false;
     this.servicesDraft = [];
     this.newCustomServiceInput = '';
+    this.servicesSaveError = '';
   }
 
   toggleServiceInDraft(id: string) {
@@ -500,6 +502,7 @@ export class ClinicProfileComponent implements OnInit, OnDestroy {
   saveServices() {
     if (!this.clinic) return;
     this.savingServices = true;
+    this.servicesSaveError = '';
     const selected = this.servicesDraft.filter(s => s.selected).map(s => ({
       id: s.id,
       label: s.label,
@@ -507,6 +510,11 @@ export class ClinicProfileComponent implements OnInit, OnDestroy {
       price: s.price,
       priceMax: s.priceMax,
     }));
+    if (selected.length < 1) {
+      this.servicesSaveError = 'Selectați cel puțin un serviciu.';
+      this.savingServices = false;
+      return;
+    }
     const token = this.authService.getToken() ?? '';
     this.clinicService.updateServices(this.clinic.id, selected, token).subscribe({
       next: (updated) => {
@@ -515,7 +523,7 @@ export class ClinicProfileComponent implements OnInit, OnDestroy {
         this.closeServicesEdit();
       },
       error: (err) => {
-        console.error('Eroare la salvare servicii:', err);
+        this.servicesSaveError = err?.error?.error ?? 'Eroare la salvare. Încearcă din nou.';
         this.savingServices = false;
       },
     });

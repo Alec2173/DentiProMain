@@ -1654,7 +1654,7 @@
 .svc-rows {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 2px;
 }
 
 .svc-row {
@@ -1665,8 +1665,8 @@
 .svc-row-main {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 9px 10px;
+  gap: 12px;
+  padding: 11px 12px;
   border-radius: 10px;
 }
 
@@ -1675,8 +1675,8 @@
 }
 
 .svc-dot {
-  width: 6px;
-  height: 6px;
+  width: 7px;
+  height: 7px;
   border-radius: 50%;
   background: #3b82f6;
   flex-shrink: 0;
@@ -1684,56 +1684,61 @@
 
 .svc-row-label {
   flex: 1;
-  font-size: 13.5px;
+  font-size: 14px;
   color: #e2e8f0;
+  min-width: 0;
 }
 
 .svc-row-actions {
   display: flex;
   align-items: center;
   gap: 8px;
+  flex-shrink: 0;
 }
 
 .svc-row-price {
-  font-size: 12.5px;
-  color: #94a3b8;
+  font-size: 13px;
+  color: #60a5fa;
   white-space: nowrap;
+  font-weight: 500;
 }
 
 .svc-no-price {
   color: #475569;
+  font-size: 12px;
   font-style: italic;
 }
 
 /* Price inline edit */
 .svc-price-edit {
-  padding: 10px 10px 14px;
-  background: rgba(37,99,235,0.06);
-  border-radius: 10px;
-  margin-bottom: 4px;
+  padding: 14px 14px 16px;
+  background: rgba(37,99,235,0.07);
+  border: 1px solid rgba(59,130,246,0.15);
+  border-radius: 12px;
+  margin: 2px 0 6px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 12px;
 }
 
 .price-type-btns {
   display: flex;
-  gap: 6px;
+  gap: 8px;
 }
 
 .price-type-btn {
-  padding: 4px 12px;
-  border-radius: 6px;
+  padding: 6px 16px;
+  border-radius: 8px;
   border: 1px solid rgba(255,255,255,0.12);
   background: transparent;
   color: #94a3b8;
-  font-size: 12px;
+  font-size: 13px;
   cursor: pointer;
   transition: all 0.15s;
 }
 
 .price-type-btn.active {
-  background: rgba(37,99,235,0.2);
+  background: rgba(37,99,235,0.22);
   border-color: rgba(59,130,246,0.4);
   color: #93c5fd;
 }
@@ -1741,96 +1746,181 @@
 .price-inputs-row {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
+  flex-wrap: wrap;
 }
 
 .price-edit-input {
-  width: 90px;
-  padding: 6px 10px;
+  width: 100px;
+  padding: 8px 12px;
   background: rgba(255,255,255,0.06);
-  border: 1px solid rgba(255,255,255,0.12);
+  border: 1px solid rgba(255,255,255,0.15);
   border-radius: 8px;
   color: #e2e8f0;
-  font-size: 13px;
+  font-size: 14px;
+}
+
+.price-edit-input:focus {
+  outline: none;
+  border-color: rgba(59,130,246,0.5);
 }
 
 .range-sep {
   color: #64748b;
-  font-size: 14px;
+  font-size: 16px;
 }
 
 .price-currency-label {
   color: #64748b;
-  font-size: 12px;
+  font-size: 13px;
 }
 
 /* ── SERVICES MODAL ───────────────────────────────────── */
 .modal-card--wide {
-  max-width: 680px;
+  max-width: 720px;
+  width: 100%;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.modal-card--wide .modal-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px;
 }
 
 .svc-edit-grid {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 10px;
 }
 
 .svc-edit-chip {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 6px 14px;
+  gap: 7px;
+  padding: 9px 18px;
   border-radius: 100px;
   border: 1px solid rgba(255,255,255,0.12);
   background: rgba(255,255,255,0.04);
   color: #94a3b8;
-  font-size: 13px;
+  font-size: 13.5px;
   cursor: pointer;
   transition: all 0.15s;
   user-select: none;
+  line-height: 1.3;
+}
+
+.svc-edit-chip:active {
+  transform: scale(0.97);
 }
 
 .svc-edit-chip:hover {
   border-color: rgba(59,130,246,0.35);
   color: #cbd5e1;
+  background: rgba(255,255,255,0.07);
 }
 
 .svc-edit-chip.selected {
   background: rgba(37,99,235,0.18);
-  border-color: rgba(59,130,246,0.45);
+  border-color: rgba(59,130,246,0.5);
   color: #93c5fd;
 }
 
 .svc-edit-chip .fal {
-  font-size: 11px;
+  font-size: 12px;
 }
 
 .custom-svc-list {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
-  margin-bottom: 12px;
+  margin-bottom: 14px;
   min-height: 8px;
 }
 
 .custom-svc-tag {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 5px 8px 5px 12px;
+  gap: 7px;
+  padding: 7px 10px 7px 14px;
   background: rgba(245,158,11,0.1);
   border: 1px solid rgba(245,158,11,0.25);
   border-radius: 100px;
   color: #fbbf24;
-  font-size: 12.5px;
+  font-size: 13px;
 }
 
 .custom-svc-add {
   display: flex;
-  gap: 8px;
+  gap: 10px;
   align-items: center;
 }
 
 .custom-svc-add .edit-input {
   flex: 1;
+  min-width: 0;
+}
+
+/* Error in services modal */
+.svc-save-error {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 24px 12px;
+  padding: 12px 16px;
+  background: rgba(239,68,68,0.1);
+  border: 1px solid rgba(239,68,68,0.25);
+  border-radius: 10px;
+  color: #fca5a5;
+  font-size: 13px;
+}
+
+/* ── RESPONSIVE — mobile ──────────────────────────────── */
+@media (max-width: 600px) {
+  .modal-card--wide {
+    max-height: 88dvh;
+  }
+
+  .modal-card--wide .modal-body {
+    padding: 16px;
+  }
+
+  .svc-edit-chip {
+    font-size: 13px;
+    padding: 8px 13px;
+  }
+
+  .svc-edit-grid {
+    gap: 8px;
+  }
+
+  .svc-row-main {
+    padding: 10px 8px;
+    gap: 8px;
+  }
+
+  .svc-row-label {
+    font-size: 13px;
+  }
+
+  .price-edit-input {
+    width: 76px;
+    font-size: 13px;
+  }
+
+  .price-type-btn {
+    padding: 5px 11px;
+    font-size: 12px;
+  }
+
+  .custom-svc-add {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .custom-svc-add .btn-save {
+    justify-content: center;
+  }
 }

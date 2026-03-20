@@ -1,12 +1,13 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RoCitiesService } from '../ro-cities.service';
 import { ServiciiService } from '../servicii.service';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { RouterLink } from '@angular/router';
+import { RouterLink, Router } from '@angular/router';
 import { AuthService } from '../auth.service';
 import { ClinicDataService } from '../clinic-data.service';
+import { SeoService } from '../seo.service';
 import { Map as MaplibreMap, Marker, NavigationControl } from 'maplibre-gl';
 
 const MAPTILER_KEY = 'cwyGOMCDF8zwmBEDJrCr';
@@ -23,14 +24,14 @@ export class FormComponent implements OnInit, OnDestroy {
   // ── STEPS ──────────────────────────────────────────────────
   currentStep = 1;
   readonly totalSteps = 6;
-  readonly stepLabels = ['Clinica', 'Profil', 'Locație', 'Servicii', 'Prețuri', 'Finalizare'];
+  readonly stepLabels = ['Clinica', 'Profil', 'Locație', 'Servicii', 'Tarife', 'Finalizare'];
   readonly stepDescriptions = [
     'Informații de bază',
     'Media & display',
     'Adresă & hartă',
     'Servicii oferite',
     'Prețuri servicii',
-    'Pachet & confirmare',
+    'Verifică și trimite',
   ];
 
   // ── STATE ──────────────────────────────────────────────────
@@ -154,15 +155,32 @@ export class FormComponent implements OnInit, OnDestroy {
     },
   ];
 
+  private seo = inject(SeoService);
+
   constructor(
     private roCitiesService: RoCitiesService,
     private serviciiService: ServiciiService,
     private http: HttpClient,
     private authService: AuthService,
     private clinicDataService: ClinicDataService,
+    private router: Router,
   ) {}
 
   ngOnInit() {
+    // Redirect dacă nu e autentificat
+    if (!this.authService.isLoggedIn) {
+      this.router.navigate(['/clinici/autentificare'], {
+        queryParams: { returnUrl: '/clinici/inscriere' },
+      });
+      return;
+    }
+
+    this.seo.set({
+      title: 'Înscrie clinica ta pe DentiPro | Formular de înregistrare',
+      description: 'Completează formularul de înregistrare și adaugă clinica ta dentară pe DentiPro. Vizibilitate imediată în căutările pacienților. Starter gratuit.',
+      canonical: 'https://dentipro.ro/clinici/inscriere',
+    });
+
     this.cities = this.roCitiesService.getCities();
     this.serviceObject = this.serviciiService.getServices();
     this.tryPrefillFromExistingClinic();
@@ -170,7 +188,12 @@ export class FormComponent implements OnInit, OnDestroy {
 
   private tryPrefillFromExistingClinic() {
     const clinicId = this.authService.currentUser?.clinicId;
-    if (!clinicId) return;
+
+    // Dacă nu are clinică, pre-fillăm numele din contul de utilizator
+    if (!clinicId) {
+      this.formData.name = this.authService.currentUser?.name ?? '';
+      return;
+    }
 
     this.existingClinicId = Number(clinicId);
     this.isUpdating = true;

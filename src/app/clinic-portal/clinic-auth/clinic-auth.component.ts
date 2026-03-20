@@ -1,8 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { RouterLink, ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from '../../auth.service';
+import { SeoService } from '../../seo.service';
+import { Meta } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-clinic-auth',
@@ -15,6 +17,7 @@ export class ClinicAuthComponent implements OnInit {
   tab: 'login' | 'register' = 'login';
   loading = false;
   error = '';
+  private returnUrl = '/clinici/dashboard';
 
   loginEmail = '';
   loginPassword = '';
@@ -26,6 +29,9 @@ export class ClinicAuthComponent implements OnInit {
   regConfirm = '';
   regShowPw = false;
 
+  private seo = inject(SeoService);
+  private metaService = inject(Meta);
+
   constructor(
     private authService: AuthService,
     private route: ActivatedRoute,
@@ -33,14 +39,22 @@ export class ClinicAuthComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    // Support ?tab=register query param
+    this.seo.set({
+      title: 'Autentificare clinică | DentiPro',
+      description: 'Intră în contul tău de clinică dentară pe DentiPro.',
+      canonical: 'https://dentipro.ro/clinici/autentificare',
+    });
+    this.metaService.updateTag({ name: 'robots', content: 'noindex, nofollow' });
+
+    // Citește query params: tab și returnUrl
     this.route.queryParams.subscribe((p) => {
       if (p['tab'] === 'register') this.tab = 'register';
+      if (p['returnUrl']) this.returnUrl = p['returnUrl'];
     });
     if (this.authService.isAdmin) {
       this.router.navigate(['/administrator']);
     } else if (this.authService.isLoggedIn && this.authService.isClinic) {
-      this.router.navigate(['/clinici/dashboard']);
+      this.router.navigate([this.returnUrl]);
     }
   }
 
@@ -58,7 +72,7 @@ export class ClinicAuthComponent implements OnInit {
       if (this.authService.isAdmin) {
         this.router.navigate(['/administrator']);
       } else {
-        this.router.navigate(['/clinici/dashboard']);
+        this.router.navigate([this.returnUrl]);
       }
     } else {
       this.error = res.error ?? 'Eroare la autentificare.';
@@ -73,7 +87,7 @@ export class ClinicAuthComponent implements OnInit {
     );
     this.loading = false;
     if (res.success) {
-      this.router.navigate(['/clinici/inscriere']);
+      this.router.navigate([this.returnUrl]);
     } else {
       this.error = res.error ?? 'Eroare la înregistrare.';
     }

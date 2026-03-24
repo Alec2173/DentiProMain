@@ -662,7 +662,37 @@
   border-color: rgba(245,158,11,0.3) !important;
 }
 
-/* ── RESPONSIVE ─────────────────────────────────────────── */
+/* ── PAGINATION ──────────────────────────────────────────── */
+.adm-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 20px;
+  border-top: 1px solid rgba(255,255,255,0.06);
+}
+
+.adm-page-btn {
+  width: 34px; height: 34px;
+  border-radius: 9px;
+  border: 1px solid rgba(255,255,255,0.1);
+  background: rgba(255,255,255,0.04);
+  color: #94a3b8;
+  font-size: 13px;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.2s;
+}
+.adm-page-btn:hover:not(:disabled) { background: rgba(255,255,255,0.09); color: #e2e8f0; }
+.adm-page-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+
+.adm-page-info {
+  font-size: 13px;
+  color: #64748b;
+}
+.adm-page-count { margin-left: 6px; color: #475569; font-size: 12px; }
+
+/* ── RESPONSIVE ──────────────────────────────────────────── */
 @media (max-width: 768px) {
   .adm-wrap { padding: 16px; }
   .adm-stats { grid-template-columns: repeat(2, 1fr); }

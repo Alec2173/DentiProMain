@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 export interface ClinicService {
@@ -29,6 +29,12 @@ export interface Clinic {
   status: string;
 }
 
+export interface ClinicsPage {
+  clinics: Clinic[];
+  total: number;
+  hasMore: boolean;
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -37,8 +43,17 @@ export class ClinicDataService {
 
   constructor(private http: HttpClient) {}
 
+  /** Încarcă toate clinicile — folosit de hartă */
   loadClinicsAuto(filters?: any): Observable<Clinic[]> {
-    return this.http.get<Clinic[]>(this.apiUrl);
+    return this.http.get<Clinic[]>(`${this.apiUrl}?mode=map`);
+  }
+
+  /** Încarcă o pagină de clinici cu date complete (cards, finder) */
+  loadPage(params: { limit?: number; offset?: number; city?: string; service?: string }): Observable<ClinicsPage> {
+    let p = new HttpParams().set('limit', String(params.limit ?? 24)).set('offset', String(params.offset ?? 0));
+    if (params.city)    p = p.set('city', params.city);
+    if (params.service) p = p.set('service', params.service);
+    return this.http.get<ClinicsPage>(this.apiUrl, { params: p });
   }
 
   getClinicById(id: number): Observable<Clinic> {

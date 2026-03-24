@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ClinicDataService } from '../clinic-data.service';
+
 @Component({
   standalone: true,
   selector: 'app-clinici',
@@ -8,20 +9,20 @@ import { ClinicDataService } from '../clinic-data.service';
 })
 export class CliniciComponent implements OnInit {
   clinics: any[] = [];
+  displayLimit = 20;
 
   constructor(private clinicData: ClinicDataService) {}
 
   ngOnInit() {
     this.clinicData.loadClinicsAuto().subscribe({
-      next: (data) => {
-        this.clinics = data;
-      },
-      error: (err) => {
-        console.error('Eroare la încărcare clinici:', err);
-      },
+      next: (data) => { this.clinics = data; },
+      error: (err) => { console.error('Eroare la încărcare clinici:', err); },
     });
   }
-  trackByClinicId(index: number, clinic: any): number {
-    return clinic.id;
-  }
+
+  get displayedClinics() { return this.clinics.slice(0, this.displayLimit); }
+  get hasMore() { return this.displayLimit < this.clinics.length; }
+  showMore() { this.displayLimit += 20; }
+
+  trackByClinicId(index: number, clinic: any): number { return clinic.id; }
 }

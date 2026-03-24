@@ -90,14 +90,7 @@ export class MapComponent implements OnInit, OnDestroy {
           const card = document.createElement('div');
           card.className = 'map-popup-card';
 
-          // Parse images
-          let images: string[] = [];
-          if (Array.isArray(clinic.images) && clinic.images.length > 0) {
-            images = clinic.images;
-          } else if (typeof clinic.clinic_images === 'string') {
-            try { images = JSON.parse(clinic.clinic_images || '[]'); } catch {}
-          }
-          const coverImg = images.length > 0 ? images[0] : 'no-img.jpg';
+          const coverImg = clinic.cover || (Array.isArray(clinic.images) && clinic.images[0]) || 'no-img.jpg';
           const logoImg = clinic.logo_url || clinic.logo_path || 'no-img.jpg';
 
           card.innerHTML = `

@@ -1,46 +1,46 @@
 <div class="main">
   <h1 id="header">Clinici Inscrise:</h1>
 
-  @for(clinic of clinics; track clinic.id) {
-
-  <button class="clinic-card">
-    <div class="in-btn">
-      <div class="img-container">
-        @if(clinic.logo_path) {
-        <img [src]="clinic.logo_path" />
-        } @else {
-        <img src="no-img.jpg" alt="" id="no-img" />
-        }
-      </div>
-      <div class="info">
-        <h1>{{ clinic.name }}</h1>
-        <div class="contact">
-          <div class="box"></div>
-          <div class="box"></div>
+  @for (clinic of displayedClinics; track clinic.id) {
+    <button class="clinic-card">
+      <div class="in-btn">
+        <div class="img-container">
+          @if (clinic.logo_path) {
+            <img [src]="clinic.logo_path" />
+          } @else {
+            <img src="no-img.jpg" alt="" id="no-img" />
+          }
         </div>
-        <div class="flex-end">
-          <div class="rating">
-            <div class="stars">
-              <span class="star">&#9733;</span>
-              <span class="star">&#9733;</span>
-              <span class="star">&#9733;</span>
-              <span class="star">&#9733;</span>
-              <span class="star">&#9733;</span>
-            </div>
-            <div class="rating-score">
-              <span>5.0</span>
-            </div>
+        <div class="info">
+          <h1>{{ clinic.name }}</h1>
+          <div class="contact">
+            <div class="box"></div>
+            <div class="box"></div>
           </div>
-          <div class="oras">
-            <span class="material-symbols-outlined"> location_on </span>
-            <p>
-              {{ clinic.city }}
-            </p>
+          <div class="flex-end">
+            <div class="rating">
+              <div class="stars">
+                <span class="star">&#9733;</span>
+                <span class="star">&#9733;</span>
+                <span class="star">&#9733;</span>
+                <span class="star">&#9733;</span>
+                <span class="star">&#9733;</span>
+              </div>
+              <div class="rating-score"><span>5.0</span></div>
+            </div>
+            <div class="oras">
+              <span class="material-symbols-outlined">location_on</span>
+              <p>{{ clinic.city }}</p>
+            </div>
           </div>
         </div>
       </div>
-    </div>
-  </button>
+    </button>
+  }
 
+  @if (hasMore) {
+    <button class="show-more-btn" (click)="showMore()">
+      Arată mai mult ({{ clinics.length - displayLimit }} rămase)
+    </button>
   }
 </div>

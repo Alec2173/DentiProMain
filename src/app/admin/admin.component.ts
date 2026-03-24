@@ -50,6 +50,8 @@ export class AdminComponent implements OnInit {
   filterOnboarding: 'all' | 'never_logged' | 'not_verified' | 'incomplete' = 'all';
   searchQuery = '';
   confirmDeleteId: number | null = null;
+  adminPage = 0;
+  readonly adminPageSize = 25;
   creatingAccounts = false;
   onboarding = false;
   onboardResult: any[] | null = null;
@@ -129,7 +131,17 @@ export class AdminComponent implements OnInit {
       );
     }
     this.filtered = list;
+    this.adminPage = 0;
   }
+
+  get pagedClinics() {
+    const start = this.adminPage * this.adminPageSize;
+    return this.filtered.slice(start, start + this.adminPageSize);
+  }
+
+  get totalPages() { return Math.ceil(this.filtered.length / this.adminPageSize); }
+  prevPage() { if (this.adminPage > 0) this.adminPage--; }
+  nextPage() { if (this.adminPage < this.totalPages - 1) this.adminPage++; }
 
   isProfileComplete(c: AdminClinic): boolean {
     return c.image_count > 0 && c.service_count > 0 && c.has_address;

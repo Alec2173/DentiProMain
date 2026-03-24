@@ -2,6 +2,22 @@ body {
   margin: 0 !important;
   padding: 0 !important;
 }
+
+.show-more-btn {
+  display: block;
+  width: calc(100% - 4rem);
+  margin: 16px 2rem 24px;
+  padding: 14px;
+  border-radius: 12px;
+  border: 1px solid rgba(59,130,246,0.3);
+  background: rgba(59,130,246,0.08);
+  color: #60a5fa;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.show-more-btn:hover { background: rgba(59,130,246,0.16); }
 #header {
   color: #393678;
   font-family: paytone one, sans-serif;

@@ -1,10 +1,10 @@
 <div class="main">
+
   @if (isLoading) {
     <div class="card-list-inner">
       @for (i of [1, 2, 3, 4, 5, 6]; track i) {
         <div class="card skeleton-card">
           <div class="card-image skeleton"></div>
-
           <div class="card-info skeleton-info">
             <div class="skeleton-line skeleton"></div>
             <div class="skeleton-line skeleton small"></div>
@@ -16,58 +16,61 @@
   }
 
   @if (!isLoading) {
-    <cdk-virtual-scroll-viewport class="viewport" itemSize="136">
+    <div class="viewport">
       <div class="card-list-inner">
-        <a
-          *cdkVirtualFor="
-            let clinic of filteredClinics;
-            trackBy: trackByClinicId
-          "
-          class="card promoted"
-          [routerLink]="['/descripton', clinic.id]"
-        >
-          <div class="promo-badge">PROMOVAT</div>
 
-          <div class="card-image">
-            @if (clinic.images.length > 0) {
-              <img [src]="clinic.images[0]" [alt]="clinic.name + ' — clinică dentară din ' + clinic.city" loading="lazy" />
-            } @else {
-              <img src="no-img.jpg" alt="Clinică dentară DentiPro" />
-            }
-          </div>
+        @for (clinic of clinics; track clinic.id) {
+          <a class="card promoted" [routerLink]="['/descripton', clinic.id]">
+            <div class="promo-badge">PROMOVAT</div>
 
-          <div class="card-info">
-            <div class="card-header">
-              <div class="logo">
-                @if (clinic.logo_url) {
-                  <img [src]="clinic.logo_url" [alt]="'Logo ' + clinic.name" loading="lazy" />
-                } @else {
-                  <img src="no-img.jpg" alt="Logo clinică" />
-                }
-              </div>
-
-              <span class="city">
-                {{ clinic.city }}
-              </span>
-
-              @if (auth.isLoggedIn && auth.isPatient) {
-                <button class="fav-btn" [class.fav-btn--active]="favoritedIds.has(clinic.id)"
-                  (click)="toggleFavorite(clinic.id, $event)" title="Adaugă la favorite">
-                  <i class="fal fa-heart"></i>
-                </button>
+            <div class="card-image">
+              @if (clinic.images?.length > 0) {
+                <img [src]="clinic.images[0]" [alt]="clinic.name + ' — clinică dentară din ' + clinic.city" loading="lazy" />
+              } @else {
+                <img src="no-img.jpg" alt="Clinică dentară DentiPro" />
               }
             </div>
 
-            <h3 class="clinic-name">
-              {{ clinic.name }}
-            </h3>
-
-            <div class="rating">
-              <span class="material-symbols-outlined">star</span> 4.5
+            <div class="card-info">
+              <div class="card-header">
+                <div class="logo">
+                  @if (clinic.logo_url) {
+                    <img [src]="clinic.logo_url" [alt]="'Logo ' + clinic.name" loading="lazy" />
+                  } @else {
+                    <img src="no-img.jpg" alt="Logo clinică" />
+                  }
+                </div>
+                <span class="city">{{ clinic.city }}</span>
+                @if (auth.isLoggedIn && auth.isPatient) {
+                  <button class="fav-btn" [class.fav-btn--active]="favoritedIds.has(clinic.id)"
+                    (click)="toggleFavorite(clinic.id, $event)" title="Adaugă la favorite">
+                    <i class="fal fa-heart"></i>
+                  </button>
+                }
+              </div>
+              <h3 class="clinic-name">{{ clinic.name }}</h3>
+              <div class="rating">
+                <span class="material-symbols-outlined">star</span> 4.5
+              </div>
             </div>
+          </a>
+        }
+
+        @if (clinics.length === 0 && !isLoading) {
+          <div class="cards-empty">Nicio clinică găsită.</div>
+        }
+
+        <!-- Sentinel pentru infinite scroll -->
+        <div #sentinel class="sentinel"></div>
+
+        @if (isLoadingMore) {
+          <div class="loading-more">
+            <div class="loading-more-spinner"></div>
           </div>
-        </a>
+        }
+
       </div>
-    </cdk-virtual-scroll-viewport>
+    </div>
   }
+
 </div>

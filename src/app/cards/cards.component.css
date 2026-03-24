@@ -284,6 +284,38 @@ a.card:hover .clinic-name {
 }
 
 /* ════════════════════════════════════════
+   SENTINEL & LOAD MORE
+════════════════════════════════════════ */
+
+.sentinel {
+  height: 1px;
+  width: 100%;
+}
+
+.loading-more {
+  display: flex;
+  justify-content: center;
+  padding: 16px 0 8px;
+}
+
+.loading-more-spinner {
+  width: 22px; height: 22px;
+  border: 2px solid rgba(255,255,255,0.1);
+  border-top-color: #3b82f6;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.cards-empty {
+  text-align: center;
+  padding: 48px 16px;
+  color: #475569;
+  font-size: 14px;
+}
+
+/* ════════════════════════════════════════
    SKELETON
 ════════════════════════════════════════ */
 

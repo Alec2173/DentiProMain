@@ -130,7 +130,7 @@
           </tr>
         </thead>
         <tbody>
-          @for (clinic of filtered; track clinic.id) {
+          @for (clinic of pagedClinics; track clinic.id) {
             <tr [class.row-pending]="clinic.status==='pending'" [class.row-suspended]="clinic.status==='suspended'">
               <td class="adm-id">#{{ clinic.id }}</td>
 
@@ -241,6 +241,21 @@
         </tbody>
       </table>
     </div>
+
+    @if (totalPages > 1) {
+      <div class="adm-pagination">
+        <button class="adm-page-btn" (click)="prevPage()" [disabled]="adminPage === 0">
+          <i class="fal fa-chevron-left"></i>
+        </button>
+        <span class="adm-page-info">
+          Pagina {{ adminPage + 1 }} din {{ totalPages }}
+          <span class="adm-page-count">({{ filtered.length }} clinici)</span>
+        </span>
+        <button class="adm-page-btn" (click)="nextPage()" [disabled]="adminPage === totalPages - 1">
+          <i class="fal fa-chevron-right"></i>
+        </button>
+      </div>
+    }
   }
 
 </div>

@@ -1,27 +1,34 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
 import { Subject, takeUntil } from 'rxjs';
 import { ClinicDataService } from '../clinic-data.service';
 import { DataShareService } from '../data-share.service';
 import { FavoritesService } from '../favorites.service';
 import { AuthService } from '../auth.service';
 import { RouterLink } from '@angular/router';
-import { ScrollingModule } from '@angular/cdk/scrolling';
 
 @Component({
   selector: 'app-cards',
   standalone: true,
-  imports: [RouterLink, ScrollingModule],
+  imports: [RouterLink],
   templateUrl: './cards.component.html',
   styleUrl: './cards.component.css',
 })
-export class CardsComponent implements OnInit, OnDestroy {
+export class CardsComponent implements OnInit, AfterViewInit, OnDestroy {
   clinics: any[] = [];
-  city = '';
-  service = '';
   isLoading = true;
+  isLoadingMore = false;
+  hasMore = false;
+  total = 0;
   favoritedIds = new Set<number>();
 
+  private city = '';
+  private service = '';
+  private offset = 0;
+  private readonly PAGE_SIZE = 24;
   private destroy$ = new Subject<void>();
+  private observer?: IntersectionObserver;
+
+  @ViewChild('sentinel') private sentinelRef!: ElementRef;
 
   constructor(
     private clinicData: ClinicDataService,
@@ -38,53 +45,71 @@ export class CardsComponent implements OnInit, OnDestroy {
 
     this.dataShareService.city$
       .pipe(takeUntil(this.destroy$))
-      .subscribe((city) => { this.city = city || ''; });
+      .subscribe(city => { this.city = city || ''; this.reload(); });
 
     this.dataShareService.service$
       .pipe(takeUntil(this.destroy$))
-      .subscribe((service) => { this.service = service || ''; });
+      .subscribe(service => { this.service = service || ''; this.reload(); });
 
-    this.clinicData.loadClinicsAuto()
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: (data) => {
-          this.clinics = this.parseClinics(data);
-          this.isLoading = false;
-        },
-        error: (err) => {
-          console.error('Eroare la încărcare clinici:', err);
-          this.isLoading = false;
-        },
-      });
+    this.loadPage(true);
+  }
 
-    this.dataShareService.filters$
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((filters) => {
-        if (!filters) return;
-        this.isLoading = true;
-        this.clinicData.loadClinicsAuto(filters)
-          .pipe(takeUntil(this.destroy$))
-          .subscribe({
-            next: (data) => {
-              this.clinics = this.parseClinics(data);
-              this.isLoading = false;
-            },
-            error: (err) => {
-              console.error('Eroare la filtrare clinici:', err);
-              this.isLoading = false;
-            },
-          });
-      });
+  ngAfterViewInit() {
+    this.setupObserver();
   }
 
   ngOnDestroy() {
+    this.observer?.disconnect();
     this.destroy$.next();
     this.destroy$.complete();
   }
 
+  private setupObserver() {
+    this.observer?.disconnect();
+    this.observer = new IntersectionObserver(entries => {
+      if (entries[0].isIntersecting && this.hasMore && !this.isLoadingMore && !this.isLoading) {
+        this.loadMore();
+      }
+    }, { rootMargin: '300px' });
+    if (this.sentinelRef) this.observer.observe(this.sentinelRef.nativeElement);
+  }
+
+  private reload() {
+    this.offset = 0;
+    this.clinics = [];
+    this.loadPage(true);
+  }
+
+  private loadPage(initial = false) {
+    if (initial) this.isLoading = true;
+    else this.isLoadingMore = true;
+
+    this.clinicData.loadPage({ limit: this.PAGE_SIZE, offset: this.offset, city: this.city || undefined, service: this.service || undefined })
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (res) => {
+          const parsed = this.parseClinics(res.clinics);
+          this.clinics = initial ? parsed : [...this.clinics, ...parsed];
+          this.total = res.total;
+          this.hasMore = res.hasMore;
+          this.offset += parsed.length;
+          this.isLoading = false;
+          this.isLoadingMore = false;
+        },
+        error: () => {
+          this.isLoading = false;
+          this.isLoadingMore = false;
+        },
+      });
+  }
+
+  loadMore() {
+    if (!this.hasMore || this.isLoadingMore) return;
+    this.loadPage(false);
+  }
+
   private parseClinics(data: any[]): any[] {
     return data.map((c) => {
-      // suportă atât formatul nou (images[]) cât și cel vechi (clinic_images string JSON)
       let images: string[] = [];
       if (Array.isArray(c.images) && c.images.length > 0) {
         images = c.images;
@@ -93,27 +118,6 @@ export class CardsComponent implements OnInit, OnDestroy {
       }
       return { ...c, images, logo_url: c.logo_url || c.logo_path || null };
     });
-  }
-
-  get filteredClinics() {
-    return this.clinics.filter((c) => {
-      const cityMatch = !this.city || c.city === this.city;
-      const serviceMatch = !this.service || this.clinicHasService(c, this.service);
-      return cityMatch && serviceMatch;
-    });
-  }
-
-  private clinicHasService(clinic: any, serviceId: string): boolean {
-    const raw = clinic.services;
-    if (!raw) return false;
-    // format nou: array de obiecte
-    if (Array.isArray(raw)) {
-      return raw.some((s: any) =>
-        s.service_id === serviceId || s.label?.toLowerCase().includes(serviceId.toLowerCase())
-      );
-    }
-    // format vechi: string comma-separated
-    return String(raw).toLowerCase().includes(serviceId.toLowerCase());
   }
 
   toggleFavorite(clinicId: number, event: Event) {

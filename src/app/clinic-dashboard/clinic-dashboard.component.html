@@ -305,3 +305,81 @@
   }
 
 </div>
+
+<!-- ── FEEDBACK POPUP ──────────────────────────────────────── -->
+@if (showFeedback) {
+  <div class="fb-overlay" (click)="closeFeedback()">
+    <div class="fb-modal" (click)="$event.stopPropagation()">
+
+      <button class="fb-close" (click)="closeFeedback()"><i class="fal fa-times"></i></button>
+
+      @if (!feedbackSubmitted) {
+
+        <div class="fb-header">
+          <div class="fb-icon">🦷</div>
+          <h2 class="fb-title">Cum ți se pare DentiPro până acum?</h2>
+          <p class="fb-subtitle">Câteva secunde de feedback ne ajută să construim exact ce ai nevoie.</p>
+        </div>
+
+        <!-- RATING -->
+        <div class="fb-section">
+          <p class="fb-label">Experiența ta generală</p>
+          <div class="fb-stars">
+            @for (s of [1,2,3,4,5]; track s) {
+              <button class="fb-star"
+                [class.active]="s <= (feedbackHover || feedbackRating)"
+                (mouseenter)="feedbackHover = s"
+                (mouseleave)="feedbackHover = 0"
+                (click)="feedbackRating = s">
+                <i class="fas fa-star"></i>
+              </button>
+            }
+          </div>
+          @if (feedbackRating) {
+            <p class="fb-rating-label">
+              {{ ['', 'Dezamăgitor', 'Acceptabil', 'Bun', 'Foarte bun', 'Excelent!'][feedbackRating] }}
+            </p>
+          }
+        </div>
+
+        <!-- FEATURES -->
+        <div class="fb-section">
+          <p class="fb-label">Ce funcționalități ți-ar fi de ajutor pe DentiPro?</p>
+          <p class="fb-sublabel">Selectează tot ce ți s-ar părea util</p>
+          <div class="fb-features">
+            @for (f of FEATURES; track f.id) {
+              <button class="fb-feature" [class.selected]="hasFeature(f.id)" (click)="toggleFeature(f.id)">
+                <i class="fal" [class.fa-check-circle]="hasFeature(f.id)" [class.fa-circle]="!hasFeature(f.id)"></i>
+                {{ f.label }}
+              </button>
+            }
+          </div>
+        </div>
+
+        <!-- OTHER -->
+        <div class="fb-section">
+          <p class="fb-label">Alte sugestii sau observații <span class="fb-optional">(opțional)</span></p>
+          <textarea class="fb-textarea" [(ngModel)]="feedbackOther"
+            placeholder="Spune-ne ce ai mai adăuga sau ce ai schimba..." rows="3"></textarea>
+        </div>
+
+        <button class="fb-submit" (click)="submitFeedback()" [disabled]="!feedbackRating || feedbackSubmitting">
+          @if (feedbackSubmitting) { <span>Se trimite...</span> }
+          @else { <span>Trimite feedbackul</span> <i class="fal fa-paper-plane"></i> }
+        </button>
+
+        <p class="fb-skip" (click)="closeFeedback()">Poate altă dată</p>
+
+      } @else {
+
+        <div class="fb-success">
+          <div class="fb-success-icon">🎉</div>
+          <h3>Mulțumim!</h3>
+          <p>Feedbackul tău ne ajută să îmbunătățim DentiPro pentru tine și pentru toate clinicile partenere.</p>
+        </div>
+
+      }
+
+    </div>
+  </div>
+}

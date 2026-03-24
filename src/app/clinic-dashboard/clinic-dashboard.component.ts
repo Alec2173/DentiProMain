@@ -1,6 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Router, RouterLink } from '@angular/router';
+import { FormsModule } from '@angular/forms';
 import { AuthService } from '../auth.service';
 
 const API = 'https://www.dentipro.ro/api';
@@ -8,15 +9,38 @@ const API = 'https://www.dentipro.ro/api';
 @Component({
   selector: 'app-clinic-dashboard',
   standalone: true,
-  imports: [RouterLink],
+  imports: [RouterLink, FormsModule],
   templateUrl: './clinic-dashboard.component.html',
   styleUrl: './clinic-dashboard.component.css',
 })
-export class ClinicDashboardComponent implements OnInit {
+export class ClinicDashboardComponent implements OnInit, OnDestroy {
   data: any = null;
   isLoading = true;
   updatingApptId: number | null = null;
   apptTab: 'pending' | 'all' = 'pending';
+
+  // ── FEEDBACK POPUP ────────────────────────────────────────
+  showFeedback = false;
+  feedbackSubmitted = false;
+  feedbackSubmitting = false;
+  feedbackRating = 0;
+  feedbackHover = 0;
+  feedbackSuggestions: string[] = [];
+  feedbackOther = '';
+  private feedbackTimer: any;
+
+  readonly FEATURES = [
+    { id: 'programari_auto',    label: 'Programări online cu confirmare automată' },
+    { id: 'sms_pacienti',       label: 'Notificări SMS pentru pacienți' },
+    { id: 'statistici',         label: 'Rapoarte și statistici detaliate' },
+    { id: 'recenzii',           label: 'Sistem de recenzii verificate' },
+    { id: 'chat',               label: 'Chat direct cu pacienții' },
+    { id: 'calendar',           label: 'Integrare calendar Google / Outlook' },
+    { id: 'oferte',             label: 'Oferte și promoții vizibile pentru pacienți' },
+    { id: 'lista_asteptare',    label: 'Gestionare listă de așteptare' },
+    { id: 'followup',           label: 'Emailuri automate de follow-up post-consultație' },
+    { id: 'facturare',          label: 'Facturare și evidență plăți' },
+  ];
 
   constructor(private http: HttpClient, public auth: AuthService, private router: Router) {}
 
@@ -28,6 +52,47 @@ export class ClinicDashboardComponent implements OnInit {
     if (!this.auth.isClinic) { this.router.navigate(['/clinici']); return; }
     if (!this.auth.currentUser?.clinicId) { this.router.navigate(['/clinici/inscriere']); return; }
     this.load();
+    this.scheduleFeedback();
+  }
+
+  ngOnDestroy() {
+    clearTimeout(this.feedbackTimer);
+  }
+
+  private scheduleFeedback() {
+    const key = `dp_feedback_${this.auth.currentUser?.id}`;
+    if (localStorage.getItem(key)) return;
+    this.feedbackTimer = setTimeout(() => { this.showFeedback = true; }, 50000);
+  }
+
+  closeFeedback() {
+    this.showFeedback = false;
+    localStorage.setItem(`dp_feedback_${this.auth.currentUser?.id}`, '1');
+    clearTimeout(this.feedbackTimer);
+  }
+
+  toggleFeature(id: string) {
+    const idx = this.feedbackSuggestions.indexOf(id);
+    if (idx > -1) this.feedbackSuggestions.splice(idx, 1);
+    else this.feedbackSuggestions.push(id);
+  }
+
+  hasFeature(id: string) { return this.feedbackSuggestions.includes(id); }
+
+  submitFeedback() {
+    if (!this.feedbackRating) return;
+    this.feedbackSubmitting = true;
+    const body = {
+      clinicId: this.auth.currentUser?.clinicId,
+      clinicName: this.auth.currentUser?.name,
+      rating: this.feedbackRating,
+      features: this.feedbackSuggestions,
+      other: this.feedbackOther.trim() || null,
+    };
+    this.http.post(`${API}/feedback/clinic`, body).subscribe({
+      next: () => { this.feedbackSubmitting = false; this.feedbackSubmitted = true; setTimeout(() => this.closeFeedback(), 2500); },
+      error: () => { this.feedbackSubmitting = false; this.feedbackSubmitted = true; setTimeout(() => this.closeFeedback(), 2500); },
+    });
   }
 
   load() {

@@ -16,9 +16,24 @@
         <i class="fal fa-paper-plane"></i>
         {{ onboarding ? 'Se trimite...' : 'Onboarding clinici' }}
       </button>
+      <button class="adm-resend-btn" (click)="resendWelcomeEmails()" [disabled]="resendingEmails">
+        <i class="fal fa-redo"></i>
+        {{ resendingEmails ? 'Se trimite...' : 'Retrimite emailuri' }}
+      </button>
       <button class="adm-create-accounts" (click)="createClinicAccounts()" [disabled]="creatingAccounts">
         <i class="fal fa-user-plus"></i>
         {{ creatingAccounts ? 'Se procesează...' : 'Creează conturi' }}
+      </button>
+      <button class="adm-add-clinic-btn" (click)="openAddClinic()">
+        <i class="fal fa-plus"></i> Adaugă clinică
+      </button>
+      <button class="adm-batch-btn" (click)="addBatchTestClinics()" [disabled]="addingBatch">
+        <i class="fal fa-flask"></i>
+        {{ addingBatch ? 'Se adaugă...' : '4 clinici test' }}
+      </button>
+      <button class="adm-simulate-btn" (click)="simulateClinics()" [disabled]="simulating">
+        <i class="fal fa-play-circle"></i>
+        {{ simulating ? 'Se simulează...' : 'Pornește simularea' }}
       </button>
       <button class="adm-refresh" (click)="load()">
         <i class="fal fa-sync-alt"></i> Reîncarcă
@@ -309,6 +324,160 @@
 
       <div class="adm-modal-actions" style="margin-top: 20px;">
         <button class="adm-modal-cancel" (click)="closeAccountsResult()">Închide</button>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- ADD CLINIC MODAL -->
+@if (showAddClinic) {
+  <div class="adm-modal-overlay" (click)="closeAddClinic()">
+    <div class="adm-modal adm-modal-form" (click)="$event.stopPropagation()">
+      <div class="adm-modal-header">
+        <h3><i class="fal fa-plus-circle"></i> Adaugă clinică nouă</h3>
+        <button class="adm-btn adm-btn-view" (click)="closeAddClinic()"><i class="fal fa-times"></i></button>
+      </div>
+      <div class="adm-form-grid">
+        <div class="adm-form-group">
+          <label>Nume clinică *</label>
+          <input type="text" [(ngModel)]="addClinicForm.name" placeholder="ex: Clinica Dentară XYZ" />
+        </div>
+        <div class="adm-form-group">
+          <label>Email *</label>
+          <input type="email" [(ngModel)]="addClinicForm.email" placeholder="contact@clinica.ro" />
+        </div>
+        <div class="adm-form-group">
+          <label>Oraș</label>
+          <input type="text" [(ngModel)]="addClinicForm.city" placeholder="ex: București" />
+        </div>
+        <div class="adm-form-group">
+          <label>Telefon</label>
+          <input type="text" [(ngModel)]="addClinicForm.phone" placeholder="07xxxxxxxx" />
+        </div>
+        <div class="adm-form-group">
+          <label>Plan</label>
+          <select [(ngModel)]="addClinicForm.plan">
+            <option value="starter">Starter</option>
+            <option value="growth">Growth</option>
+            <option value="pro">Pro</option>
+          </select>
+        </div>
+      </div>
+      @if (addClinicError) {
+        <p class="adm-form-error">{{ addClinicError }}</p>
+      }
+      <div class="adm-modal-actions" style="margin-top: 24px;">
+        <button class="adm-modal-cancel" (click)="closeAddClinic()">Anulează</button>
+        <button class="adm-modal-submit" (click)="submitAddClinic()" [disabled]="addingClinic">
+          {{ addingClinic ? 'Se adaugă...' : 'Adaugă clinică' }}
+        </button>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- BATCH RESULT MODAL -->
+@if (batchResult !== null) {
+  <div class="adm-modal-overlay" (click)="closeBatchResult()">
+    <div class="adm-modal adm-modal-wide" (click)="$event.stopPropagation()">
+      <div class="adm-modal-header">
+        <h3><i class="fal fa-flask"></i> Clinici test adăugate — {{ batchResult.length }} procesate</h3>
+        <button class="adm-btn adm-btn-view" (click)="closeBatchResult()"><i class="fal fa-times"></i></button>
+      </div>
+      <div class="adm-accounts-table-wrap">
+        <table class="adm-accounts-table">
+          <thead>
+            <tr><th>Clinică</th><th>Email</th><th>Parolă generată</th><th>Status</th></tr>
+          </thead>
+          <tbody>
+            @for (r of batchResult; track r.email) {
+              <tr>
+                <td>{{ r.clinicName }}</td>
+                <td class="adm-mono">{{ r.email }}</td>
+                <td class="adm-mono">{{ r.password ?? '—' }}</td>
+                <td>
+                  @if (r.action === 'created') { <span class="adm-badge adm-badge-active">Creat</span> }
+                  @else if (r.action === 'exists') { <span class="adm-badge adm-badge-pending">Există deja</span> }
+                  @else { <span class="adm-badge adm-badge-suspended">Eroare</span> }
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+      <div class="adm-modal-actions" style="margin-top: 20px;">
+        <button class="adm-modal-cancel" (click)="closeBatchResult()">Închide</button>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- SIMULATE RESULT MODAL -->
+@if (simulateResult !== null) {
+  <div class="adm-modal-overlay" (click)="closeSimulateResult()">
+    <div class="adm-modal adm-modal-wide" (click)="$event.stopPropagation()">
+      <div class="adm-modal-header">
+        <h3><i class="fal fa-play-circle"></i> Simulare completă — {{ simulateResult.length }} clinici</h3>
+        <button class="adm-btn adm-btn-view" (click)="closeSimulateResult()"><i class="fal fa-times"></i></button>
+      </div>
+      <div class="adm-accounts-table-wrap">
+        <table class="adm-accounts-table">
+          <thead>
+            <tr><th>Clinică</th><th>Email</th><th>Servicii adăugate</th><th>Status</th></tr>
+          </thead>
+          <tbody>
+            @for (r of simulateResult; track r.email) {
+              <tr>
+                <td>{{ r.clinicName }}</td>
+                <td class="adm-mono">{{ r.email }}</td>
+                <td>{{ r.servicesAdded ?? '—' }}</td>
+                <td>
+                  @if (r.status === 'simulated') { <span class="adm-badge adm-badge-active">Simulat</span> }
+                  @else if (r.status === 'not_found') { <span class="adm-badge adm-badge-pending">Negăsit</span> }
+                  @else { <span class="adm-badge adm-badge-suspended">Eroare</span> }
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+      <div class="adm-modal-actions" style="margin-top: 20px;">
+        <button class="adm-modal-cancel" (click)="closeSimulateResult()">Închide</button>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- RESEND EMAILS RESULT MODAL -->
+@if (resendResult !== null) {
+  <div class="adm-modal-overlay" (click)="closeResendResult()">
+    <div class="adm-modal adm-modal-wide" (click)="$event.stopPropagation()">
+      <div class="adm-modal-header">
+        <h3><i class="fal fa-paper-plane"></i> Emailuri retrimise — {{ resendResult.length }} clinici</h3>
+        <button class="adm-btn adm-btn-view" (click)="closeResendResult()"><i class="fal fa-times"></i></button>
+      </div>
+      <div class="adm-accounts-table-wrap">
+        <table class="adm-accounts-table">
+          <thead>
+            <tr><th>Clinică</th><th>Email</th><th>Parolă nouă</th><th>Email trimis</th></tr>
+          </thead>
+          <tbody>
+            @for (r of resendResult; track r.email) {
+              <tr>
+                <td>{{ r.clinicName }}</td>
+                <td class="adm-mono">{{ r.email }}</td>
+                <td class="adm-mono">{{ r.password ?? '—' }}</td>
+                <td>
+                  @if (r.emailSent) { <span class="adm-verify-ok"><i class="fal fa-check"></i> Trimis</span> }
+                  @else { <span class="adm-verify-no"><i class="fal fa-times"></i> Nu</span> }
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+      <div class="adm-modal-actions" style="margin-top: 20px;">
+        <button class="adm-modal-cancel" (click)="closeResendResult()">Închide</button>
       </div>
     </div>
   </div>

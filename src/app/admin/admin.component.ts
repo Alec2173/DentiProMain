@@ -284,11 +284,11 @@ export class AdminComponent implements OnInit {
 
   // ── RESEND WELCOME EMAILS ─────────────────────────────────
   resendWelcomeEmails() {
-    const targetEmails = this.TEST_CLINICS.map(c => c.email);
-    if (!confirm(`Retrimiți emailurile de bun venit (cu parole noi) la:\n\n${targetEmails.join('\n')}`)) return;
+    const count = this.clinics.filter(c => c.user_id).length;
+    if (!confirm(`Retrimiți emailurile de bun venit (cu parole noi) la toate cele ${count} clinici cu cont?`)) return;
     this.resendingEmails = true;
     this.resendResult = null;
-    this.http.post<any>(`${API}/admin/resend-welcome-emails`, { emails: targetEmails }, { headers: this.headers() }).subscribe({
+    this.http.post<any>(`${API}/admin/resend-welcome-emails`, {}, { headers: this.headers() }).subscribe({
       next: (res) => {
         this.resendingEmails = false;
         this.resendResult = res.results;

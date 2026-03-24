@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, AfterViewInit, ViewChild, ElementRef, ChangeDetectorRef } from '@angular/core';
 import { Subject, takeUntil } from 'rxjs';
 import { ClinicDataService } from '../clinic-data.service';
 import { DataShareService } from '../data-share.service';
@@ -29,12 +29,14 @@ export class CardsComponent implements OnInit, AfterViewInit, OnDestroy {
   private observer?: IntersectionObserver;
 
   @ViewChild('sentinel') private sentinelRef!: ElementRef;
+  @ViewChild('viewport') private viewportRef!: ElementRef;
 
   constructor(
     private clinicData: ClinicDataService,
     private dataShareService: DataShareService,
     public favorites: FavoritesService,
     public auth: AuthService,
+    private cdr: ChangeDetectorRef,
   ) {}
 
   ngOnInit() {
@@ -70,7 +72,10 @@ export class CardsComponent implements OnInit, AfterViewInit, OnDestroy {
       if (entries[0].isIntersecting && this.hasMore && !this.isLoadingMore && !this.isLoading) {
         this.loadMore();
       }
-    }, { rootMargin: '300px' });
+    }, {
+      root: this.viewportRef?.nativeElement ?? null,
+      rootMargin: '200px',
+    });
     if (this.sentinelRef) this.observer.observe(this.sentinelRef.nativeElement);
   }
 
@@ -95,6 +100,11 @@ export class CardsComponent implements OnInit, AfterViewInit, OnDestroy {
           this.offset += parsed.length;
           this.isLoading = false;
           this.isLoadingMore = false;
+          this.cdr.detectChanges();
+          // Re-osservă sentinel-ul după ce DOM-ul s-a actualizat
+          if (this.hasMore && this.sentinelRef) {
+            this.setupObserver();
+          }
         },
         error: () => {
           this.isLoading = false;

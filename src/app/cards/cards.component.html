@@ -16,7 +16,7 @@
   }
 
   @if (!isLoading) {
-    <div class="viewport">
+    <div class="viewport" #viewport>
       <div class="card-list-inner">
 
         @for (clinic of clinics; track clinic.id) {

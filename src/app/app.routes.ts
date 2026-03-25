@@ -107,6 +107,10 @@ export const routes: Routes = [
     loadComponent: () => import('./services-page/services-page.component').then(m => m.ServicesPageComponent),
   },
   {
+    path: 'contact',
+    loadComponent: () => import('./contact/contact.component').then((m) => m.ContactComponent),
+  },
+  {
     path: '**',
     loadComponent: () => import('./not-found/not-found.component').then((m) => m.NotFoundComponent),
   },

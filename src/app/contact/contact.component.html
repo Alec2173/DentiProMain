@@ -1,0 +1,114 @@
+<div class="contact-page">
+
+  <div class="contact-hero">
+    <div class="contact-hero-icon"><i class="fal fa-headset"></i></div>
+    <h1>Suntem aici să te ajutăm</h1>
+    <p>Echipa DentiPro răspunde la orice întrebare. Nu ezita să ne contactezi!</p>
+  </div>
+
+  <div class="contact-grid">
+
+    <!-- Email -->
+    <a href="mailto:office.dentipro&#64;gmail.com" class="contact-card contact-card--email">
+      <div class="contact-card-icon">
+        <i class="fal fa-envelope"></i>
+      </div>
+      <div class="contact-card-body">
+        <span class="contact-card-title">Email</span>
+        <span class="contact-card-value">office.dentipro&#64;gmail.com</span>
+        <span class="contact-card-desc">Răspundem în maxim 24 de ore în zilele lucrătoare</span>
+      </div>
+      <i class="fal fa-arrow-right contact-card-arrow"></i>
+    </a>
+
+    <!-- Chat din cont -->
+    @if (auth.isClinic) {
+      <div class="contact-card contact-card--chat">
+        <div class="contact-card-icon">
+          <i class="fal fa-comment-question"></i>
+        </div>
+        <div class="contact-card-body">
+          <span class="contact-card-title">Chat direct din aplicație</span>
+          <span class="contact-card-value">Butonul „Ajutor" din colțul din dreapta jos</span>
+          <span class="contact-card-desc">Trimite un mesaj direct din contul tău și îți răspundem acolo</span>
+        </div>
+        <div class="contact-card-hint">
+          <i class="fal fa-arrow-down"></i> Apasă butonul albastru din dreapta jos a paginii
+        </div>
+      </div>
+    } @else {
+      <a routerLink="/clinici/autentificare" class="contact-card contact-card--chat">
+        <div class="contact-card-icon">
+          <i class="fal fa-comment-question"></i>
+        </div>
+        <div class="contact-card-body">
+          <span class="contact-card-title">Chat direct din aplicație</span>
+          <span class="contact-card-value">Disponibil pentru clinicile înregistrate</span>
+          <span class="contact-card-desc">Autentifică-te pentru a folosi chatul de suport</span>
+        </div>
+        <i class="fal fa-arrow-right contact-card-arrow"></i>
+      </a>
+    }
+
+    <!-- Program -->
+    <div class="contact-card contact-card--schedule">
+      <div class="contact-card-icon">
+        <i class="fal fa-clock"></i>
+      </div>
+      <div class="contact-card-body">
+        <span class="contact-card-title">Program suport</span>
+        <div class="contact-schedule">
+          <div class="schedule-row">
+            <span class="schedule-day">Luni — Vineri</span>
+            <span class="schedule-time">09:00 — 18:00</span>
+          </div>
+          <div class="schedule-row schedule-row--off">
+            <span class="schedule-day">Sâmbătă — Duminică</span>
+            <span class="schedule-time">Închis</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- FAQ Simplu -->
+  <div class="contact-faq">
+    <h2><i class="fal fa-question-circle"></i> Întrebări frecvente</h2>
+
+    <div class="faq-list">
+
+      <details class="faq-item">
+        <summary>Cum îmi adaug fotografiile clinicii?</summary>
+        <p>Mergi la <strong>Editează profilul</strong> (butonul din dashboard) → secțiunea „Fotografii" → apasă „Adaugă fotografie" și selectează imaginile de pe calculator. Poți adăuga până la 20 de fotografii.</p>
+      </details>
+
+      <details class="faq-item">
+        <summary>Cum adaug serviciile oferite de clinica mea?</summary>
+        <p>Din dashboard, apasă „Editează profilul" → secțiunea „Servicii" → apasă „+ Adaugă serviciu". Alege tipul de serviciu și poți adăuga un preț orientativ.</p>
+      </details>
+
+      <details class="faq-item">
+        <summary>Nu văd profilul meu pe site. Ce fac?</summary>
+        <p>Profilul tău este vizibil publicului după ce este aprobat de echipa DentiPro. Dacă ai trimis înscrierea și nu ai primit confirmare în 24 de ore, trimite-ne un email la office.dentipro&#64;gmail.com.</p>
+      </details>
+
+      <details class="faq-item">
+        <summary>Am uitat parola. Cum o resetez?</summary>
+        <p>Mergi la pagina de autentificare a clinicii și apasă „Am uitat parola". Vei primi un email cu instrucțiuni pentru resetarea parolei.</p>
+      </details>
+
+      <details class="faq-item">
+        <summary>Cum văd programările pacienților?</summary>
+        <p>Din dashboard-ul clinicii, secțiunea „Programări" afișează toate cererile de programare. Poți confirma sau anula fiecare programare direct de acolo.</p>
+      </details>
+
+      <details class="faq-item">
+        <summary>Cum modific numărul de telefon sau adresa clinicii?</summary>
+        <p>Mergi la „Editează profilul" din dashboard. Acolo poți modifica toate informațiile: telefon, adresă, descriere, program de lucru.</p>
+      </details>
+
+    </div>
+  </div>
+
+</div>

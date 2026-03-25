@@ -52,10 +52,19 @@ export class AdminComponent implements OnInit {
   confirmDeleteId: number | null = null;
   adminPage = 0;
   readonly adminPageSize = 25;
+
+  // Dev tools dropdown
+  showDevTools = false;
   creatingAccounts = false;
   onboarding = false;
   onboardResult: any[] | null = null;
   accountsResult: any[] | null = null;
+  addingBatch = false;
+  batchResult: any[] | null = null;
+  simulating = false;
+  simulateResult: any[] | null = null;
+  resendingEmails = false;
+  resendResult: any[] | null = null;
 
   // Add clinic
   showAddClinic = false;
@@ -63,17 +72,20 @@ export class AdminComponent implements OnInit {
   addClinicError = '';
   addClinicForm: AddClinicForm = { name: '', email: '', city: '', phone: '', plan: 'starter' };
 
-  // Resend welcome emails
-  resendingEmails = false;
-  resendResult: any[] | null = null;
+  // Email completare profil
+  sendingProfileEmails = false;
+  profileEmailsResult: any[] | null = null;
 
-  // Batch test clinics
-  addingBatch = false;
-  batchResult: any[] | null = null;
+  // Feedback
+  feedbackList: any[] | null = null;
 
-  // Simulate clinics
-  simulating = false;
-  simulateResult: any[] | null = null;
+  // Support messages
+  supportMessages: any[] | null = null;
+  openThreadId: number | null = null;
+
+  get unreadMessages(): number {
+    return this.supportMessages?.filter(m => !m.is_read).length ?? 0;
+  }
 
   readonly TEST_CLINICS: AddClinicForm[] = [
     { name: 'Clinica Test Alec 1', email: 'alec.constant300604@gmail.com',    city: 'București',  phone: '0700000001', plan: 'starter' },
@@ -89,7 +101,6 @@ export class AdminComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    console.log('[Admin] isAdmin:', this.auth.isAdmin, '| role:', this.auth.currentUser?.role);
     if (!this.auth.isAdmin) {
       this.router.navigate(['/']);
       return;
@@ -110,7 +121,7 @@ export class AdminComponent implements OnInit {
         this.isLoading = false;
       },
       error: (err) => {
-        console.error('[Admin] Eroare la încărcarea clinicilor:', err.status, err.message, err);
+        console.error('[Admin] Eroare:', err.status, err.message);
         this.isLoading = false;
       },
     });
@@ -161,13 +172,8 @@ export class AdminComponent implements OnInit {
     });
   }
 
-  confirmDelete(id: number) {
-    this.confirmDeleteId = id;
-  }
-
-  cancelDelete() {
-    this.confirmDeleteId = null;
-  }
+  confirmDelete(id: number) { this.confirmDeleteId = id; }
+  cancelDelete() { this.confirmDeleteId = null; }
 
   deleteClinic(id: number) {
     this.http.delete(`${API}/admin/clinics/${id}`, { headers: this.headers() }).subscribe({
@@ -186,27 +192,6 @@ export class AdminComponent implements OnInit {
   get notVerifiedCount() { return this.clinics.filter(c => c.user_id && !c.email_verified).length; }
   get incompleteCount()  { return this.clinics.filter(c => !this.isProfileComplete(c)).length; }
 
-  createClinicAccounts() {
-    if (!confirm('Creezi conturi pentru toate clinicile fără user? Parolele vor fi afișate o singură dată — salvează-le!')) return;
-    this.creatingAccounts = true;
-    this.accountsResult = null;
-    this.http.post<any>(`${API}/admin/create-clinic-accounts`, {}, { headers: this.headers() }).subscribe({
-      next: (res) => {
-        this.creatingAccounts = false;
-        this.accountsResult = res.results;
-        this.load();
-      },
-      error: (err) => {
-        this.creatingAccounts = false;
-        alert('❌ Eroare: ' + (err.error?.error ?? err.message));
-      },
-    });
-  }
-
-  closeAccountsResult() {
-    this.accountsResult = null;
-  }
-
   // ── ADD CLINIC ────────────────────────────────────────────
   openAddClinic() {
     this.addClinicForm = { name: '', email: '', city: '', phone: '', plan: 'starter' };
@@ -214,9 +199,7 @@ export class AdminComponent implements OnInit {
     this.showAddClinic = true;
   }
 
-  closeAddClinic() {
-    this.showAddClinic = false;
-  }
+  closeAddClinic() { this.showAddClinic = false; }
 
   submitAddClinic() {
     if (!this.addClinicForm.name.trim() || !this.addClinicForm.email.trim()) {
@@ -238,92 +221,137 @@ export class AdminComponent implements OnInit {
     });
   }
 
-  // ── BATCH TEST CLINICS ────────────────────────────────────
+  // ── EMAIL COMPLETARE PROFIL ───────────────────────────────
+  sendCompleteProfileEmails() {
+    const count = this.clinics.filter(c => !this.isProfileComplete(c)).length;
+    if (!confirm(`Trimiți emailuri de completare profil la ${count} clinici cu profil incomplet?`)) return;
+    this.sendingProfileEmails = true;
+    this.profileEmailsResult = null;
+    this.http.post<any>(`${API}/admin/send-complete-profile`, {}, { headers: this.headers() }).subscribe({
+      next: (res) => {
+        this.sendingProfileEmails = false;
+        this.profileEmailsResult = res.results;
+      },
+      error: (err) => {
+        this.sendingProfileEmails = false;
+        alert('❌ Eroare: ' + (err.error?.error ?? err.message));
+      },
+    });
+  }
+
+  closeProfileEmailsResult() { this.profileEmailsResult = null; }
+
+  // ── SUPPORT MESSAGES ──────────────────────────────────────
+  loadSupportMessages() {
+    this.http.get<any[]>(`${API}/admin/support-messages`, { headers: this.headers() }).subscribe({
+      next: (data) => { this.supportMessages = data; },
+      error: (err) => { alert('❌ Eroare: ' + (err.error?.error ?? err.message)); },
+    });
+  }
+
+  toggleThread(id: number) {
+    this.openThreadId = this.openThreadId === id ? null : id;
+  }
+
+  replyToMessage(m: any) {
+    if (!m._replyDraft?.trim()) return;
+    m._sending = true;
+    this.http.post(`${API}/admin/support-messages/${m.id}/reply`, { reply: m._replyDraft }, { headers: this.headers() }).subscribe({
+      next: () => {
+        if (!m.replies) m.replies = [];
+        m.replies.push({ sender: 'admin', body: m._replyDraft, created_at: new Date().toISOString() });
+        m.is_read = true;
+        m._replyDraft = '';
+        m._sending = false;
+      },
+      error: (err) => {
+        m._sending = false;
+        alert('❌ ' + (err.error?.error ?? err.message));
+      },
+    });
+  }
+
+  closeThread(m: any) {
+    this.http.patch(`${API}/admin/support-messages/${m.id}/close`, {}, { headers: this.headers() }).subscribe({
+      next: () => { m.status = 'closed'; m.is_read = true; },
+    });
+  }
+
+  reopenThread(m: any) {
+    this.http.patch(`${API}/admin/support-messages/${m.id}/reopen`, {}, { headers: this.headers() }).subscribe({
+      next: () => { m.status = 'open'; },
+    });
+  }
+
+  // ── FEEDBACK ──────────────────────────────────────────────
+  loadFeedbacks() {
+    this.http.get<any[]>(`${API}/admin/feedbacks`, { headers: this.headers() }).subscribe({
+      next: (data) => { this.feedbackList = data; },
+      error: (err) => { alert('❌ Eroare: ' + (err.error?.error ?? err.message)); },
+    });
+  }
+
+  // ── DEV TOOLS ─────────────────────────────────────────────
+  createClinicAccounts() {
+    if (!confirm('Creezi conturi pentru toate clinicile fără user? Parolele vor fi afișate o singură dată — salvează-le!')) return;
+    this.creatingAccounts = true;
+    this.accountsResult = null;
+    this.http.post<any>(`${API}/admin/create-clinic-accounts`, {}, { headers: this.headers() }).subscribe({
+      next: (res) => { this.creatingAccounts = false; this.accountsResult = res.results; this.load(); },
+      error: (err) => { this.creatingAccounts = false; alert('❌ Eroare: ' + (err.error?.error ?? err.message)); },
+    });
+  }
+
+  closeAccountsResult() { this.accountsResult = null; }
+
   addBatchTestClinics() {
     if (!confirm(`Adaugi ${this.TEST_CLINICS.length} clinici de test cu conturi și emailuri?\n\n${this.TEST_CLINICS.map(c => c.email).join('\n')}`)) return;
     this.addingBatch = true;
     this.batchResult = null;
     this.http.post<any>(`${API}/admin/add-batch-clinics`, { clinics: this.TEST_CLINICS }, { headers: this.headers() }).subscribe({
-      next: (res) => {
-        this.addingBatch = false;
-        this.batchResult = res.results;
-        this.load();
-      },
-      error: (err) => {
-        this.addingBatch = false;
-        alert('❌ Eroare: ' + (err.error?.error ?? err.message));
-      },
+      next: (res) => { this.addingBatch = false; this.batchResult = res.results; this.load(); },
+      error: (err) => { this.addingBatch = false; alert('❌ Eroare: ' + (err.error?.error ?? err.message)); },
     });
   }
 
-  closeBatchResult() {
-    this.batchResult = null;
-  }
+  closeBatchResult() { this.batchResult = null; }
 
-  // ── SIMULATE CLINICS ──────────────────────────────────────
   simulateClinics() {
-    if (!confirm('Populezi profilul complet (adresă, descriere, servicii, coordonate) pentru cele 4 clinici de test?')) return;
+    if (!confirm('Populezi profilul complet pentru cele 4 clinici de test?')) return;
     this.simulating = true;
     this.simulateResult = null;
     this.http.post<any>(`${API}/admin/simulate-clinics`, {}, { headers: this.headers() }).subscribe({
-      next: (res) => {
-        this.simulating = false;
-        this.simulateResult = res.results;
-        this.load();
-      },
-      error: (err) => {
-        this.simulating = false;
-        alert('❌ Eroare: ' + (err.error?.error ?? err.message));
-      },
+      next: (res) => { this.simulating = false; this.simulateResult = res.results; this.load(); },
+      error: (err) => { this.simulating = false; alert('❌ Eroare: ' + (err.error?.error ?? err.message)); },
     });
   }
 
-  closeSimulateResult() {
-    this.simulateResult = null;
-  }
+  closeSimulateResult() { this.simulateResult = null; }
 
-  // ── RESEND WELCOME EMAILS ─────────────────────────────────
   resendWelcomeEmails() {
     const count = this.clinics.filter(c => c.user_id).length;
     if (!confirm(`Retrimiți emailurile de bun venit (cu parole noi) la toate cele ${count} clinici cu cont?`)) return;
     this.resendingEmails = true;
     this.resendResult = null;
     this.http.post<any>(`${API}/admin/resend-welcome-emails`, {}, { headers: this.headers() }).subscribe({
-      next: (res) => {
-        this.resendingEmails = false;
-        this.resendResult = res.results;
-      },
-      error: (err) => {
-        this.resendingEmails = false;
-        alert('❌ Eroare: ' + (err.error?.error ?? err.message));
-      },
+      next: (res) => { this.resendingEmails = false; this.resendResult = res.results; },
+      error: (err) => { this.resendingEmails = false; alert('❌ Eroare: ' + (err.error?.error ?? err.message)); },
     });
   }
 
-  closeResendResult() {
-    this.resendResult = null;
-  }
+  closeResendResult() { this.resendResult = null; }
 
   runOnboarding() {
     if (!confirm('Creezi conturi noi + trimiți emailuri de bun venit tuturor clinicilor fără cont?')) return;
     this.onboarding = true;
     this.onboardResult = null;
     this.http.post<any>(`${API}/admin/onboard-clinics`, {}, { headers: this.headers() }).subscribe({
-      next: (res) => {
-        this.onboarding = false;
-        this.onboardResult = res.results;
-        this.load();
-      },
-      error: (err) => {
-        this.onboarding = false;
-        alert('❌ Eroare: ' + (err.error?.error ?? err.message));
-      },
+      next: (res) => { this.onboarding = false; this.onboardResult = res.results; this.load(); },
+      error: (err) => { this.onboarding = false; alert('❌ Eroare: ' + (err.error?.error ?? err.message)); },
     });
   }
 
-  closeOnboardResult() {
-    this.onboardResult = null;
-  }
+  closeOnboardResult() { this.onboardResult = null; }
 
   exitToPatient() {
     this.auth.logout();
@@ -333,6 +361,11 @@ export class AdminComponent implements OnInit {
   formatDate(d: string | null) {
     if (!d) return '—';
     return new Date(d).toLocaleDateString('ro-RO', { day: '2-digit', month: 'short', year: 'numeric' });
+  }
+
+  formatTime(d: string | null): string {
+    if (!d) return '';
+    return new Date(d).toLocaleTimeString('ro-RO', { hour: '2-digit', minute: '2-digit' });
   }
 
   formatLoginDate(d: string | null): string {

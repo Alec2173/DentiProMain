@@ -52,23 +52,46 @@ export class ClinicDashboardComponent implements OnInit, OnDestroy {
     if (!this.auth.isClinic) { this.router.navigate(['/clinici']); return; }
     if (!this.auth.currentUser?.clinicId) { this.router.navigate(['/clinici/inscriere']); return; }
     this.load();
-    this.scheduleFeedback();
+    this.initFeedback();
   }
 
   ngOnDestroy() {
     clearTimeout(this.feedbackTimer);
   }
 
-  private scheduleFeedback() {
-    const key = `dp_feedback_${this.auth.currentUser?.id}`;
-    if (localStorage.getItem(key)) return;
+  private get fbKey(): string { return `dp_feedback_${this.auth.currentUser?.id}`; }
+
+  private initFeedback() {
+    const state = localStorage.getItem(this.fbKey);
+    // 'submitted' or 'done' → never show again
+    if (state === 'submitted' || state === 'done') return;
+
+    // Check backend: maybe they submitted from another device
+    this.http.get<{ submitted: boolean }>(`${API}/feedback/clinic/check?clinicId=${this.auth.currentUser?.clinicId}`)
+      .subscribe({
+        next: (r) => {
+          if (r.submitted) { localStorage.setItem(this.fbKey, 'submitted'); return; }
+          this.scheduleFeedback(state);
+        },
+        error: () => this.scheduleFeedback(state),
+      });
+  }
+
+  private scheduleFeedback(state: string | null) {
+    // skip2 (already skipped once before) → schedule once more, then mark done
+    // no state → schedule normally
     this.feedbackTimer = setTimeout(() => { this.showFeedback = true; }, 50000);
   }
 
   closeFeedback() {
     this.showFeedback = false;
-    localStorage.setItem(`dp_feedback_${this.auth.currentUser?.id}`, '1');
     clearTimeout(this.feedbackTimer);
+    const current = localStorage.getItem(this.fbKey);
+    if (current === 'skip1') {
+      localStorage.setItem(this.fbKey, 'done');
+    } else if (!current) {
+      localStorage.setItem(this.fbKey, 'skip1');
+    }
   }
 
   toggleFeature(id: string) {
@@ -90,8 +113,18 @@ export class ClinicDashboardComponent implements OnInit, OnDestroy {
       other: this.feedbackOther.trim() || null,
     };
     this.http.post(`${API}/feedback/clinic`, body).subscribe({
-      next: () => { this.feedbackSubmitting = false; this.feedbackSubmitted = true; setTimeout(() => this.closeFeedback(), 2500); },
-      error: () => { this.feedbackSubmitting = false; this.feedbackSubmitted = true; setTimeout(() => this.closeFeedback(), 2500); },
+      next: () => {
+        this.feedbackSubmitting = false;
+        this.feedbackSubmitted = true;
+        localStorage.setItem(this.fbKey, 'submitted');
+        setTimeout(() => { this.showFeedback = false; clearTimeout(this.feedbackTimer); }, 2500);
+      },
+      error: () => {
+        this.feedbackSubmitting = false;
+        this.feedbackSubmitted = true;
+        localStorage.setItem(this.fbKey, 'submitted');
+        setTimeout(() => { this.showFeedback = false; clearTimeout(this.feedbackTimer); }, 2500);
+      },
     });
   }
 

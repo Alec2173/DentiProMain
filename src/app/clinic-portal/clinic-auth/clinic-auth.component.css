@@ -287,6 +287,28 @@
 
 .req { color: #ef4444; font-size: 10px; }
 
+.ca-support-hint {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 20px;
+  padding: 14px 16px;
+  background: rgba(59, 130, 246, 0.05);
+  border: 1px solid rgba(59, 130, 246, 0.12);
+  border-radius: 12px;
+  font-size: 13px;
+  color: #64748b;
+  text-align: center;
+}
+.ca-support-hint > i { color: #60a5fa; }
+.ca-support-link { color: #60a5fa; text-decoration: none; font-weight: 600; }
+.ca-support-link:hover { text-decoration: underline; }
+.ca-support-sep { color: #475569; }
+.ca-support-widget-hint { color: #94a3b8; display: flex; align-items: center; gap: 5px; font-weight: 500; }
+.ca-support-widget-hint i { color: #8b5cf6; }
+
 /* ── BACKGROUND ORBS ── */
 
 .ca-orb {

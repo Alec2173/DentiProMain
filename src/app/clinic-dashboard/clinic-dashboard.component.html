@@ -99,29 +99,110 @@
     </div>
 
     <!-- ── PROFILE COMPLETION ─────────────────────────────────── -->
-    <div class="completion-card">
-      <div class="completion-header">
-        <div class="completion-title">
-          <i class="fal fa-tasks"></i>
-          <span>Completitudine profil</span>
+    @if (profileCompletion < 100) {
+      <a routerLink="/clinici/profil" class="completion-card completion-card--clickable">
+        <div class="completion-header">
+          <div class="completion-title">
+            <i class="fal fa-tasks"></i>
+            <span>Completitudine profil</span>
+          </div>
+          <span class="completion-pct">{{ profileCompletion }}%</span>
         </div>
-        <span class="completion-pct">{{ profileCompletion }}%</span>
-      </div>
-      <div class="progress-track">
-        <div class="progress-fill" [style.width.%]="profileCompletion"></div>
-      </div>
-      @if (profileCompletion < 100) {
+        <div class="progress-track">
+          <div class="progress-fill" [style.width.%]="profileCompletion"></div>
+        </div>
         <p class="completion-hint">
-          <i class="fal fa-info-circle"></i>
-          Profilul tău este <strong>{{ profileCompletion }}% complet</strong>. Adaugă mai multe detalii pentru a atrage mai mulți pacienți.
+          <i class="fal fa-arrow-right"></i>
+          Profilul tău este <strong>{{ profileCompletion }}% complet</strong>. Apasă pentru a-l finaliza și atrage mai mulți pacienți.
         </p>
-      } @else {
+      </a>
+    } @else {
+      <div class="completion-card">
+        <div class="completion-header">
+          <div class="completion-title">
+            <i class="fal fa-tasks"></i>
+            <span>Completitudine profil</span>
+          </div>
+          <span class="completion-pct">{{ profileCompletion }}%</span>
+        </div>
+        <div class="progress-track">
+          <div class="progress-fill" [style.width.%]="profileCompletion"></div>
+        </div>
         <p class="completion-hint success">
           <i class="fal fa-check-circle"></i>
           Profilul tău este complet! Felicitări.
         </p>
-      }
-    </div>
+      </div>
+    }
+
+    <!-- ── GHID PAS CU PAS ────────────────────────────────────── -->
+    @if (profileCompletion < 100) {
+      <div class="guide-card">
+        <div class="guide-header">
+          <i class="fal fa-map-signs"></i>
+          <span>Ghid rapid — cum îți configurezi profilul</span>
+        </div>
+        <div class="guide-steps">
+
+          <div class="guide-step" [class.guide-step--done]="data.clinic?.name && data.clinic?.phone_public">
+            <div class="guide-step-num">1</div>
+            <div class="guide-step-body">
+              <span class="guide-step-title">Completează informațiile de bază</span>
+              <span class="guide-step-desc">Adaugă numele clinicii, telefonul public și adresa</span>
+            </div>
+            @if (data.clinic?.name && data.clinic?.phone_public) {
+              <i class="fal fa-check-circle guide-done-icon"></i>
+            } @else {
+              <a routerLink="/clinici/profil" class="guide-step-btn">Completează <i class="fal fa-arrow-right"></i></a>
+            }
+          </div>
+
+          <div class="guide-step" [class.guide-step--done]="data.clinic?.logo_url">
+            <div class="guide-step-num">2</div>
+            <div class="guide-step-body">
+              <span class="guide-step-title">Adaugă logo-ul clinicii</span>
+              <span class="guide-step-desc">O imagine clară cu sigla sau numele clinicii tale</span>
+            </div>
+            @if (data.clinic?.logo_url) {
+              <i class="fal fa-check-circle guide-done-icon"></i>
+            } @else {
+              <a routerLink="/clinici/profil" class="guide-step-btn">Adaugă <i class="fal fa-arrow-right"></i></a>
+            }
+          </div>
+
+          <div class="guide-step" [class.guide-step--done]="data.stats?.images > 0">
+            <div class="guide-step-num">3</div>
+            <div class="guide-step-body">
+              <span class="guide-step-title">Încarcă fotografii ale clinicii</span>
+              <span class="guide-step-desc">Pacienții vor vedea sala de așteptare, cabinetul, echipa</span>
+            </div>
+            @if (data.stats?.images > 0) {
+              <i class="fal fa-check-circle guide-done-icon"></i>
+            } @else {
+              <a routerLink="/clinici/profil" class="guide-step-btn">Adaugă poze <i class="fal fa-arrow-right"></i></a>
+            }
+          </div>
+
+          <div class="guide-step" [class.guide-step--done]="data.stats?.services > 0">
+            <div class="guide-step-num">4</div>
+            <div class="guide-step-body">
+              <span class="guide-step-title">Adaugă serviciile oferite</span>
+              <span class="guide-step-desc">Detartraj, implant, albire, aparat dentar — ce oferiți voi</span>
+            </div>
+            @if (data.stats?.services > 0) {
+              <i class="fal fa-check-circle guide-done-icon"></i>
+            } @else {
+              <a routerLink="/clinici/profil" class="guide-step-btn">Adaugă servicii <i class="fal fa-arrow-right"></i></a>
+            }
+          </div>
+
+        </div>
+        <p class="guide-hint">
+          <i class="fal fa-lightbulb"></i>
+          Cu cât profilul este mai complet, cu atât mai mulți pacienți îți vor găsi clinica.
+        </p>
+      </div>
+    }
 
     <!-- ── QUICK ACTIONS ──────────────────────────────────────── -->
     <div class="section-title">

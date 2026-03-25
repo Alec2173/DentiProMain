@@ -8,83 +8,84 @@
 ════════════════════════════════════════════════════════════ */
 
 :root {
-
   /* ── BACKGROUNDS ── */
-  --bg-deep:      #020b18;   /* page base, cel mai adânc */
-  --bg-primary:   #071224;   /* background principal */
-  --bg-surface:   #0a1d36;   /* secțiuni, zone de conținut */
-  --bg-elevated:  #0e2444;   /* cards, suprafețe ridicate */
-  --bg-overlay:   rgba(2, 11, 24, 0.88);  /* modals, overlays */
+  --bg-deep: #020b18; /* page base, cel mai adânc */
+  --bg-primary: #071224; /* background principal */
+  --bg-surface: #0a1d36; /* secțiuni, zone de conținut */
+  --bg-elevated: #0e2444; /* cards, suprafețe ridicate */
+  --bg-overlay: rgba(2, 11, 24, 0.88); /* modals, overlays */
 
   /* ── ACCENTE ── */
-  --accent-blue:      #2563eb;               /* CTA principal, acțiuni primare */
-  --accent-blue-dark: #1d4ed8;               /* hover pe blue */
-  --accent-cyan:      #06b6d4;               /* identitate medicală, secundar */
-  --accent-cyan-dark: #0891b2;               /* hover pe cyan */
+  --accent-blue: #2563eb; /* CTA principal, acțiuni primare */
+  --accent-blue-dark: #1d4ed8; /* hover pe blue */
+  --accent-cyan: #06b6d4; /* identitate medicală, secundar */
+  --accent-cyan-dark: #0891b2; /* hover pe cyan */
 
-  --accent-gradient:        linear-gradient(135deg, #2563eb 0%, #06b6d4 100%);
-  --accent-gradient-subtle: linear-gradient(135deg, rgba(37,99,235,0.15) 0%, rgba(6,182,212,0.10) 100%);
+  --accent-gradient: linear-gradient(135deg, #2563eb 0%, #06b6d4 100%);
+  --accent-gradient-subtle: linear-gradient(
+    135deg,
+    rgba(37, 99, 235, 0.15) 0%,
+    rgba(6, 182, 212, 0.1) 100%
+  );
 
   /* ── GLOW ── */
-  --glow-blue: rgba(37,  99, 235, 0.20);
-  --glow-cyan: rgba(6,  182, 212, 0.15);
-  --glow-blue-strong: rgba(37,  99, 235, 0.35);
-  --glow-cyan-strong: rgba(6,  182, 212, 0.28);
+  --glow-blue: rgba(37, 99, 235, 0.2);
+  --glow-cyan: rgba(6, 182, 212, 0.15);
+  --glow-blue-strong: rgba(37, 99, 235, 0.35);
+  --glow-cyan-strong: rgba(6, 182, 212, 0.28);
 
   /* ── TEXT ── */
-  --text-primary:   #eef4ff;                      /* titluri, text important */
-  --text-secondary: rgba(238, 244, 255, 0.55);    /* body text */
-  --text-muted:     rgba(238, 244, 255, 0.30);    /* placeholders, hints */
-  --text-disabled:  rgba(238, 244, 255, 0.15);    /* disabled states */
-  --text-accent:    #60a5fa;                       /* links, accent text */
+  --text-primary: #eef4ff; /* titluri, text important */
+  --text-secondary: rgba(238, 244, 255, 0.55); /* body text */
+  --text-muted: rgba(238, 244, 255, 0.3); /* placeholders, hints */
+  --text-disabled: rgba(238, 244, 255, 0.15); /* disabled states */
+  --text-accent: #60a5fa; /* links, accent text */
 
   /* ── BORDERS ── */
   --border-subtle: rgba(255, 255, 255, 0.04);
-  --border-light:  rgba(255, 255, 255, 0.07);
+  --border-light: rgba(255, 255, 255, 0.07);
   --border-medium: rgba(255, 255, 255, 0.11);
   --border-strong: rgba(255, 255, 255, 0.18);
-  --border-focus:  rgba(37, 99, 235, 0.55);
+  --border-focus: rgba(37, 99, 235, 0.55);
 
   /* ── CARDS ── */
-  --card-bg:           rgba(10, 29, 54, 0.75);
-  --card-bg-hover:     rgba(12, 34, 62, 0.85);
-  --card-border:       rgba(255, 255, 255, 0.06);
-  --card-border-hover: rgba(255, 255, 255, 0.10);
+  --card-bg: rgba(10, 29, 54, 0.75);
+  --card-bg-hover: rgba(12, 34, 62, 0.85);
+  --card-border: rgba(255, 255, 255, 0.06);
+  --card-border-hover: rgba(255, 255, 255, 0.1);
   --card-shadow:
-    0 1px 0 rgba(255, 255, 255, 0.04) inset,
-    0 8px 32px rgba(0, 0, 0, 0.35);
+    0 1px 0 rgba(255, 255, 255, 0.04) inset, 0 8px 32px rgba(0, 0, 0, 0.35);
   --card-shadow-hover:
-    0 1px 0 rgba(255, 255, 255, 0.05) inset,
-    0 16px 48px rgba(0, 0, 0, 0.45),
+    0 1px 0 rgba(255, 255, 255, 0.05) inset, 0 16px 48px rgba(0, 0, 0, 0.45),
     0 0 0 1px rgba(37, 99, 235, 0.12);
 
   /* ── SHADOWS ── */
-  --shadow-xs: 0 1px 4px  rgba(0, 0, 0, 0.20);
-  --shadow-sm: 0 2px 10px rgba(0, 0, 0, 0.30);
-  --shadow-md: 0 8px 28px rgba(0, 0, 0, 0.40);
+  --shadow-xs: 0 1px 4px rgba(0, 0, 0, 0.2);
+  --shadow-sm: 0 2px 10px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 8px 28px rgba(0, 0, 0, 0.4);
   --shadow-lg: 0 16px 52px rgba(0, 0, 0, 0.52);
   --shadow-xl: 0 32px 80px rgba(0, 0, 0, 0.65);
 
-  --shadow-glow-blue: 0 0 48px rgba(37,  99, 235, 0.18);
+  --shadow-glow-blue: 0 0 48px rgba(37, 99, 235, 0.18);
   --shadow-glow-cyan: 0 0 48px rgba(6, 182, 212, 0.14);
 
   /* ── BORDER RADIUS ── */
-  --radius-xs:   4px;
-  --radius-sm:   8px;
-  --radius-md:   12px;
-  --radius-lg:   16px;
-  --radius-xl:   20px;
-  --radius-2xl:  24px;
+  --radius-xs: 4px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --radius-2xl: 24px;
   --radius-full: 9999px;
 
   /* ── SPACING (8px grid) ── */
-  --space-1:  4px;
-  --space-2:  8px;
-  --space-3:  12px;
-  --space-4:  16px;
-  --space-5:  20px;
-  --space-6:  24px;
-  --space-8:  32px;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
   --space-10: 40px;
   --space-12: 48px;
   --space-16: 64px;
@@ -92,53 +93,54 @@
   --space-24: 96px;
 
   /* ── TRANSITIONS ── */
-  --t-fast:   0.14s ease;
+  --t-fast: 0.14s ease;
   --t-normal: 0.22s ease;
-  --t-slow:   0.35s ease;
+  --t-slow: 0.35s ease;
   --t-spring: 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
 
   /* ── TYPOGRAPHY ── */
-  --font-sans: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI",
-               Roboto, Helvetica, Arial, sans-serif;
+  --font-sans:
+    -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, Helvetica,
+    Arial, sans-serif;
   --font-mono: "SF Mono", "Fira Code", "Cascadia Code", Consolas, monospace;
 
-  --text-xs:   11px;
-  --text-sm:   13px;
+  --text-xs: 11px;
+  --text-sm: 13px;
   --text-base: 15px;
-  --text-md:   17px;
-  --text-lg:   20px;
-  --text-xl:   24px;
-  --text-2xl:  30px;
-  --text-3xl:  38px;
-  --text-4xl:  48px;
-  --text-5xl:  60px;
+  --text-md: 17px;
+  --text-lg: 20px;
+  --text-xl: 24px;
+  --text-2xl: 30px;
+  --text-3xl: 38px;
+  --text-4xl: 48px;
+  --text-5xl: 60px;
 
   /* ── Z-INDEX ── */
-  --z-base:    1;
-  --z-above:   10;
+  --z-base: 1;
+  --z-above: 10;
   --z-dropdown: 100;
-  --z-sticky:  200;
-  --z-navbar:  500;
-  --z-modal:   1000;
-  --z-toast:   1500;
+  --z-sticky: 200;
+  --z-navbar: 500;
+  --z-modal: 1000;
+  --z-toast: 1500;
 
   /* ── Backwards compat cu variabilele vechi folosite în componente ── */
-  --bg-primary-old:    var(--bg-primary);
-  --bg-secondary:      var(--bg-surface);
-  --surface-main:      var(--bg-elevated);
-  --accent-primary:    var(--accent-cyan);
-  --accent-secondary:  var(--accent-blue);
-  --gradient-accent:   var(--accent-gradient);
-  --text-muted-old:    var(--text-secondary);
-  --text-soft:         var(--text-muted);
-  --border-light-old:  var(--border-light);
+  --bg-primary-old: var(--bg-primary);
+  --bg-secondary: var(--bg-surface);
+  --surface-main: var(--bg-elevated);
+  --accent-primary: var(--accent-cyan);
+  --accent-secondary: var(--accent-blue);
+  --gradient-accent: var(--accent-gradient);
+  --text-muted-old: var(--text-secondary);
+  --text-soft: var(--text-muted);
+  --border-light-old: var(--border-light);
   --border-subtle-old: var(--border-subtle);
-  --radius-lg:         var(--radius-lg);
-  --radius-xl:         var(--radius-xl);
-  --transition-fast:   var(--t-fast);
+  --radius-lg: var(--radius-lg);
+  --radius-xl: var(--radius-xl);
+  --transition-fast: var(--t-fast);
   --transition-normal: var(--t-normal);
-  --glow-blue-old:     var(--glow-blue-strong);
-  --glow-indigo:       rgba(99, 102, 241, 0.20);
+  --glow-blue-old: var(--glow-blue-strong);
+  --glow-indigo: rgba(99, 102, 241, 0.2);
 }
 
 /* ════════════════════════════════════════════════════════════
@@ -211,7 +213,7 @@ select {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.10);
+  background: rgba(255, 255, 255, 0.1);
   border-radius: var(--radius-full);
 }
 
@@ -221,7 +223,7 @@ select {
 
 * {
   scrollbar-width: thin;
-  scrollbar-color: rgba(255,255,255,0.10) transparent;
+  scrollbar-color: rgba(255, 255, 255, 0.1) transparent;
 }
 
 /* ════════════════════════════════════════════════════════════
@@ -254,10 +256,18 @@ select {
   background-clip: text;
 }
 
-.text-primary   { color: var(--text-primary); }
-.text-secondary { color: var(--text-secondary); }
-.text-muted     { color: var(--text-muted); }
-.text-accent    { color: var(--text-accent); }
+.text-primary {
+  color: var(--text-primary);
+}
+.text-secondary {
+  color: var(--text-secondary);
+}
+.text-muted {
+  color: var(--text-muted);
+}
+.text-accent {
+  color: var(--text-accent);
+}
 
 /* ════════════════════════════════════════════════════════════
    MAPLIBRE — CUSTOM PIN MARKER
@@ -286,8 +296,9 @@ select {
   align-items: center;
   cursor: pointer;
   transform-origin: 50% 100%;
-  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1),
-              filter 0.25s ease;
+  transition:
+    transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1),
+    filter 0.25s ease;
   filter: drop-shadow(0 4px 10px rgba(37, 99, 235, 0.45));
 }
 
@@ -307,7 +318,9 @@ select {
   align-items: center;
   justify-content: center;
   box-shadow: 0 3px 12px rgba(37, 99, 235, 0.5);
-  transition: background 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    background 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .map-pin:hover .map-pin__body {
@@ -352,8 +365,14 @@ select {
 }
 
 @keyframes pinPulse {
-  0%   { transform: translate(-50%, -50%) scale(1);   opacity: 0.65; }
-  100% { transform: translate(-50%, -50%) scale(2.2); opacity: 0; }
+  0% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 0.65;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(2.2);
+    opacity: 0;
+  }
 }
 
 /* Active state when popup is open */
@@ -392,9 +411,10 @@ select {
   background: #0c1e38;
   border: 1px solid rgba(255, 255, 255, 0.09);
   cursor: pointer;
-  transition: border-color 0.22s ease,
-              box-shadow 0.22s ease,
-              transform 0.22s cubic-bezier(0.34, 1.4, 0.64, 1);
+  transition:
+    border-color 0.22s ease,
+    box-shadow 0.22s ease,
+    transform 0.22s cubic-bezier(0.34, 1.4, 0.64, 1);
   display: flex;
   flex-direction: column;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.45);
@@ -402,8 +422,9 @@ select {
 
 .map-popup-card:hover {
   border-color: rgba(37, 99, 235, 0.45);
-  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.65),
-              0 0 0 1px rgba(37, 99, 235, 0.18);
+  box-shadow:
+    0 16px 48px rgba(0, 0, 0, 0.65),
+    0 0 0 1px rgba(37, 99, 235, 0.18);
   transform: translateY(-3px);
 }
 
@@ -430,7 +451,7 @@ select {
 }
 
 .popup-image::after {
-  content: '';
+  content: "";
   position: absolute;
   inset: 0;
   background: linear-gradient(
@@ -509,7 +530,7 @@ select {
 .popup-star {
   font-size: 14px;
   color: #f59e0b;
-  font-variation-settings: 'FILL' 1;
+  font-variation-settings: "FILL" 1;
   vertical-align: middle;
 }
 
@@ -520,7 +541,9 @@ select {
   display: flex;
   align-items: center;
   gap: 3px;
-  transition: color 0.2s, gap 0.2s;
+  transition:
+    color 0.2s,
+    gap 0.2s;
 }
 
 .map-popup-card:hover .popup-cta {
@@ -542,8 +565,12 @@ select {
 ════════════════════════════════════════════════════════════ */
 
 @keyframes shimmer {
-  0%   { transform: translateX(-100%); }
-  100% { transform: translateX(100%); }
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
 }
 
 .skeleton {
@@ -554,14 +581,14 @@ select {
 }
 
 .skeleton::after {
-  content: '';
+  content: "";
   position: absolute;
   inset: 0;
   background: linear-gradient(
     90deg,
-    transparent       0%,
-    rgba(255,255,255,0.055) 50%,
-    transparent       100%
+    transparent 0%,
+    rgba(255, 255, 255, 0.055) 50%,
+    transparent 100%
   );
   animation: shimmer 1.5s infinite;
 }
@@ -571,45 +598,84 @@ select {
 ════════════════════════════════════════════════════════════ */
 
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to   { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 @keyframes slideUp {
-  from { opacity: 0; transform: translateY(12px); }
-  to   { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @keyframes scaleIn {
-  from { opacity: 0; transform: scale(0.92); }
-  to   { opacity: 1; transform: scale(1); }
+  from {
+    opacity: 0;
+    transform: scale(0.92);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
 @keyframes scaleInSpring {
-  from { opacity: 0; transform: scale(0.88); }
-  to   { opacity: 1; transform: scale(1); }
+  from {
+    opacity: 0;
+    transform: scale(0.88);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
 @keyframes dropIn {
-  from { opacity: 0; transform: translateY(-6px) scale(0.97); }
-  to   { opacity: 1; transform: translateY(0) scale(1); }
+  from {
+    opacity: 0;
+    transform: translateY(-6px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 @keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50%       { opacity: 0.4; }
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.4;
+  }
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 @keyframes strokeCircle {
-  to { stroke-dashoffset: 0; }
+  to {
+    stroke-dashoffset: 0;
+  }
 }
 
 @keyframes strokeCheck {
-  to { stroke-dashoffset: 0; }
+  to {
+    stroke-dashoffset: 0;
+  }
 }
 
 /* ════════════════════════════════════════════════════════════
@@ -617,22 +683,40 @@ select {
 ════════════════════════════════════════════════════════════ */
 
 /* Prevent horizontal overflow on any page */
-html, body {
+html,
+body {
   overflow-x: hidden;
   max-width: 100vw;
 }
 
 /* MapLibre popup: shrink on mobile */
 @media (max-width: 480px) {
-  .map-popup-card { width: 220px; }
-  .popup-image { height: 110px; }
-  .popup-name { font-size: 13px; }
-  .popup-info { padding: 12px 14px; }
+  .map-popup-card {
+    width: 220px;
+  }
+  .popup-image {
+    height: 110px;
+  }
+  .popup-name {
+    font-size: 13px;
+  }
+  .popup-info {
+    padding: 12px 14px;
+  }
 }
 
 @media (max-width: 360px) {
-  .map-popup-card { width: 190px; }
-  .popup-image { height: 96px; }
-  .popup-name { font-size: 12px; }
-  .popup-info { padding: 10px 12px; gap: 4px; }
+  .map-popup-card {
+    width: 190px;
+  }
+  .popup-image {
+    height: 96px;
+  }
+  .popup-name {
+    font-size: 12px;
+  }
+  .popup-info {
+    padding: 10px 12px;
+    gap: 4px;
+  }
 }

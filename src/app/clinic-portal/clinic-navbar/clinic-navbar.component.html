@@ -18,6 +18,9 @@
       <a routerLink="/clinici/inscriere" routerLinkActive="active">
         Înregistrare
       </a>
+      <a routerLink="/contact" routerLinkActive="active">
+        Contact
+      </a>
     </div>
   </div>
 
@@ -83,6 +86,10 @@
 
             <div class="cn-dd-divider"></div>
 
+            <a class="cn-dd-item" routerLink="/contact" (click)="userMenuOpen = false">
+              <i class="fal fa-question-circle"></i> Ajutor & Contact
+            </a>
+
             <a class="cn-dd-item cn-dd-patient-link" routerLink="/" (click)="logout(); userMenuOpen = false">
               <i class="fal fa-arrow-left"></i> Site pacienți
             </a>
@@ -113,6 +120,7 @@
          Locație originală: clinic-navbar > mobile menu -->
     <!-- <a routerLink="/clinici/pricing" (click)="mobileMenuOpen = false">Prețuri</a> -->
     <a routerLink="/clinici/inscriere" (click)="mobileMenuOpen = false">Înregistrare</a>
+    <a routerLink="/contact" (click)="mobileMenuOpen = false">Contact & Ajutor</a>
 
     @if (!authService.isLoggedIn || authService.isPatient) {
       <a routerLink="/clinici/autentificare" (click)="mobileMenuOpen = false" class="cn-mobile-auth-primary">

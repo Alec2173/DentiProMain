@@ -11,33 +11,60 @@
         <p class="adm-sub">Panou de administrare clinici</p>
       </div>
     </div>
+
     <div class="adm-header-actions">
-      <button class="adm-onboard-btn" (click)="runOnboarding()" [disabled]="onboarding">
-        <i class="fal fa-paper-plane"></i>
-        {{ onboarding ? 'Se trimite...' : 'Onboarding clinici' }}
-      </button>
-      <button class="adm-resend-btn" (click)="resendWelcomeEmails()" [disabled]="resendingEmails">
-        <i class="fal fa-redo"></i>
-        {{ resendingEmails ? 'Se trimite...' : 'Retrimite emailuri' }}
-      </button>
-      <button class="adm-create-accounts" (click)="createClinicAccounts()" [disabled]="creatingAccounts">
-        <i class="fal fa-user-plus"></i>
-        {{ creatingAccounts ? 'Se procesează...' : 'Creează conturi' }}
-      </button>
+      <!-- Acțiuni principale -->
       <button class="adm-add-clinic-btn" (click)="openAddClinic()">
         <i class="fal fa-plus"></i> Adaugă clinică
       </button>
-      <button class="adm-batch-btn" (click)="addBatchTestClinics()" [disabled]="addingBatch">
-        <i class="fal fa-flask"></i>
-        {{ addingBatch ? 'Se adaugă...' : '4 clinici test' }}
+
+      <button class="adm-profile-btn" (click)="sendCompleteProfileEmails()" [disabled]="sendingProfileEmails">
+        <i class="fal fa-envelope-open-text"></i>
+        {{ sendingProfileEmails ? 'Se trimite...' : 'Email profil incomplet (' + incompleteCount + ')' }}
       </button>
-      <button class="adm-simulate-btn" (click)="simulateClinics()" [disabled]="simulating">
-        <i class="fal fa-play-circle"></i>
-        {{ simulating ? 'Se simulează...' : 'Pornește simularea' }}
+
+      <button class="adm-messages-btn" (click)="loadSupportMessages()">
+        <i class="fal fa-comments"></i> Mesaje
+        @if (unreadMessages > 0) {
+          <span class="adm-unread-badge">{{ unreadMessages }}</span>
+        }
       </button>
+
+      <button class="adm-feedback-btn" (click)="loadFeedbacks()">
+        <i class="fal fa-star"></i> Feedbackuri
+      </button>
+
       <button class="adm-refresh" (click)="load()">
-        <i class="fal fa-sync-alt"></i> Reîncarcă
+        <i class="fal fa-sync-alt"></i>
       </button>
+
+      <!-- Dev Tools dropdown -->
+      <div class="adm-devtools-wrap">
+        <button class="adm-devtools-btn" (click)="showDevTools = !showDevTools">
+          <i class="fal fa-tools"></i> Dev
+          <i class="fal" [class.fa-chevron-down]="!showDevTools" [class.fa-chevron-up]="showDevTools"></i>
+        </button>
+        @if (showDevTools) {
+          <div class="adm-devtools-dropdown" (click)="$event.stopPropagation()">
+            <button (click)="runOnboarding(); showDevTools=false" [disabled]="onboarding">
+              <i class="fal fa-paper-plane"></i> Onboarding clinici
+            </button>
+            <button (click)="resendWelcomeEmails(); showDevTools=false" [disabled]="resendingEmails">
+              <i class="fal fa-redo"></i> Retrimite emailuri
+            </button>
+            <button (click)="createClinicAccounts(); showDevTools=false" [disabled]="creatingAccounts">
+              <i class="fal fa-user-plus"></i> Creează conturi
+            </button>
+            <button (click)="addBatchTestClinics(); showDevTools=false" [disabled]="addingBatch">
+              <i class="fal fa-flask"></i> 4 clinici test
+            </button>
+            <button (click)="simulateClinics(); showDevTools=false" [disabled]="simulating">
+              <i class="fal fa-play-circle"></i> Simulare clinici test
+            </button>
+          </div>
+        }
+      </div>
+
       <button class="adm-exit" (click)="exitToPatient()">
         <i class="fal fa-arrow-left"></i> Site pacienți
       </button>
@@ -167,14 +194,11 @@
               <td class="adm-city">{{ clinic.city || '—' }}</td>
 
               <td>
-                <span class="adm-badge adm-badge-{{ clinic.status }}">
-                  {{ clinic.status }}
-                </span>
+                <span class="adm-badge adm-badge-{{ clinic.status }}">{{ clinic.status }}</span>
               </td>
 
               <td class="adm-plan">{{ clinic.plan }}</td>
 
-              <!-- PROFIL SCORE -->
               <td class="adm-profile-cell">
                 <div class="adm-profile-dots">
                   <span class="adm-dot" [class.filled]="clinic.image_count > 0" title="Poze ({{ clinic.image_count }})">
@@ -195,12 +219,9 @@
                 </span>
               </td>
 
-              <!-- ULTIMA AUTENTIFICARE -->
               <td class="adm-login-cell">
                 @if (!clinic.last_login_at) {
-                  <span class="adm-never-logged">
-                    <i class="fal fa-clock"></i> Niciodată
-                  </span>
+                  <span class="adm-never-logged"><i class="fal fa-clock"></i> Niciodată</span>
                 } @else {
                   <span class="adm-last-login">{{ formatLoginDate(clinic.last_login_at) }}</span>
                 }
@@ -260,91 +281,164 @@
 
 </div>
 
-<!-- ONBOARD RESULT MODAL -->
-@if (onboardResult !== null) {
-  <div class="adm-modal-overlay" (click)="closeOnboardResult()">
-    <div class="adm-modal adm-modal-wide" (click)="$event.stopPropagation()">
+<!-- ── SUPPORT MESSAGES MODAL ──────────────────────────── -->
+@if (supportMessages !== null) {
+  <div class="adm-modal-overlay" (click)="supportMessages = null; openThreadId = null">
+    <div class="adm-modal adm-modal-wide adm-modal-messages" (click)="$event.stopPropagation()">
       <div class="adm-modal-header">
-        <h3><i class="fal fa-paper-plane"></i> Onboarding — {{ onboardResult.length }} clinici procesate</h3>
-        <button class="adm-btn adm-btn-view" (click)="closeOnboardResult()"><i class="fal fa-times"></i></button>
-      </div>
-      <div class="adm-accounts-table-wrap">
-        <table class="adm-accounts-table">
-          <thead>
-            <tr><th>Clinică</th><th>Email</th><th>Acțiune</th><th>Email trimis</th></tr>
-          </thead>
-          <tbody>
-            @for (r of onboardResult; track r.clinicId) {
-              <tr>
-                <td>{{ r.clinicName }}</td>
-                <td class="adm-mono">{{ r.email }}</td>
-                <td>
-                  @if (r.action === 'created') { <span class="adm-badge adm-badge-active">Cont nou</span> }
-                  @else if (r.action === 'linked_existing') { <span class="adm-badge adm-badge-pending">Linkat</span> }
-                  @else { <span class="adm-badge adm-badge-suspended">Eroare</span> }
-                </td>
-                <td>
-                  @if (r.emailSent) { <span class="adm-verify-ok"><i class="fal fa-check"></i> Trimis</span> }
-                  @else { <span class="adm-verify-no"><i class="fal fa-times"></i> Nu</span> }
-                </td>
-              </tr>
-            }
-          </tbody>
-        </table>
-      </div>
-      <div class="adm-modal-actions" style="margin-top: 20px;">
-        <button class="adm-modal-cancel" (click)="closeOnboardResult()">Închide</button>
-      </div>
-    </div>
-  </div>
-}
-
-<!-- ACCOUNTS RESULT MODAL -->
-@if (accountsResult !== null) {
-  <div class="adm-modal-overlay" (click)="closeAccountsResult()">
-    <div class="adm-modal adm-modal-wide" (click)="$event.stopPropagation()">
-      <div class="adm-modal-header">
-        <h3><i class="fal fa-user-check"></i> Conturi create — {{ accountsResult.length }} clinici procesate</h3>
-        <button class="adm-btn adm-btn-view" (click)="closeAccountsResult()"><i class="fal fa-times"></i></button>
+        <h3><i class="fal fa-comments"></i> Mesaje suport
+          @if (unreadMessages > 0) {
+            <span class="adm-unread-badge" style="margin-left:8px;">{{ unreadMessages }} noi</span>
+          }
+        </h3>
+        <button class="adm-btn adm-btn-view" (click)="supportMessages = null; openThreadId = null">
+          <i class="fal fa-times"></i>
+        </button>
       </div>
 
-      <div class="adm-accounts-table-wrap">
-        <table class="adm-accounts-table">
-          <thead>
-            <tr>
-              <th>Clinică</th>
-              <th>Email</th>
-              <th>Parolă generată</th>
-              <th>Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            @for (r of accountsResult; track r.clinicId) {
-              <tr>
-                <td>{{ r.clinicName }}</td>
-                <td class="adm-mono">{{ r.email }}</td>
-                <td class="adm-mono">{{ r.password ?? '—' }}</td>
-                <td>
-                  @if (r.action === 'created') {
-                    <span class="adm-badge adm-badge-active">Cont nou</span>
-                  } @else {
-                    <span class="adm-badge adm-badge-pending">Linkat</span>
+      @if (supportMessages.length === 0) {
+        <p style="padding: 24px; color: #64748b; text-align: center;">Niciun mesaj primit încă.</p>
+      } @else {
+        <div class="adm-msgs-list">
+          @for (m of supportMessages; track m.id) {
+            <div class="adm-msg-card" [class.adm-msg-unread]="!m.is_read" [class.adm-msg-closed]="m.status === 'closed'">
+
+              <!-- Antet conversație -->
+              <div class="adm-msg-meta" (click)="toggleThread(m.id)" style="cursor:pointer;">
+                <div class="adm-msg-meta-left">
+                  <span class="adm-msg-clinic">{{ m.clinic_name || 'Clinică necunoscută' }}</span>
+                  <span class="adm-msg-email">{{ m.clinic_email || '—' }}</span>
+                </div>
+                <div class="adm-msg-meta-right">
+                  @if (m.status === 'closed') {
+                    <span class="adm-thread-badge adm-thread-closed">Închis</span>
+                  } @else if (!m.is_read) {
+                    <span class="adm-thread-badge adm-thread-new">Nou</span>
                   }
-                </td>
-              </tr>
-            }
-          </tbody>
-        </table>
-      </div>
+                  <span class="adm-msg-date">{{ formatDate(m.created_at) }}</span>
+                  <span class="adm-thread-replies-count">
+                    <i class="fal fa-comment-alt"></i> {{ (m.replies?.length ?? 0) + 1 }}
+                  </span>
+                  <i class="fal" [class.fa-chevron-down]="openThreadId !== m.id" [class.fa-chevron-up]="openThreadId === m.id"
+                     style="color:#475569; font-size:12px;"></i>
+                </div>
+              </div>
 
-      <div class="adm-modal-actions" style="margin-top: 20px;">
-        <button class="adm-modal-cancel" (click)="closeAccountsResult()">Închide</button>
+              <!-- Thread expandat -->
+              @if (openThreadId === m.id) {
+                <div class="adm-thread-body">
+
+                  <!-- Mesajul original (de la clinică) -->
+                  <div class="adm-chat-bubble adm-chat-bubble--in">
+                    <span class="adm-chat-from"><i class="fal fa-building"></i> {{ m.clinic_name || 'Clinică' }}</span>
+                    <span class="adm-chat-text">{{ m.message }}</span>
+                    <span class="adm-chat-time">{{ formatDate(m.created_at) }} {{ formatTime(m.created_at) }}</span>
+                  </div>
+
+                  <!-- Replies din thread -->
+                  @for (r of m.replies; track r.id) {
+                    @if (r.sender === 'clinic') {
+                      <div class="adm-chat-bubble adm-chat-bubble--in">
+                        <span class="adm-chat-from"><i class="fal fa-building"></i> {{ m.clinic_name || 'Clinică' }}</span>
+                        <span class="adm-chat-text">{{ r.body }}</span>
+                        <span class="adm-chat-time">{{ formatDate(r.created_at) }} {{ formatTime(r.created_at) }}</span>
+                      </div>
+                    } @else {
+                      <div class="adm-chat-bubble adm-chat-bubble--out">
+                        <span class="adm-chat-from"><i class="fal fa-shield-alt"></i> Admin DentiPro</span>
+                        <span class="adm-chat-text">{{ r.body }}</span>
+                        <span class="adm-chat-time">{{ formatDate(r.created_at) }} {{ formatTime(r.created_at) }}</span>
+                      </div>
+                    }
+                  }
+
+                  <!-- Formular răspuns (întotdeauna vizibil când thread e deschis) -->
+                  @if (m.status !== 'closed') {
+                    <div class="adm-thread-reply-form">
+                      <textarea class="adm-msg-textarea" [(ngModel)]="m._replyDraft"
+                        placeholder="Scrie răspunsul tău..." rows="3"></textarea>
+                      <div class="adm-thread-reply-actions">
+                        <button class="adm-thread-close-btn" (click)="closeThread(m)" title="Închide conversația">
+                          <i class="fal fa-times-circle"></i> Închide conversația
+                        </button>
+                        <button class="adm-msg-send-btn"
+                          (click)="replyToMessage(m)"
+                          [disabled]="!m._replyDraft?.trim() || m._sending">
+                          @if (m._sending) { Se trimite... }
+                          @else { <i class="fal fa-paper-plane"></i> Trimite }
+                        </button>
+                      </div>
+                    </div>
+                  } @else {
+                    <div class="adm-thread-closed-bar">
+                      <span><i class="fal fa-lock"></i> Conversație închisă</span>
+                      <button class="adm-thread-reopen-btn" (click)="reopenThread(m)">
+                        <i class="fal fa-lock-open"></i> Redeschide
+                      </button>
+                    </div>
+                  }
+                </div>
+              }
+
+            </div>
+          }
+        </div>
+      }
+
+      <div class="adm-modal-actions" style="margin-top: 16px;">
+        <button class="adm-modal-cancel" (click)="supportMessages = null; openThreadId = null">Închide</button>
       </div>
     </div>
   </div>
 }
 
-<!-- ADD CLINIC MODAL -->
+<!-- ── FEEDBACK MODAL ──────────────────────────────────── -->
+@if (feedbackList !== null) {
+  <div class="adm-modal-overlay" (click)="feedbackList = null">
+    <div class="adm-modal adm-modal-wide" (click)="$event.stopPropagation()">
+      <div class="adm-modal-header">
+        <h3><i class="fal fa-star"></i> Feedbackuri clinici — {{ feedbackList.length }} total</h3>
+        <button class="adm-btn adm-btn-view" (click)="feedbackList = null"><i class="fal fa-times"></i></button>
+      </div>
+      @if (feedbackList.length === 0) {
+        <p style="padding: 20px; color: #64748b; text-align: center;">Niciun feedback primit încă.</p>
+      } @else {
+        <div class="adm-accounts-table-wrap">
+          <table class="adm-accounts-table">
+            <thead>
+              <tr><th>Clinică</th><th>Rating</th><th>Funcționalități dorite</th><th>Alte sugestii</th><th>Data</th></tr>
+            </thead>
+            <tbody>
+              @for (f of feedbackList; track f.id) {
+                <tr>
+                  <td>{{ f.clinic_name || '—' }}</td>
+                  <td>
+                    <span class="adm-feedback-stars">
+                      @for (s of [1,2,3,4,5]; track s) {
+                        <i class="fas fa-star" [style.color]="s <= f.rating ? '#f59e0b' : '#334155'"></i>
+                      }
+                    </span>
+                    <span style="margin-left:6px; color:#f1f5f9; font-weight:600;">{{ f.rating }}/5</span>
+                  </td>
+                  <td class="adm-feedback-features">
+                    @if (f.features?.length > 0) { {{ f.features.join(', ') }} } @else { — }
+                  </td>
+                  <td>{{ f.other || '—' }}</td>
+                  <td class="adm-date">{{ formatDate(f.created_at) }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+      <div class="adm-modal-actions" style="margin-top: 20px;">
+        <button class="adm-modal-cancel" (click)="feedbackList = null">Închide</button>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- ── ADD CLINIC MODAL ────────────────────────────────── -->
 @if (showAddClinic) {
   <div class="adm-modal-overlay" (click)="closeAddClinic()">
     <div class="adm-modal adm-modal-form" (click)="$event.stopPropagation()">
@@ -391,19 +485,125 @@
   </div>
 }
 
-<!-- BATCH RESULT MODAL -->
-@if (batchResult !== null) {
-  <div class="adm-modal-overlay" (click)="closeBatchResult()">
+<!-- ── PROFILE EMAILS RESULT MODAL ────────────────────── -->
+@if (profileEmailsResult !== null) {
+  <div class="adm-modal-overlay" (click)="closeProfileEmailsResult()">
     <div class="adm-modal adm-modal-wide" (click)="$event.stopPropagation()">
       <div class="adm-modal-header">
-        <h3><i class="fal fa-flask"></i> Clinici test adăugate — {{ batchResult.length }} procesate</h3>
-        <button class="adm-btn adm-btn-view" (click)="closeBatchResult()"><i class="fal fa-times"></i></button>
+        <h3><i class="fal fa-envelope-open-text"></i> Emailuri completare profil — {{ profileEmailsResult.length }} clinici</h3>
+        <button class="adm-btn adm-btn-view" (click)="closeProfileEmailsResult()"><i class="fal fa-times"></i></button>
+      </div>
+      <div class="adm-accounts-table-wrap">
+        <table class="adm-accounts-table">
+          <thead>
+            <tr><th>Clinică</th><th>Email</th><th>Status</th></tr>
+          </thead>
+          <tbody>
+            @for (r of profileEmailsResult; track r.email) {
+              <tr>
+                <td>{{ r.clinicName }}</td>
+                <td class="adm-mono">{{ r.email }}</td>
+                <td>
+                  @if (r.emailSent) { <span class="adm-verify-ok"><i class="fal fa-check"></i> Trimis</span> }
+                  @else { <span class="adm-verify-no"><i class="fal fa-times"></i> Eroare</span> }
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+      <div class="adm-modal-actions" style="margin-top: 20px;">
+        <button class="adm-modal-cancel" (click)="closeProfileEmailsResult()">Închide</button>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- ── ONBOARD RESULT MODAL ───────────────────────────── -->
+@if (onboardResult !== null) {
+  <div class="adm-modal-overlay" (click)="closeOnboardResult()">
+    <div class="adm-modal adm-modal-wide" (click)="$event.stopPropagation()">
+      <div class="adm-modal-header">
+        <h3><i class="fal fa-paper-plane"></i> Onboarding — {{ onboardResult.length }} clinici procesate</h3>
+        <button class="adm-btn adm-btn-view" (click)="closeOnboardResult()"><i class="fal fa-times"></i></button>
+      </div>
+      <div class="adm-accounts-table-wrap">
+        <table class="adm-accounts-table">
+          <thead>
+            <tr><th>Clinică</th><th>Email</th><th>Acțiune</th><th>Email trimis</th></tr>
+          </thead>
+          <tbody>
+            @for (r of onboardResult; track r.clinicId) {
+              <tr>
+                <td>{{ r.clinicName }}</td>
+                <td class="adm-mono">{{ r.email }}</td>
+                <td>
+                  @if (r.action === 'created') { <span class="adm-badge adm-badge-active">Cont nou</span> }
+                  @else if (r.action === 'linked_existing') { <span class="adm-badge adm-badge-pending">Linkat</span> }
+                  @else { <span class="adm-badge adm-badge-suspended">Eroare</span> }
+                </td>
+                <td>
+                  @if (r.emailSent) { <span class="adm-verify-ok"><i class="fal fa-check"></i> Trimis</span> }
+                  @else { <span class="adm-verify-no"><i class="fal fa-times"></i> Nu</span> }
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+      <div class="adm-modal-actions" style="margin-top: 20px;">
+        <button class="adm-modal-cancel" (click)="closeOnboardResult()">Închide</button>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- ── ACCOUNTS RESULT MODAL ──────────────────────────── -->
+@if (accountsResult !== null) {
+  <div class="adm-modal-overlay" (click)="closeAccountsResult()">
+    <div class="adm-modal adm-modal-wide" (click)="$event.stopPropagation()">
+      <div class="adm-modal-header">
+        <h3><i class="fal fa-user-check"></i> Conturi create — {{ accountsResult.length }} clinici</h3>
+        <button class="adm-btn adm-btn-view" (click)="closeAccountsResult()"><i class="fal fa-times"></i></button>
       </div>
       <div class="adm-accounts-table-wrap">
         <table class="adm-accounts-table">
           <thead>
             <tr><th>Clinică</th><th>Email</th><th>Parolă generată</th><th>Status</th></tr>
           </thead>
+          <tbody>
+            @for (r of accountsResult; track r.clinicId) {
+              <tr>
+                <td>{{ r.clinicName }}</td>
+                <td class="adm-mono">{{ r.email }}</td>
+                <td class="adm-mono">{{ r.password ?? '—' }}</td>
+                <td>
+                  @if (r.action === 'created') { <span class="adm-badge adm-badge-active">Cont nou</span> }
+                  @else { <span class="adm-badge adm-badge-pending">Linkat</span> }
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+      <div class="adm-modal-actions" style="margin-top: 20px;">
+        <button class="adm-modal-cancel" (click)="closeAccountsResult()">Închide</button>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- ── BATCH / SIMULATE / RESEND RESULT MODALS ─────────── -->
+@if (batchResult !== null) {
+  <div class="adm-modal-overlay" (click)="closeBatchResult()">
+    <div class="adm-modal adm-modal-wide" (click)="$event.stopPropagation()">
+      <div class="adm-modal-header">
+        <h3><i class="fal fa-flask"></i> Clinici test — {{ batchResult.length }} procesate</h3>
+        <button class="adm-btn adm-btn-view" (click)="closeBatchResult()"><i class="fal fa-times"></i></button>
+      </div>
+      <div class="adm-accounts-table-wrap">
+        <table class="adm-accounts-table">
+          <thead><tr><th>Clinică</th><th>Email</th><th>Parolă</th><th>Status</th></tr></thead>
           <tbody>
             @for (r of batchResult; track r.email) {
               <tr>
@@ -412,7 +612,7 @@
                 <td class="adm-mono">{{ r.password ?? '—' }}</td>
                 <td>
                   @if (r.action === 'created') { <span class="adm-badge adm-badge-active">Creat</span> }
-                  @else if (r.action === 'exists') { <span class="adm-badge adm-badge-pending">Există deja</span> }
+                  @else if (r.action === 'exists') { <span class="adm-badge adm-badge-pending">Există</span> }
                   @else { <span class="adm-badge adm-badge-suspended">Eroare</span> }
                 </td>
               </tr>
@@ -427,19 +627,16 @@
   </div>
 }
 
-<!-- SIMULATE RESULT MODAL -->
 @if (simulateResult !== null) {
   <div class="adm-modal-overlay" (click)="closeSimulateResult()">
     <div class="adm-modal adm-modal-wide" (click)="$event.stopPropagation()">
       <div class="adm-modal-header">
-        <h3><i class="fal fa-play-circle"></i> Simulare completă — {{ simulateResult.length }} clinici</h3>
+        <h3><i class="fal fa-play-circle"></i> Simulare — {{ simulateResult.length }} clinici</h3>
         <button class="adm-btn adm-btn-view" (click)="closeSimulateResult()"><i class="fal fa-times"></i></button>
       </div>
       <div class="adm-accounts-table-wrap">
         <table class="adm-accounts-table">
-          <thead>
-            <tr><th>Clinică</th><th>Email</th><th>Servicii adăugate</th><th>Status</th></tr>
-          </thead>
+          <thead><tr><th>Clinică</th><th>Email</th><th>Servicii</th><th>Status</th></tr></thead>
           <tbody>
             @for (r of simulateResult; track r.email) {
               <tr>
@@ -463,19 +660,16 @@
   </div>
 }
 
-<!-- RESEND EMAILS RESULT MODAL -->
 @if (resendResult !== null) {
   <div class="adm-modal-overlay" (click)="closeResendResult()">
     <div class="adm-modal adm-modal-wide" (click)="$event.stopPropagation()">
       <div class="adm-modal-header">
-        <h3><i class="fal fa-paper-plane"></i> Emailuri retrimise — {{ resendResult.length }} clinici</h3>
+        <h3><i class="fal fa-paper-plane"></i> Emailuri retrimise — {{ resendResult.length }}</h3>
         <button class="adm-btn adm-btn-view" (click)="closeResendResult()"><i class="fal fa-times"></i></button>
       </div>
       <div class="adm-accounts-table-wrap">
         <table class="adm-accounts-table">
-          <thead>
-            <tr><th>Clinică</th><th>Email</th><th>Parolă nouă</th><th>Email trimis</th></tr>
-          </thead>
+          <thead><tr><th>Clinică</th><th>Email</th><th>Parolă nouă</th><th>Trimis</th></tr></thead>
           <tbody>
             @for (r of resendResult; track r.email) {
               <tr>
@@ -498,7 +692,7 @@
   </div>
 }
 
-<!-- CONFIRM DELETE MODAL -->
+<!-- ── CONFIRM DELETE MODAL ───────────────────────────── -->
 @if (confirmDeleteId !== null) {
   <div class="adm-modal-overlay" (click)="cancelDelete()">
     <div class="adm-modal" (click)="$event.stopPropagation()">

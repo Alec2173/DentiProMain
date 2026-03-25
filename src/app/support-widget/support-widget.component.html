@@ -1,0 +1,157 @@
+<!-- ── STICKY WIDGET ─────────────────────────────────────────── -->
+<div class="sw-wrap">
+
+  <!-- Buton flotant -->
+  <button class="sw-fab" (click)="toggle()" [class.sw-fab--open]="isOpen" title="Ajutor și suport">
+    @if (!isOpen) {
+      <i class="fal fa-comment-question"></i>
+      <span class="sw-fab-label">Ajutor</span>
+      @if (unreadReplies > 0) {
+        <span class="sw-badge">{{ unreadReplies }}</span>
+      }
+    } @else {
+      <i class="fal fa-times"></i>
+    }
+  </button>
+
+  <!-- Panel -->
+  @if (isOpen) {
+    <div class="sw-panel">
+
+      <div class="sw-header">
+        <div class="sw-header-icon"><i class="fal fa-headset"></i></div>
+        <div>
+          <div class="sw-header-title">Echipa DentiPro</div>
+          <div class="sw-header-sub">Răspundem în cel mai scurt timp</div>
+        </div>
+      </div>
+
+      <!-- Istoricul conversațiilor (doar clinici logati) -->
+      @if (auth.isClinic) {
+        @if (loadingHistory) {
+          <div class="sw-loading"><i class="fal fa-spinner fa-spin"></i></div>
+        }
+
+        @if (!loadingHistory && history.length > 0) {
+          <div class="sw-history">
+            @for (m of history; track m.id) {
+              <!-- Antet conversație (click pentru expand) -->
+              <div class="sw-thread-header" (click)="toggleThread(m.id)"
+                   [class.sw-thread-closed]="m.status === 'closed'">
+                <div class="sw-thread-preview">
+                  {{ m.message.length > 60 ? (m.message.slice(0,60) + '…') : m.message }}
+                </div>
+                <div class="sw-thread-meta">
+                  @if (m.status === 'closed') {
+                    <span class="sw-thread-badge sw-thread-badge--closed">Închis</span>
+                  } @else if (hasUnseenAdminReply(m)) {
+                    <span class="sw-thread-badge sw-thread-badge--new">Răspuns nou</span>
+                  }
+                  <span class="sw-thread-count">
+                    <i class="fal fa-comment-alt"></i> {{ (m.replies?.length ?? 0) + 1 }}
+                  </span>
+                  <i class="fal" [class.fa-chevron-down]="activeThreadId !== m.id"
+                     [class.fa-chevron-up]="activeThreadId === m.id"></i>
+                </div>
+              </div>
+
+              <!-- Thread expandat -->
+              @if (activeThreadId === m.id) {
+                <div class="sw-thread-body">
+
+                  <!-- Mesaj original -->
+                  <div class="sw-bubble sw-bubble--me">
+                    <span class="sw-bubble-text">{{ m.message }}</span>
+                    <span class="sw-bubble-date">{{ formatDate(m.created_at) }}</span>
+                  </div>
+
+                  <!-- Replies -->
+                  @for (r of m.replies; track r.id) {
+                    @if (r.sender === 'clinic') {
+                      <div class="sw-bubble sw-bubble--me">
+                        <span class="sw-bubble-text">{{ r.body }}</span>
+                        <span class="sw-bubble-date">{{ formatDate(r.created_at) }}</span>
+                      </div>
+                    } @else {
+                      <div class="sw-bubble sw-bubble--them">
+                        <span class="sw-bubble-from">DentiPro</span>
+                        <span class="sw-bubble-text">{{ r.body }}</span>
+                        <span class="sw-bubble-date">{{ formatDate(r.created_at) }}</span>
+                      </div>
+                    }
+                  }
+
+                  @if (m.replies?.length === 0) {
+                    <div class="sw-pending">
+                      <i class="fal fa-clock"></i> Răspuns în așteptare
+                    </div>
+                  }
+
+                  <!-- Follow-up form (dacă nu e închis) -->
+                  @if (m.status !== 'closed') {
+                    <div class="sw-followup-form">
+                      <textarea class="sw-textarea sw-textarea--sm" [(ngModel)]="followUp"
+                        placeholder="Trimite un mesaj următor..." rows="2"></textarea>
+                      <button class="sw-send-btn sw-send-btn--sm"
+                        (click)="sendFollowUp(m)" [disabled]="!followUp.trim() || sendingFollowUp">
+                        @if (sendingFollowUp) { <i class="fal fa-spinner fa-spin"></i> }
+                        @else { <i class="fal fa-paper-plane"></i> Trimite }
+                      </button>
+                    </div>
+                  } @else {
+                    <div class="sw-closed-note"><i class="fal fa-lock"></i> Conversație închisă</div>
+                  }
+                </div>
+              }
+            }
+          </div>
+        }
+      }
+
+      <!-- Formular mesaj nou -->
+      @if (sent && !activeThreadId) {
+        <div class="sw-sent">
+          <i class="fal fa-check-circle"></i>
+          <span>Mesajul tău a fost trimis! Îți vom răspunde în curând.</span>
+        </div>
+        <button class="sw-new-btn" (click)="sent = false">
+          <i class="fal fa-plus"></i> Trimite alt mesaj
+        </button>
+      } @else if (!activeThreadId) {
+        <div class="sw-form">
+          <p class="sw-form-label">
+            <i class="fal fa-question-circle"></i>
+            Ai o întrebare sau o problemă?
+          </p>
+
+          @if (!auth.isClinic) {
+            <input
+              type="email"
+              class="sw-email-input"
+              [(ngModel)]="guestEmail"
+              placeholder="Adresa ta de email (obligatoriu)"
+            />
+          }
+
+          <textarea
+            class="sw-textarea"
+            [(ngModel)]="message"
+            placeholder="Scrie întrebarea ta aici..."
+            rows="4">
+          </textarea>
+          <button class="sw-send-btn" (click)="send()" [disabled]="!canSend || sending">
+            @if (sending) { <i class="fal fa-spinner fa-spin"></i> Se trimite... }
+            @else { <i class="fal fa-paper-plane"></i> Trimite mesajul }
+          </button>
+        </div>
+      }
+
+      <div class="sw-email-row">
+        <i class="fal fa-envelope"></i>
+        <a href="mailto:office.dentipro&#64;gmail.com">office.dentipro&#64;gmail.com</a>
+      </div>
+
+    </div>
+  }
+
+</div>

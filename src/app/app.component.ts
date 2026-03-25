@@ -10,6 +10,7 @@ import { CommonModule } from '@angular/common';
 import { NavbarComponent } from './navbar/navbar.component';
 import { ClinicNavbarComponent } from './clinic-portal/clinic-navbar/clinic-navbar.component';
 import { LeftSidebarComponent } from './left-sidebar/left-sidebar.component';
+import { SupportWidgetComponent } from './support-widget/support-widget.component';
 import { Router, Event as RouterEvent, NavigationStart, NavigationEnd, NavigationCancel, NavigationError } from '@angular/router';
 import { AuthService } from './auth.service';
 import * as CookieConsent from 'vanilla-cookieconsent';
@@ -17,7 +18,7 @@ import * as CookieConsent from 'vanilla-cookieconsent';
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, CommonModule, NavbarComponent, ClinicNavbarComponent, LeftSidebarComponent],
+  imports: [RouterOutlet, CommonModule, NavbarComponent, ClinicNavbarComponent, LeftSidebarComponent, SupportWidgetComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css',
 })

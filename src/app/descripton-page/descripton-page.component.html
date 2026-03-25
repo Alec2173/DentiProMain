@@ -109,6 +109,11 @@
             <button class="dp-btn-book" (click)="openBooking()">
               <i class="fal fa-calendar-check"></i> Programează consultație
             </button>
+            @if (whatsappUrl) {
+              <a [href]="whatsappUrl" target="_blank" rel="noopener noreferrer" class="dp-btn-whatsapp">
+                <i class="fab fa-whatsapp"></i> WhatsApp
+              </a>
+            }
             @if (auth.isLoggedIn && auth.isPatient) {
               <button class="dp-btn-fav" [class.dp-btn-fav--active]="isFavorited" (click)="toggleFavorite()">
                 <i class="fal fa-heart"></i>
@@ -236,6 +241,32 @@
     }
   </div>
 </div>
+
+<!-- ══════════════════════════ SERVICE INTEREST POPUP ═══ -->
+@if (showServicePopup) {
+  <div class="si-overlay" (click)="closeServicePopup()">
+    <div class="si-modal" (click)="$event.stopPropagation()">
+      <button class="si-close" (click)="closeServicePopup()"><i class="fal fa-times"></i></button>
+      <div class="si-icon"><i class="fal fa-heart"></i></div>
+      <h3 class="si-title">Clinică salvată!</h3>
+      <p class="si-sub">Ce serviciu te interesează la {{ clinics.name }}?</p>
+      <div class="si-options">
+        @for (opt of serviceInterestOptions; track opt) {
+          <button class="si-opt" [class.si-opt--active]="selectedService === opt"
+                  (click)="selectedService = opt">
+            {{ opt }}
+          </button>
+        }
+      </div>
+      <div class="si-actions">
+        <button class="si-btn-skip" (click)="closeServicePopup()">Sari peste</button>
+        <button class="si-btn-save" (click)="saveServiceInterest()" [disabled]="!selectedService">
+          <i class="fal fa-check"></i> Salvează preferința
+        </button>
+      </div>
+    </div>
+  </div>
+}
 
 <!-- ══════════════════════════ BOOKING MODAL ═══ -->
 @if (showBooking) {

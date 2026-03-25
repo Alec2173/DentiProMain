@@ -1,0 +1,148 @@
+<!-- ── CLINIC LIST PAGE ─────────────────────────────────────────── -->
+<div class="cl-page">
+
+  <!-- Breadcrumbs -->
+  <nav class="cl-breadcrumb" aria-label="breadcrumb">
+    <a routerLink="/" class="cl-bc-link">Acasă</a>
+    <span class="cl-bc-sep">›</span>
+    <a routerLink="/dentisti/implanturi" class="cl-bc-link">Dentisti</a>
+    @if (serviciu) {
+      <span class="cl-bc-sep">›</span>
+      <a [routerLink]="['/dentisti', serviciu]" class="cl-bc-link">{{ serviciuLabel }}</a>
+    }
+    @if (oras) {
+      <span class="cl-bc-sep">›</span>
+      <span class="cl-bc-current">{{ formatCity(oras) }}</span>
+    }
+  </nav>
+
+  <!-- H1 + meta -->
+  <div class="cl-hero">
+    <h1 class="cl-h1">{{ h1 }}</h1>
+    @if (!isLoading) {
+      <p class="cl-meta">{{ total }} {{ total === 1 ? 'clinică găsită' : 'clinici găsite' }}</p>
+    }
+  </div>
+
+  <!-- Filtre rapide pe serviciu -->
+  <div class="cl-service-chips">
+    @for (s of relatedServices; track s.id) {
+      <a [routerLink]="oras ? ['/dentisti', s.id, oras] : ['/dentisti', s.id]" class="cl-chip">
+        {{ s.label }}
+      </a>
+    }
+  </div>
+
+  <!-- Grid clinici -->
+  @if (isLoading) {
+    <div class="cl-skeleton-grid">
+      @for (i of [1,2,3,4,5,6]; track i) {
+        <div class="cl-skeleton-card"></div>
+      }
+    </div>
+  } @else if (clinics.length === 0) {
+    <div class="cl-empty">
+      <i class="fal fa-search"></i>
+      <p>Nu am găsit clinici pentru această combinație.<br>Încearcă fără filtru de oraș.</p>
+      @if (oras) {
+        <a [routerLink]="['/dentisti', serviciu]" class="cl-btn-link">
+          Vezi toate clinicile pentru {{ serviciuLabel }}
+        </a>
+      }
+    </div>
+  } @else {
+    <div class="cl-grid">
+      @for (clinic of clinics; track clinic.id) {
+        <a [routerLink]="['/clinic-profile', clinic.id]" class="cl-card">
+          <!-- Cover image -->
+          <div class="cl-card-img">
+            @if (clinic.images?.[0]) {
+              <img [src]="clinic.images[0]" [alt]="clinic.name" loading="lazy" />
+            } @else if (clinic.logo_url) {
+              <img [src]="clinic.logo_url" [alt]="clinic.name" loading="lazy" class="cl-card-img--logo" />
+            } @else {
+              <div class="cl-card-img-placeholder"><i class="fal fa-hospital"></i></div>
+            }
+            @if (clinic.plan === 'pro') {
+              <span class="cl-badge cl-badge--pro">Pro</span>
+            } @else if (clinic.plan === 'growth') {
+              <span class="cl-badge cl-badge--growth">Growth</span>
+            }
+          </div>
+
+          <!-- Card body -->
+          <div class="cl-card-body">
+            <div class="cl-card-header">
+              @if (clinic.logo_url) {
+                <img [src]="clinic.logo_url" [alt]="clinic.name" class="cl-logo" />
+              }
+              <div class="cl-card-info">
+                <h2 class="cl-card-name">{{ clinic.name }}</h2>
+                @if (clinic.city) {
+                  <div class="cl-card-city">
+                    <i class="fal fa-map-marker-alt"></i> {{ clinic.city }}
+                  </div>
+                }
+              </div>
+            </div>
+
+            @if (getServicePrice(clinic)) {
+              <div class="cl-card-price">
+                <i class="fal fa-tag"></i> {{ getServicePrice(clinic) }}
+              </div>
+            }
+
+            @if (clinic.services?.length > 0) {
+              <div class="cl-card-services">
+                @for (s of clinic.services.slice(0,3); track s.service_id) {
+                  <span class="cl-service-tag">{{ s.label }}</span>
+                }
+                @if (clinic.services.length > 3) {
+                  <span class="cl-service-tag cl-service-tag--more">+{{ clinic.services.length - 3 }}</span>
+                }
+              </div>
+            }
+
+            <div class="cl-card-cta">
+              <span class="cl-cta-btn">
+                <i class="fal fa-calendar-check"></i> Programează
+              </span>
+            </div>
+          </div>
+        </a>
+      }
+    </div>
+
+    <!-- Load more -->
+    @if (hasMore) {
+      <div class="cl-load-more">
+        <button class="cl-load-btn" (click)="loadMore()" [disabled]="isLoadingMore">
+          @if (isLoadingMore) {
+            <i class="fal fa-spinner fa-spin"></i> Se încarcă...
+          } @else {
+            <i class="fal fa-plus"></i> Mai multe clinici
+          }
+        </button>
+      </div>
+    }
+  }
+
+  <!-- SEO footer -->
+  <section class="cl-seo-footer">
+    <h2 class="cl-seo-h2">{{ serviciuLabel }} — Ghid complet</h2>
+    <p class="cl-seo-text">{{ seoFooterText }}</p>
+
+    <!-- Link-uri servicii înrudite -->
+    <div class="cl-seo-links">
+      <strong>Alte servicii stomatologice:</strong>
+      <div class="cl-seo-link-grid">
+        @for (s of relatedServices; track s.id) {
+          <a [routerLink]="['/dentisti', s.id]" class="cl-seo-link">
+            {{ s.label }}
+          </a>
+        }
+      </div>
+    </div>
+  </section>
+
+</div>

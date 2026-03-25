@@ -1,0 +1,193 @@
+<!-- ── PENTRU CLINICI LANDING ────────────────────────────────────── -->
+<div class="pc-page">
+
+  <!-- HERO -->
+  <section class="pc-hero">
+    <div class="pc-hero-inner">
+      <div class="pc-hero-badge">
+        <i class="fal fa-hospital"></i> Pentru clinici dentare
+      </div>
+      <h1 class="pc-h1">
+        Mai mulți pacienți.<br>
+        <span class="pc-h1-accent">Fără efort suplimentar.</span>
+      </h1>
+      <p class="pc-hero-sub">
+        DentiPro conectează clinicile stomatologice cu pacienții care caută activ un dentist.
+        Profil complet, hartă interactivă, programări online. Gratuit pentru a începe.
+      </p>
+      <div class="pc-hero-btns">
+        <a routerLink="/clinici/inscriere" class="pc-btn pc-btn--primary">
+          <i class="fal fa-plus-circle"></i> Înscrie clinica gratuit
+        </a>
+        <a routerLink="/clinici/autentificare" class="pc-btn pc-btn--ghost">
+          <i class="fal fa-sign-in"></i> Am deja cont
+        </a>
+      </div>
+      <div class="pc-hero-stats">
+        <div class="pc-stat"><span class="pc-stat-val">70+</span><span class="pc-stat-label">Clinici active</span></div>
+        <div class="pc-stat-sep"></div>
+        <div class="pc-stat"><span class="pc-stat-val">500+</span><span class="pc-stat-label">Pacienți/lună</span></div>
+        <div class="pc-stat-sep"></div>
+        <div class="pc-stat"><span class="pc-stat-val">Gratuit</span><span class="pc-stat-label">Plan de bază</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- BENEFITS -->
+  <section class="pc-section">
+    <h2 class="pc-section-title">De ce clinicile aleg DentiPro</h2>
+    <div class="pc-benefits-grid">
+      @for (b of benefits; track b.title) {
+        <div class="pc-benefit-card">
+          <div class="pc-benefit-icon"><i [class]="b.icon"></i></div>
+          <h3 class="pc-benefit-title">{{ b.title }}</h3>
+          <p class="pc-benefit-desc">{{ b.desc }}</p>
+        </div>
+      }
+    </div>
+  </section>
+
+  <!-- PLANS -->
+  <section class="pc-section">
+    <h2 class="pc-section-title">Planuri simple și transparente</h2>
+    <div class="pc-plans-grid">
+      @for (p of plans; track p.name) {
+        <div class="pc-plan" [class.pc-plan--featured]="p.featured">
+          @if (p.badge) {
+            <div class="pc-plan-badge">{{ p.badge }}</div>
+          }
+          <div class="pc-plan-name">{{ p.name }}</div>
+          <div class="pc-plan-price">
+            {{ p.price }}
+            <span class="pc-plan-period">{{ p.period }}</span>
+          </div>
+          <ul class="pc-plan-features">
+            @for (f of p.features; track f) {
+              <li><i class="fal fa-check"></i> {{ f }}</li>
+            }
+          </ul>
+          <a routerLink="/clinici/inscriere" class="pc-plan-cta"
+             [class.pc-plan-cta--primary]="p.featured"
+             [class.pc-plan-cta--ghost]="!p.featured">
+            Începe cu {{ p.name }}
+          </a>
+        </div>
+      }
+    </div>
+  </section>
+
+  <!-- LEAD FORM -->
+  <section class="pc-section" id="inscriere-rapida">
+    <div class="pc-form-wrap">
+      <div class="pc-form-left">
+        <h2 class="pc-form-title">Vrei să afli mai multe?</h2>
+        <p class="pc-form-sub">
+          Lasă-ne datele și te contactăm în 24 de ore pentru o prezentare gratuită.
+        </p>
+        <ul class="pc-form-bullets">
+          <li><i class="fal fa-check-circle"></i> Prezentare gratuită a platformei</li>
+          <li><i class="fal fa-check-circle"></i> Te ajutăm să configurezi profilul</li>
+          <li><i class="fal fa-check-circle"></i> Fără obligații, fără contracte</li>
+        </ul>
+      </div>
+
+      <div class="pc-form-right">
+        @if (submitted) {
+          <div class="pc-success">
+            <i class="fal fa-check-circle"></i>
+            <h3>Mulțumim!</h3>
+            <p>Te contactăm în cel mai scurt timp. Între timp, poți să te înregistrezi direct.</p>
+            <a routerLink="/clinici/inscriere" class="pc-btn pc-btn--primary">
+              Înregistrare completă <i class="fal fa-arrow-right"></i>
+            </a>
+          </div>
+        } @else {
+          <form [formGroup]="leadForm" (ngSubmit)="submit()" class="pc-lead-form" novalidate>
+            <div class="pc-field">
+              <label class="pc-label">Numele clinicii *</label>
+              <input type="text" formControlName="clinicName" class="pc-input"
+                     placeholder="ex. Clinica Dentară Smile"
+                     [class.pc-input--error]="f['clinicName'].invalid && f['clinicName'].touched" />
+            </div>
+            <div class="pc-field-row">
+              <div class="pc-field">
+                <label class="pc-label">Orașul *</label>
+                <input type="text" formControlName="city" class="pc-input"
+                       placeholder="Cluj-Napoca"
+                       [class.pc-input--error]="f['city'].invalid && f['city'].touched" />
+              </div>
+              <div class="pc-field">
+                <label class="pc-label">Planul dorit</label>
+                <select formControlName="plan" class="pc-input pc-select">
+                  <option value="starter">Starter — Gratuit</option>
+                  <option value="growth">Growth — 49 RON/lună</option>
+                  <option value="pro">Pro — 99 RON/lună</option>
+                </select>
+              </div>
+            </div>
+            <div class="pc-field">
+              <label class="pc-label">Persoana de contact *</label>
+              <input type="text" formControlName="name" class="pc-input"
+                     placeholder="Dr. Popescu Ion"
+                     [class.pc-input--error]="f['name'].invalid && f['name'].touched" />
+            </div>
+            <div class="pc-field-row">
+              <div class="pc-field">
+                <label class="pc-label">Telefon *</label>
+                <input type="tel" formControlName="phone" class="pc-input"
+                       placeholder="07XX XXX XXX"
+                       [class.pc-input--error]="f['phone'].invalid && f['phone'].touched" />
+              </div>
+              <div class="pc-field">
+                <label class="pc-label">Email *</label>
+                <input type="email" formControlName="email" class="pc-input"
+                       placeholder="contact@clinica.ro"
+                       [class.pc-input--error]="f['email'].invalid && f['email'].touched" />
+              </div>
+            </div>
+            @if (submitError) {
+              <div class="pc-error-msg"><i class="fal fa-exclamation-circle"></i> {{ submitError }}</div>
+            }
+            <button type="submit" class="pc-btn pc-btn--primary pc-btn--full"
+                    [disabled]="leadForm.invalid || submitting">
+              @if (submitting) { <i class="fal fa-spinner fa-spin"></i> Se trimite... }
+              @else { <i class="fal fa-paper-plane"></i> Vreau o prezentare gratuită }
+            </button>
+            <p class="pc-form-note">
+              Sau înregistrează-te direct:
+              <a routerLink="/clinici/inscriere">Formular complet →</a>
+            </p>
+          </form>
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="pc-section">
+    <h2 class="pc-section-title">Întrebări frecvente</h2>
+    <div class="pc-faq-list">
+      @for (faq of faqs; track faq.q; let i = $index) {
+        <div class="pc-faq-item" [class.pc-faq-item--open]="activeFaq === i">
+          <button class="pc-faq-q" (click)="toggleFaq(i)">
+            {{ faq.q }}
+            <i class="fal" [class.fa-chevron-down]="activeFaq !== i"
+               [class.fa-chevron-up]="activeFaq === i"></i>
+          </button>
+          @if (activeFaq === i) {
+            <div class="pc-faq-a">{{ faq.a }}</div>
+          }
+        </div>
+      }
+    </div>
+  </section>
+
+  <!-- FINAL CTA -->
+  <section class="pc-final-cta">
+    <h2 class="pc-final-title">Gata să aduci mai mulți pacienți?</h2>
+    <a routerLink="/clinici/inscriere" class="pc-btn pc-btn--primary pc-btn--lg">
+      <i class="fal fa-hospital-user"></i> Înscrie clinica gratuit acum
+    </a>
+  </section>
+
+</div>

@@ -315,6 +315,102 @@
             }
           </div>
 
+          <!-- ÎNAINTE / DUPĂ -->
+          <div class="card ba-card">
+            <div class="card-header">
+              <div class="card-title-group">
+                <div class="card-title-icon"><i class="fal fa-magic"></i></div>
+                <h2 class="card-title">Înainte / După</h2>
+              </div>
+              @if (isOwner) {
+                <button class="text-btn" (click)="openBAForm()">
+                  <i class="fal fa-plus"></i> Adaugă
+                </button>
+              }
+            </div>
+
+            @if (loadingBA) {
+              <div class="ba-loading"><i class="fal fa-spinner fa-spin"></i></div>
+            } @else if (beforeAfterPairs.length === 0) {
+              <div class="ba-empty">
+                <i class="fal fa-images"></i>
+                <p>Niciun caz adăugat încă.</p>
+                @if (isOwner) {
+                  <span class="empty-hint">Adaugă cazuri înainte/după pentru a impresiona pacienții</span>
+                }
+              </div>
+            } @else {
+              <div class="ba-grid">
+                @for (pair of beforeAfterPairs; track pair.id) {
+                  <div class="ba-pair">
+                    <div class="ba-images">
+                      <div class="ba-img-wrap">
+                        <span class="ba-label ba-label--before">Înainte</span>
+                        <img [src]="pair.before_url" class="ba-img" alt="Înainte" loading="lazy" />
+                      </div>
+                      <div class="ba-arrow"><i class="fal fa-arrow-right"></i></div>
+                      <div class="ba-img-wrap">
+                        <span class="ba-label ba-label--after">După</span>
+                        <img [src]="pair.after_url" class="ba-img" alt="După" loading="lazy" />
+                      </div>
+                    </div>
+                    @if (pair.caption) {
+                      <p class="ba-caption">{{ pair.caption }}</p>
+                    }
+                    @if (isOwner) {
+                      <button class="ba-delete-btn" (click)="deleteBAEntry(pair.id)" title="Șterge">
+                        <i class="fal fa-trash"></i>
+                      </button>
+                    }
+                  </div>
+                }
+              </div>
+            }
+          </div>
+
+          <!-- FORMULAR ADĂUGARE ÎNAINTE/DUPĂ -->
+          @if (showBAForm) {
+            <div class="ba-form-card card">
+              <h3 class="ba-form-title"><i class="fal fa-magic"></i> Adaugă caz înainte/după</h3>
+              <div class="ba-form-inputs">
+                <label class="ba-upload-label">
+                  <span>Imagine ÎNAINTE</span>
+                  <input type="file" accept="image/*" (change)="onBAFileSelected('before', $event)" hidden #baBeforeInput />
+                  <div class="ba-upload-box" (click)="baBeforeInput.click()">
+                    @if (baBeforePreview) {
+                      <img [src]="baBeforePreview" class="ba-preview-img" alt="Preview înainte" />
+                    } @else {
+                      <i class="fal fa-plus-circle"></i>
+                      <span>Click pentru imagine</span>
+                    }
+                  </div>
+                </label>
+                <label class="ba-upload-label">
+                  <span>Imagine DUPĂ</span>
+                  <input type="file" accept="image/*" (change)="onBAFileSelected('after', $event)" hidden #baAfterInput />
+                  <div class="ba-upload-box" (click)="baAfterInput.click()">
+                    @if (baAfterPreview) {
+                      <img [src]="baAfterPreview" class="ba-preview-img" alt="Preview după" />
+                    } @else {
+                      <i class="fal fa-plus-circle"></i>
+                      <span>Click pentru imagine</span>
+                    }
+                  </div>
+                </label>
+              </div>
+              <input type="text" class="ba-caption-input" [(ngModel)]="baCaption"
+                     placeholder="Descriere opțională (ex: Fațete ceramice, 6 dinți)" />
+              <div class="ba-form-actions">
+                <button class="text-btn" (click)="closeBAForm()">Renunță</button>
+                <button class="save-btn" (click)="saveBAEntry()"
+                        [disabled]="!baBeforePreview || !baAfterPreview || baSaving">
+                  @if (baSaving) { <i class="fal fa-spinner fa-spin"></i> }
+                  @else { <i class="fal fa-check"></i> Salvează }
+                </button>
+              </div>
+            </div>
+          }
+
           <!-- SERVICII & PREȚURI -->
           <div class="card">
             <div class="card-header">

@@ -70,9 +70,7 @@ export const routes: Routes = [
 
   // ── LEGACY REDIRECTS ──────────────────────────────────────
   { path: 'Inscriere', redirectTo: 'clinici/inscriere', pathMatch: 'full' },
-  // HIDDEN_PRICING — de readus când lansăm (schimbă redirectTo înapoi la 'clinici/pricing' și scoate guard-ul)
-  // Data ascuns: 2026-03-20
-  { path: 'pricing', redirectTo: '', pathMatch: 'full' },
+  { path: 'pricing', redirectTo: 'preturi', pathMatch: 'full' },
   {
     path: 'viewer',
     loadComponent: () => import('./form/viewer/viewer.component').then((m) => m.ViewerComponent),
@@ -110,6 +108,25 @@ export const routes: Routes = [
     path: 'contact',
     loadComponent: () => import('./contact/contact.component').then((m) => m.ContactComponent),
   },
+
+  // ── SEO ROUTES ─────────────────────────────────────────────
+  {
+    path: 'dentisti/:serviciu',
+    loadComponent: () => import('./clinic-list/clinic-list.component').then((m) => m.ClinicListComponent),
+  },
+  {
+    path: 'dentisti/:serviciu/:oras',
+    loadComponent: () => import('./clinic-list/clinic-list.component').then((m) => m.ClinicListComponent),
+  },
+  {
+    path: 'preturi',
+    loadComponent: () => import('./preturi/preturi.component').then((m) => m.PreturiComponent),
+  },
+  {
+    path: 'pentru-clinici',
+    loadComponent: () => import('./pentru-clinici/pentru-clinici.component').then((m) => m.PentruCliniciComponent),
+  },
+
   {
     path: '**',
     loadComponent: () => import('./not-found/not-found.component').then((m) => m.NotFoundComponent),

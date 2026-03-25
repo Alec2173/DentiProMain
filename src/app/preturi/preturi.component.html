@@ -1,0 +1,111 @@
+<!-- ── PREȚURI PAGE ──────────────────────────────────────────────── -->
+<div class="pr-page">
+
+  <!-- Hero -->
+  <div class="pr-hero">
+    <div class="pr-hero-badge"><i class="fal fa-tag"></i> Actualizat 2025</div>
+    <h1 class="pr-h1">Prețuri stomatologie în România</h1>
+    <p class="pr-subtitle">
+      Compară costurile reale ale tratamentelor dentare. Prețurile sunt orientative,
+      bazate pe clinicile înregistrate pe DentiPro.
+    </p>
+  </div>
+
+  <!-- Category tabs -->
+  <div class="pr-tabs">
+    @for (cat of categories; track cat.id) {
+      <button class="pr-tab" [class.pr-tab--active]="activeCategory === cat.id"
+              (click)="setCategory(cat.id)">
+        {{ cat.label }}
+      </button>
+    }
+  </div>
+
+  <!-- Price table -->
+  <div class="pr-table-wrap">
+    <table class="pr-table">
+      <thead>
+        <tr>
+          <th class="pr-th pr-th--service">Serviciu</th>
+          <th class="pr-th pr-th--price">Min</th>
+          <th class="pr-th pr-th--price pr-th--avg">Mediu</th>
+          <th class="pr-th pr-th--price">Max</th>
+          <th class="pr-th pr-th--unit">Unitate</th>
+          <th class="pr-th pr-th--action"></th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (p of filteredPrices; track p.id) {
+          <tr class="pr-row">
+            <td class="pr-td pr-td--service">
+              <a [routerLink]="['/dentisti', p.id]" class="pr-service-link">
+                {{ p.label }}
+              </a>
+            </td>
+            <td class="pr-td pr-td--min">{{ p.min === 0 ? 'Gratuit' : p.min + ' RON' }}</td>
+            <td class="pr-td pr-td--avg">
+              <span class="pr-avg-badge">{{ p.avg }} RON</span>
+              <!-- Mini bar graph -->
+              <div class="pr-bar-wrap">
+                <div class="pr-bar" [style.width]="((p.avg - p.min) / (p.max - p.min + 1) * 100) + '%'"></div>
+              </div>
+            </td>
+            <td class="pr-td pr-td--max">{{ p.max | number }}+ RON</td>
+            <td class="pr-td pr-td--unit">/ {{ p.unit }}</td>
+            <td class="pr-td pr-td--action">
+              <a [routerLink]="['/dentisti', p.id]" class="pr-find-btn">
+                <i class="fal fa-search"></i> Clinici
+              </a>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Disclaimer -->
+  <div class="pr-disclaimer">
+    <i class="fal fa-info-circle"></i>
+    Prețurile sunt orientative și pot varia în funcție de clinică, complexitatea cazului și materialele folosite.
+    Consultați clinica pentru un deviz personalizat.
+  </div>
+
+  <!-- CTA -->
+  <div class="pr-cta">
+    <div class="pr-cta-card">
+      <h2 class="pr-cta-title">Găsește clinica potrivită pentru bugetul tău</h2>
+      <p class="pr-cta-text">
+        DentiPro îți arată prețurile reale ale clinicilor din orașul tău.
+        Compară și programează-te în câteva secunde.
+      </p>
+      <div class="pr-cta-btns">
+        <a routerLink="/finder" class="pr-cta-btn pr-cta-btn--primary">
+          <i class="fal fa-search"></i> Caută clinici
+        </a>
+        <a routerLink="/harta" class="pr-cta-btn pr-cta-btn--secondary">
+          <i class="fal fa-map-marked-alt"></i> Hartă clinici
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- SEO text -->
+  <div class="pr-seo-text">
+    <h2>Cât costă stomatologia în România în 2025?</h2>
+    <p>
+      Prețurile serviciilor stomatologice în România variază semnificativ în funcție de zona geografică,
+      experiența medicului, echipamentele folosite și calitatea materialelor dentare.
+      În general, clinicile din București și Cluj-Napoca practică prețuri mai mari față de cele din orașele mai mici.
+    </p>
+    <p>
+      Cele mai solicitate servicii rămân detartrajul și albirea dentară, urmate de implanturi și aparate dentare.
+      Un implant dentar complet (implant + coroană) costă între 1.200 și 5.000 RON, în timp ce un aparat
+      dentar transparent (alinere) poate ajunge la 10.000 RON pentru cazuri complexe.
+    </p>
+    <p>
+      DentiPro centralizează prețurile reale afișate de clinicile partenere, oferindu-ți transparență deplină
+      înainte de a lua o decizie.
+    </p>
+  </div>
+
+</div>

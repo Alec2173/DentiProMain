@@ -106,6 +106,7 @@ export class ClinicProfileComponent implements OnInit, OnDestroy {
         this.mapAddressInput = clinic.address || '';
         this.isLoading = false;
         setTimeout(() => this.initClinicMap(), 200);
+        this.loadBeforeAfter();
       },
       error: () => { this.isLoading = false; },
     });
@@ -582,6 +583,67 @@ export class ClinicProfileComponent implements OnInit, OnDestroy {
         this.cancelPriceEdit();
       },
       error: (err) => console.error('Eroare la salvare preț:', err),
+    });
+  }
+
+  // ── BEFORE/AFTER GALLERY ─────────────────────────────────
+  beforeAfterPairs: { id: number; before_url: string; after_url: string; caption: string }[] = [];
+  loadingBA = false;
+  showBAForm = false;
+  baBeforePreview = '';
+  baAfterPreview = '';
+  baCaption = '';
+  baBeforeFile: File | null = null;
+  baAfterFile: File | null = null;
+  baSaving = false;
+
+  private loadBeforeAfter() {
+    if (!this.clinic) return;
+    this.loadingBA = true;
+    const url = `https://www.dentipro.ro/api/clinics/${this.clinic.id}/before-after`;
+    this.http.get<any[]>(url).subscribe({
+      next: (data) => { this.beforeAfterPairs = data; this.loadingBA = false; },
+      error: () => { this.loadingBA = false; },
+    });
+  }
+
+  openBAForm() { this.showBAForm = true; this.baBeforePreview = ''; this.baAfterPreview = ''; this.baCaption = ''; this.baBeforeFile = null; this.baAfterFile = null; }
+  closeBAForm() { this.showBAForm = false; }
+
+  onBAFileSelected(type: 'before' | 'after', event: Event) {
+    const input = event.target as HTMLInputElement;
+    if (!input.files?.[0]) return;
+    const file = input.files[0];
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      if (type === 'before') { this.baBeforePreview = e.target?.result as string; this.baBeforeFile = file; }
+      else { this.baAfterPreview = e.target?.result as string; this.baAfterFile = file; }
+    };
+    reader.readAsDataURL(file);
+  }
+
+  saveBAEntry() {
+    if (!this.clinic || !this.baBeforePreview || !this.baAfterPreview || this.baSaving) return;
+    this.baSaving = true;
+    const body = { before_url: this.baBeforePreview, after_url: this.baAfterPreview, caption: this.baCaption.trim() };
+    const token = this.authService.getToken() ?? '';
+    const headers = { headers: { Authorization: `Bearer ${token}` } };
+    this.http.post<any>(`https://www.dentipro.ro/api/clinics/${this.clinic.id}/before-after`, body, headers).subscribe({
+      next: (entry) => {
+        this.beforeAfterPairs.unshift(entry);
+        this.baSaving = false;
+        this.closeBAForm();
+      },
+      error: () => { this.baSaving = false; },
+    });
+  }
+
+  deleteBAEntry(id: number) {
+    if (!this.clinic) return;
+    const token = this.authService.getToken() ?? '';
+    const headers = { headers: { Authorization: `Bearer ${token}` } };
+    this.http.delete(`https://www.dentipro.ro/api/clinics/${this.clinic.id}/before-after/${id}`, headers).subscribe({
+      next: () => { this.beforeAfterPairs = this.beforeAfterPairs.filter(p => p.id !== id); },
     });
   }
 

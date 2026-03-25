@@ -137,11 +137,47 @@ export class DescriptonPageComponent implements OnInit, OnDestroy {
 
   toggleFavorite() {
     if (!this.auth.isLoggedIn || !this.clinics?.id) return;
+    const wasFav = this.isFavorited;
     this.favorites.toggle(this.clinics.id);
+    if (!wasFav) {
+      // Show service interest popup after saving
+      this.showServicePopup = true;
+    }
   }
 
   get isFavorited(): boolean {
     return this.clinics?.id ? this.favorites.isFavorited(this.clinics.id) : false;
+  }
+
+  // ── WHATSAPP ──────────────────────────────────────────────────
+  get whatsappUrl(): string | null {
+    const phone = this.clinics?.phone_public;
+    if (!phone) return null;
+    const digits = phone.replace(/\D/g, '');
+    const intl = digits.startsWith('0') ? '4' + digits : digits;
+    const text = encodeURIComponent(`Bună ziua! Am găsit clinica ${this.clinics.name} pe DentiPro și aș dori o programare.`);
+    return `https://wa.me/${intl}?text=${text}`;
+  }
+
+  // ── SERVICE INTEREST POPUP ────────────────────────────────────
+  showServicePopup = false;
+  selectedService = '';
+
+  readonly serviceInterestOptions = [
+    'Implanturi', 'Aparat dentar', 'Albire', 'Detartraj', 'Obturație',
+    'Tratament de canal', 'Fațete', 'Extracție', 'Consultație', 'Altele',
+  ];
+
+  saveServiceInterest() {
+    if (this.selectedService && this.clinics?.id) {
+      const key = `dp_fav_service_${this.clinics.id}`;
+      localStorage.setItem(key, this.selectedService);
+    }
+    this.showServicePopup = false;
+  }
+
+  closeServicePopup() {
+    this.showServicePopup = false;
   }
 
   // ── BOOKING MODAL ────────────────────────────────────────────

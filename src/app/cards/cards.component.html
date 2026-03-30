@@ -49,9 +49,23 @@
                 }
               </div>
               <h3 class="clinic-name">{{ clinic.name }}</h3>
-              <div class="rating">
-                <span class="material-symbols-outlined">star</span> 4.5
-              </div>
+              @if (getServiceInfo(clinic); as info) {
+                <div class="card-service-price">
+                  <span class="material-symbols-outlined">payments</span>
+                  <span class="card-service-label">{{ info.label }}</span>
+                  @if (info.price) {
+                    <span class="card-service-amount">{{ info.price }}</span>
+                  }
+                </div>
+              }
+              @if (clinic.avg_rating) {
+                <div class="rating">
+                  <span class="material-symbols-outlined">star</span> {{ clinic.avg_rating | number:'1.1-1' }}
+                  @if (clinic.review_count > 0) {
+                    <span class="rating-count">({{ clinic.review_count }})</span>
+                  }
+                </div>
+              }
             </div>
           </a>
         }

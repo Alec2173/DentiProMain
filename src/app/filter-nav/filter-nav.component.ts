@@ -22,10 +22,14 @@ export class FilterNavComponent implements OnInit, OnDestroy {
   searchService = '';
   serviceDropdownOpen = false;
 
+  // Price: maximum price in RON
+  maxPrice: number | null = null;
+  maxPriceText = '';
+
   mobileOpen = false;
 
   get activeFilterCount(): number {
-    return (this.searchCity ? 1 : 0) + (this.searchService ? 1 : 0);
+    return (this.searchCity ? 1 : 0) + (this.searchService ? 1 : 0) + (this.maxPrice ? 1 : 0);
   }
 
   cities: string[] = [];
@@ -57,6 +61,13 @@ export class FilterNavComponent implements OnInit, OnDestroy {
         } else {
           this.serviceText = '';
         }
+      });
+
+    this.dataShareService.maxPrice$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((p) => {
+        this.maxPrice = p;
+        this.maxPriceText = p ? String(p) : '';
       });
   }
 
@@ -126,6 +137,17 @@ export class FilterNavComponent implements OnInit, OnDestroy {
     this.serviceDropdownOpen = false;
   }
 
+  // ── PRICE ─────────────────────────────────
+  onMaxPriceInput() {
+    const val = parseFloat(this.maxPriceText);
+    this.maxPrice = isNaN(val) || val <= 0 ? null : val;
+  }
+
+  clearMaxPrice() {
+    this.maxPrice = null;
+    this.maxPriceText = '';
+  }
+
   // ── GLOBAL ────────────────────────────────
   closeAll() {
     this.cityDropdownOpen = false;
@@ -135,7 +157,8 @@ export class FilterNavComponent implements OnInit, OnDestroy {
   apply() {
     this.dataShareService.setCity(this.searchCity);
     this.dataShareService.setService(this.searchService);
-    this.dataShareService.setFilters({ city: this.searchCity, service: this.searchService });
+    this.dataShareService.setMaxPrice(this.maxPrice);
+    this.dataShareService.setFilters({ city: this.searchCity, service: this.searchService, maxPrice: this.maxPrice });
     this.closeAll();
   }
 }

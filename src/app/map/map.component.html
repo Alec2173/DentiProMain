@@ -1,3 +1,27 @@
 <div class="wrap-map">
   <div class="map" #mapppp></div>
+
+  @if (isLoading()) {
+    <div class="map-skeleton">
+      <div class="map-skeleton__shimmer"></div>
+
+      <div class="map-skeleton__pin" style="top:32%;left:28%"></div>
+      <div class="map-skeleton__pin" style="top:48%;left:58%"></div>
+      <div class="map-skeleton__pin" style="top:62%;left:40%"></div>
+
+      <div class="map-skeleton__label">
+        <i class="fal fa-map-marked-alt"></i>
+        Se încarcă harta...
+      </div>
+    </div>
+  }
+
+  @if (isFiltering()) {
+    <div class="map-filter-pill">
+      <span class="map-filter-pill__dot"></span>
+      <span class="map-filter-pill__dot"></span>
+      <span class="map-filter-pill__dot"></span>
+      Se filtrează
+    </div>
+  }
 </div>

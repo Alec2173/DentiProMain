@@ -18,6 +18,11 @@
           <span class="material-symbols-outlined">dentistry</span>{{ serviceText }}
         </span>
       }
+      @if (maxPrice) {
+        <span class="fnav-mobile-pill fnav-mobile-pill--price">
+          <span class="material-symbols-outlined">payments</span>max {{ maxPrice }} lei
+        </span>
+      }
     </div>
     <span class="material-symbols-outlined fnav-mobile-chevron" [class.open]="mobileOpen">
       expand_more
@@ -101,11 +106,38 @@
       }
     </div>
 
+    <div class="seg-sep"></div>
+
+    <!-- PRICE -->
+    <div class="seg" (click)="$event.stopPropagation()">
+      <span class="material-symbols-outlined seg-icon">payments</span>
+      <div class="seg-body seg-body--price">
+        <span class="seg-label">Preț max (lei)</span>
+        <div class="seg-value-row">
+          <input
+            class="seg-input seg-input--price"
+            type="number"
+            min="0"
+            step="50"
+            [(ngModel)]="maxPriceText"
+            placeholder="Orice preț"
+            (input)="onMaxPriceInput()"
+            autocomplete="off"
+          />
+          @if (maxPrice) {
+            <button class="clear-btn" (click)="$event.stopPropagation(); clearMaxPrice()">
+              <span class="material-symbols-outlined">close</span>
+            </button>
+          }
+        </div>
+      </div>
+    </div>
+
     <div class="seg-sep active-filters-sep"></div>
 
     <!-- ACTIVE PILLS -->
     <div class="active-filters">
-      @if (searchCity || searchService) {
+      @if (searchCity || searchService || maxPrice) {
         @if (searchCity) {
           <span class="filter-pill">
             <span class="material-symbols-outlined">location_on</span>{{ searchCity }}
@@ -114,6 +146,11 @@
         @if (searchService) {
           <span class="filter-pill">
             <span class="material-symbols-outlined">dentistry</span>{{ serviceText }}
+          </span>
+        }
+        @if (maxPrice) {
+          <span class="filter-pill filter-pill--price">
+            <span class="material-symbols-outlined">payments</span>max {{ maxPrice }} lei
           </span>
         }
       } @else {

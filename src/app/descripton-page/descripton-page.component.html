@@ -58,7 +58,17 @@
                 <i class="fal fa-map-marker-alt"></i> {{ clinics.city }}
               </div>
               <div class="dp-info__rating">
-                ⭐ 4.8 <span class="dp-info__reviews">(124 recenzii)</span>
+                @if (avgRating) {
+                  <span class="dp-info__stars">
+                    @for (s of starsArray(); track s) {
+                      <i class="fas fa-star" [class.dp-star--filled]="s <= avgRating" [class.dp-star--half]="s > avgRating && s - 0.5 <= avgRating" [class.dp-star--empty]="s > avgRating + 0.5"></i>
+                    }
+                  </span>
+                  <span class="dp-info__avg">{{ avgRating | number:'1.1-1' }}</span>
+                  <span class="dp-info__reviews">({{ reviewCount }} {{ reviewCount === 1 ? 'recenzie' : 'recenzii' }})</span>
+                } @else {
+                  <span class="dp-info__no-reviews"><i class="fal fa-star"></i> Fii primul care lasă o recenzie</span>
+                }
               </div>
             </div>
           </div>
@@ -82,24 +92,35 @@
 
           <div class="dp-info__divider"></div>
 
-          <!-- Quick contact -->
+          <!-- Quick contact — clickable -->
           <div class="dp-info__contacts">
             @if (clinics.phone_public) {
-              <div class="dp-contact-item">
-                <div class="dp-contact-item__icon-wrap"><i class="fal fa-phone"></i></div>
-                <span class="dp-contact-item__text">{{ clinics.phone_public }}</span>
-              </div>
+              <a class="dp-contact-item dp-contact-item--link" [href]="'tel:' + clinics.phone_public">
+                <div class="dp-contact-item__icon-wrap dp-contact-item__icon-wrap--phone"><i class="fal fa-phone"></i></div>
+                <div class="dp-contact-item__body">
+                  <span class="dp-contact-item__label">Telefon</span>
+                  <span class="dp-contact-item__text">{{ clinics.phone_public }}</span>
+                </div>
+                <i class="fal fa-external-link dp-contact-item__arrow"></i>
+              </a>
             }
             @if (clinics.email) {
-              <div class="dp-contact-item">
-                <div class="dp-contact-item__icon-wrap"><i class="fal fa-envelope"></i></div>
-                <span class="dp-contact-item__text">{{ clinics.email }}</span>
-              </div>
+              <a class="dp-contact-item dp-contact-item--link" [href]="'mailto:' + clinics.email">
+                <div class="dp-contact-item__icon-wrap dp-contact-item__icon-wrap--email"><i class="fal fa-envelope"></i></div>
+                <div class="dp-contact-item__body">
+                  <span class="dp-contact-item__label">Email</span>
+                  <span class="dp-contact-item__text">{{ clinics.email }}</span>
+                </div>
+                <i class="fal fa-external-link dp-contact-item__arrow"></i>
+              </a>
             }
             @if (displayAddress) {
               <div class="dp-contact-item">
                 <div class="dp-contact-item__icon-wrap"><i class="fal fa-map-marker-alt"></i></div>
-                <span class="dp-contact-item__text">{{ displayAddress }}</span>
+                <div class="dp-contact-item__body">
+                  <span class="dp-contact-item__label">Adresă</span>
+                  <span class="dp-contact-item__text">{{ displayAddress }}</span>
+                </div>
               </div>
             }
           </div>
@@ -109,11 +130,9 @@
             <button class="dp-btn-book" (click)="openBooking()">
               <i class="fal fa-calendar-check"></i> Programează consultație
             </button>
-            @if (whatsappUrl) {
-              <a [href]="whatsappUrl" target="_blank" rel="noopener noreferrer" class="dp-btn-whatsapp">
-                <i class="fab fa-whatsapp"></i> WhatsApp
-              </a>
-            }
+            <button class="dp-btn-msg" (click)="openMsgModal()">
+              <i class="fal fa-paper-plane"></i> Trimite mesaj
+            </button>
             @if (auth.isLoggedIn && auth.isPatient) {
               <button class="dp-btn-fav" [class.dp-btn-fav--active]="isFavorited" (click)="toggleFavorite()">
                 <i class="fal fa-heart"></i>
@@ -238,9 +257,209 @@
         </div>
       }
 
+      <!-- ─── RECENZII ─── -->
+      <div class="dp-card dp-reviews-card">
+        <div class="dp-reviews-header">
+          <div>
+            <h2 class="dp-card__title">
+              <span class="dp-card__title-dot"></span>
+              <i class="fal fa-star"></i> Recenzii
+            </h2>
+            @if (avgRating) {
+              <div class="dp-reviews-summary">
+                <span class="dp-reviews-avg">{{ avgRating | number:'1.1-1' }}</span>
+                <div class="dp-reviews-stars">
+                  @for (s of starsArray(); track s) {
+                    <i class="fas fa-star" [class.filled]="s <= avgRating!" [class.empty]="s > avgRating!"></i>
+                  }
+                </div>
+                <span class="dp-reviews-count">{{ reviewCount }} {{ reviewCount === 1 ? 'recenzie' : 'recenzii' }}</span>
+              </div>
+            }
+          </div>
+          @if (canReview) {
+            <button class="dp-btn-review" (click)="openReviewModal()">
+              <i class="fal fa-pen"></i> Lasă o recenzie
+            </button>
+          }
+          @if (auth.isLoggedIn && auth.isPatient && !canReview && !reviewsLoading) {
+            <span class="dp-review-hint">
+              <i class="fal fa-info-circle"></i> Poți lăsa o recenzie după o programare finalizată
+            </span>
+          }
+        </div>
+
+        @if (reviewsLoading) {
+          <div class="dp-reviews-loading">
+            @for (i of [1,2,3]; track i) {
+              <div class="dp-review-sk">
+                <div class="sk-line sk-avatar"></div>
+                <div class="sk-lines">
+                  <div class="sk-line sk-name"></div>
+                  <div class="sk-line sk-text"></div>
+                  <div class="sk-line sk-text sk-text--short"></div>
+                </div>
+              </div>
+            }
+          </div>
+        } @else if (reviews.length === 0) {
+          <div class="dp-reviews-empty">
+            <i class="fal fa-comments"></i>
+            <span>Nicio recenzie încă. Fii primul!</span>
+          </div>
+        } @else {
+          <div class="dp-reviews-list">
+            @for (r of reviews; track r.id) {
+              <div class="dp-review-item">
+                <div class="dp-review-item__top">
+                  <div class="dp-review-item__avatar">{{ r.patient_name?.charAt(0)?.toUpperCase() || '?' }}</div>
+                  <div class="dp-review-item__info">
+                    <span class="dp-review-item__name">{{ r.patient_name }}</span>
+                    <span class="dp-review-item__date">{{ formatReviewDate(r.created_at) }}</span>
+                  </div>
+                  <div class="dp-review-item__stars">
+                    @for (s of starsArray(); track s) {
+                      <i class="fas fa-star" [class.filled]="s <= r.rating" [class.empty]="s > r.rating"></i>
+                    }
+                  </div>
+                </div>
+                @if (r.text) {
+                  <p class="dp-review-item__text">{{ r.text }}</p>
+                }
+              </div>
+            }
+          </div>
+        }
+      </div>
+
     }
   </div>
 </div>
+
+<!-- ══════════════════════════ MESSAGE MODAL ═══ -->
+@if (showMsgModal) {
+  <div class="msg-overlay" (click)="closeMsgModal()">
+    <div class="msg-modal" (click)="$event.stopPropagation()">
+
+      <button class="msg-close" (click)="closeMsgModal()"><i class="fal fa-times"></i></button>
+
+      @if (!msgSent) {
+        <div class="msg-header">
+          <div class="msg-icon"><i class="fal fa-paper-plane"></i></div>
+          <h3 class="msg-title">Trimite un mesaj</h3>
+          <p class="msg-sub">Mesajul va fi trimis direct la <strong>{{ clinics.name }}</strong></p>
+        </div>
+
+        <div class="msg-form">
+          <div class="msg-row">
+            <div class="msg-field">
+              <label class="msg-label"><i class="fal fa-user"></i> Nume *</label>
+              <input class="msg-input" type="text" [(ngModel)]="msgName" placeholder="Numele tău" />
+            </div>
+            <div class="msg-field">
+              <label class="msg-label"><i class="fal fa-envelope"></i> Email *</label>
+              <input class="msg-input" type="email" [(ngModel)]="msgEmail" placeholder="email@exemplu.ro" />
+            </div>
+          </div>
+          <div class="msg-field">
+            <label class="msg-label"><i class="fal fa-phone"></i> Telefon (opțional)</label>
+            <input class="msg-input" type="tel" [(ngModel)]="msgPhone" placeholder="07XX XXX XXX" />
+          </div>
+          <div class="msg-field">
+            <label class="msg-label"><i class="fal fa-comment-alt"></i> Mesaj *</label>
+            <textarea class="msg-textarea" [(ngModel)]="msgBody" rows="4"
+              placeholder="Ex: Bună ziua, aș dori informații despre... / Vreau să fac o programare pentru..."></textarea>
+            <span class="msg-chars">{{ msgBody.length }}/2000</span>
+          </div>
+
+          @if (msgError) {
+            <div class="msg-error"><i class="fal fa-exclamation-circle"></i> {{ msgError }}</div>
+          }
+
+          <div class="msg-actions">
+            <button class="msg-btn-cancel" (click)="closeMsgModal()">Renunță</button>
+            <button class="msg-btn-send" (click)="sendMsg()" [disabled]="msgSending">
+              @if (msgSending) { <i class="fal fa-spinner fa-spin"></i> Se trimite... }
+              @else { <i class="fal fa-paper-plane"></i> Trimite mesajul }
+            </button>
+          </div>
+        </div>
+      } @else {
+        <div class="msg-success">
+          <div class="msg-success-icon"><i class="fal fa-check-circle"></i></div>
+          <h3>Mesaj trimis!</h3>
+          <p>{{ clinics.name }} va primi mesajul tău și îți va răspunde la <strong>{{ msgEmail }}</strong>.</p>
+          <button class="msg-btn-send" (click)="closeMsgModal()"><i class="fal fa-check"></i> Închide</button>
+        </div>
+      }
+
+    </div>
+  </div>
+}
+
+<!-- ══════════════════════════ REVIEW MODAL ═══ -->
+@if (showReviewModal) {
+  <div class="msg-overlay" (click)="closeReviewModal()">
+    <div class="msg-modal" (click)="$event.stopPropagation()">
+      <button class="msg-close" (click)="closeReviewModal()"><i class="fal fa-times"></i></button>
+
+      @if (!reviewSent) {
+        <div class="msg-header">
+          <div class="msg-icon"><i class="fal fa-star"></i></div>
+          <h3 class="msg-title">Lasă o recenzie</h3>
+          <p class="msg-sub">Experiența ta la <strong>{{ clinics.name }}</strong></p>
+        </div>
+
+        <div class="msg-form">
+          <!-- Stars selector -->
+          <div class="rv-stars-wrap">
+            <span class="rv-stars-label">Nota ta *</span>
+            <div class="rv-stars">
+              @for (s of starsArray(); track s) {
+                <i class="fas fa-star rv-star"
+                   [class.rv-star--active]="s <= (reviewHover || reviewRating)"
+                   (mouseenter)="hoverStar(s)"
+                   (mouseleave)="clearHover()"
+                   (click)="setReviewRating(s)"></i>
+              }
+            </div>
+            @if (reviewRating) {
+              <span class="rv-rating-label">
+                {{ reviewRating === 1 ? 'Dezamăgitor' : reviewRating === 2 ? 'Slab' : reviewRating === 3 ? 'Acceptabil' : reviewRating === 4 ? 'Bun' : 'Excelent' }}
+              </span>
+            }
+          </div>
+
+          <div class="msg-field">
+            <label class="msg-label"><i class="fal fa-comment-alt"></i> Recenzia ta *</label>
+            <textarea class="msg-textarea" [(ngModel)]="reviewText" rows="4"
+              placeholder="Descrie experiența ta: cum a decurs consultația, calitatea serviciilor, ambianța..."></textarea>
+            <span class="msg-chars">{{ reviewText.length }}/1000</span>
+          </div>
+
+          @if (reviewError) {
+            <div class="msg-error"><i class="fal fa-exclamation-circle"></i> {{ reviewError }}</div>
+          }
+
+          <div class="msg-actions">
+            <button class="msg-btn-cancel" (click)="closeReviewModal()">Renunță</button>
+            <button class="msg-btn-send" (click)="submitReview()" [disabled]="reviewSending">
+              @if (reviewSending) { <i class="fal fa-spinner fa-spin"></i> Se trimite... }
+              @else { <i class="fal fa-star"></i> Publică recenzia }
+            </button>
+          </div>
+        </div>
+      } @else {
+        <div class="msg-success">
+          <div class="msg-success-icon"><i class="fal fa-check-circle"></i></div>
+          <h3>Recenzie publicată!</h3>
+          <p>Mulțumim pentru feedback! Recenzia ta ajută alți pacienți să aleagă mai bine.</p>
+          <button class="msg-btn-send" (click)="closeReviewModal()"><i class="fal fa-check"></i> Închide</button>
+        </div>
+      }
+    </div>
+  </div>
+}
 
 <!-- ══════════════════════════ SERVICE INTEREST POPUP ═══ -->
 @if (showServicePopup) {

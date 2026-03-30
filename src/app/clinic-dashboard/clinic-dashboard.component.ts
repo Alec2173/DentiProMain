@@ -2,6 +2,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+import { DecimalPipe } from '@angular/common';
 import { AuthService } from '../auth.service';
 
 const API = 'https://www.dentipro.ro/api';
@@ -9,7 +10,7 @@ const API = 'https://www.dentipro.ro/api';
 @Component({
   selector: 'app-clinic-dashboard',
   standalone: true,
-  imports: [RouterLink, FormsModule],
+  imports: [RouterLink, FormsModule, DecimalPipe],
   templateUrl: './clinic-dashboard.component.html',
   styleUrl: './clinic-dashboard.component.css',
 })
@@ -53,6 +54,8 @@ export class ClinicDashboardComponent implements OnInit, OnDestroy {
     if (!this.auth.currentUser?.clinicId) { this.router.navigate(['/clinici/inscriere']); return; }
     this.load();
     this.initFeedback();
+    this.loadMessages();
+    this.loadClinicReviews();
   }
 
   ngOnDestroy() {
@@ -77,7 +80,7 @@ export class ClinicDashboardComponent implements OnInit, OnDestroy {
       });
   }
 
-  private scheduleFeedback(state: string | null) {
+  private scheduleFeedback(_state: string | null) {
     // skip2 (already skipped once before) → schedule once more, then mark done
     // no state → schedule normally
     this.feedbackTimer = setTimeout(() => { this.showFeedback = true; }, 50000);
@@ -185,5 +188,80 @@ export class ClinicDashboardComponent implements OnInit, OnDestroy {
   statusLabel(s: string): string {
     const map: any = { pending: 'În așteptare', confirmed: 'Confirmat', cancelled: 'Anulat', completed: 'Finalizat' };
     return map[s] ?? s;
+  }
+
+  // ── MESSAGES ───────────────────────────────────────────────
+  messages: any[] = [];
+  messagesLoading = false;
+  expandedMsgId: number | null = null;
+  replyText: { [id: number]: string } = {};
+  replySending: number | null = null;
+
+  get unreadCount(): number {
+    return this.messages.filter(m => !m.read_at).length;
+  }
+
+  loadMessages() {
+    this.messagesLoading = true;
+    this.http.get<any[]>(`${API}/messages/clinic`, { headers: this.headers }).subscribe({
+      next: (msgs) => { this.messages = msgs; this.messagesLoading = false; },
+      error: () => { this.messagesLoading = false; },
+    });
+  }
+
+  toggleMsg(msg: any) {
+    if (this.expandedMsgId === msg.id) {
+      this.expandedMsgId = null;
+      return;
+    }
+    this.expandedMsgId = msg.id;
+    if (!msg.read_at) {
+      this.http.patch(`${API}/messages/${msg.id}/read`, {}, { headers: this.headers }).subscribe({
+        next: () => { msg.read_at = new Date().toISOString(); }
+      });
+    }
+  }
+
+  sendReply(msg: any) {
+    const text = (this.replyText[msg.id] || '').trim();
+    if (!text) return;
+    this.replySending = msg.id;
+    this.http.post(`${API}/messages/${msg.id}/reply`, { reply: text }, { headers: this.headers }).subscribe({
+      next: () => {
+        msg.reply = text;
+        msg.replied_at = new Date().toISOString();
+        this.replyText[msg.id] = '';
+        this.replySending = null;
+      },
+      error: () => { this.replySending = null; },
+    });
+  }
+
+  // ── REVIEWS ────────────────────────────────────────────────
+  clinicReviews: any[] = [];
+  reviewsLoading = false;
+  clinicAvgRating: number | null = null;
+  clinicReviewCount = 0;
+
+  loadClinicReviews() {
+    const clinicId = this.auth.currentUser?.clinicId;
+    if (!clinicId) return;
+    this.reviewsLoading = true;
+    this.http.get<any>(`${API}/reviews/clinic/${clinicId}`, { headers: this.headers }).subscribe({
+      next: (res) => {
+        this.clinicReviews = res.reviews ?? [];
+        this.clinicAvgRating = res.avgRating ?? null;
+        this.clinicReviewCount = res.count ?? this.clinicReviews.length;
+        this.reviewsLoading = false;
+      },
+      error: () => { this.reviewsLoading = false; },
+    });
+  }
+
+  starsArray(): number[] { return [1, 2, 3, 4, 5]; }
+
+  formatReviewDate(d: string): string {
+    if (!d) return '';
+    return new Date(d).toLocaleDateString('ro-RO', { month: 'long', year: 'numeric', day: '2-digit' });
   }
 }

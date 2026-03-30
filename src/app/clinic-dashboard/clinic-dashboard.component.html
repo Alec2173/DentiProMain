@@ -345,6 +345,116 @@
       </div>
     }
 
+    <!-- ── MESAJE PRIMITE ────────────────────────────────────── -->
+    <div class="section-title">
+      <i class="fal fa-envelope"></i> Mesaje primite
+      @if (unreadCount > 0) {
+        <span class="msg-badge">{{ unreadCount }}</span>
+      }
+    </div>
+
+    @if (messagesLoading) {
+      <div class="msgs-loading"><i class="fal fa-spinner fa-spin"></i> Se încarcă mesajele...</div>
+    } @else if (messages.length === 0) {
+      <div class="msgs-empty">
+        <i class="fal fa-inbox"></i>
+        <span>Nu ai primit niciun mesaj încă.</span>
+      </div>
+    } @else {
+      <div class="msgs-list">
+        @for (msg of messages; track msg.id) {
+          <div class="msg-row" [class.msg-row--unread]="!msg.read_at" (click)="toggleMsg(msg)">
+
+            <div class="msg-row__top">
+              <div class="msg-row__avatar">{{ msg.sender_name?.charAt(0)?.toUpperCase() || '?' }}</div>
+              <div class="msg-row__info">
+                <span class="msg-row__name">{{ msg.sender_name }}</span>
+                <span class="msg-row__email">{{ msg.sender_email }}</span>
+              </div>
+              <span class="msg-row__date">{{ formatDate(msg.created_at) }}</span>
+              @if (!msg.read_at) {
+                <span class="msg-row__dot"></span>
+              }
+              @if (msg.reply) {
+                <span class="msg-row__replied"><i class="fal fa-reply"></i> Răspuns trimis</span>
+              }
+            </div>
+
+            @if (expandedMsgId === msg.id) {
+              <div class="msg-row__body" (click)="$event.stopPropagation()">
+                <p class="msg-row__text">{{ msg.body }}</p>
+                @if (msg.sender_phone) {
+                  <span class="msg-row__phone"><i class="fal fa-phone"></i> {{ msg.sender_phone }}</span>
+                }
+
+                @if (msg.reply) {
+                  <div class="msg-row__existing-reply">
+                    <i class="fal fa-reply"></i>
+                    <span>{{ msg.reply }}</span>
+                  </div>
+                } @else {
+                  <div class="msg-row__reply-form">
+                    <textarea class="msg-row__reply-input" [(ngModel)]="replyText[msg.id]"
+                      placeholder="Scrie un răspuns..." rows="3"></textarea>
+                    <button class="msg-row__reply-btn"
+                      (click)="sendReply(msg)"
+                      [disabled]="replySending === msg.id || !replyText[msg.id]?.trim()">
+                      @if (replySending === msg.id) { <i class="fal fa-spinner fa-spin"></i> }
+                      @else { <i class="fal fa-reply"></i> }
+                      Trimite răspuns
+                    </button>
+                  </div>
+                }
+              </div>
+            }
+
+          </div>
+        }
+      </div>
+    }
+
+    <!-- ── RECENZII ────────────────────────────────────────────── -->
+    <div class="section-title">
+      <i class="fal fa-star"></i> Recenzii primite
+      @if (clinicAvgRating) {
+        <span class="reviews-avg-badge">
+          <i class="fas fa-star"></i> {{ clinicAvgRating | number:'1.1-1' }}
+          <span class="reviews-avg-count">({{ clinicReviewCount }})</span>
+        </span>
+      }
+    </div>
+
+    @if (reviewsLoading) {
+      <div class="msgs-loading"><i class="fal fa-spinner fa-spin"></i> Se încarcă recenziile...</div>
+    } @else if (clinicReviews.length === 0) {
+      <div class="msgs-empty">
+        <i class="fal fa-star"></i>
+        <span>Nu ai primit nicio recenzie încă. Recenziile apar după programări finalizate.</span>
+      </div>
+    } @else {
+      <div class="rv-list">
+        @for (r of clinicReviews; track r.id) {
+          <div class="rv-item">
+            <div class="rv-item__top">
+              <div class="rv-item__avatar">{{ r.patient_name?.charAt(0)?.toUpperCase() || '?' }}</div>
+              <div class="rv-item__info">
+                <span class="rv-item__name">{{ r.patient_name }}</span>
+                <span class="rv-item__date">{{ formatReviewDate(r.created_at) }}</span>
+              </div>
+              <div class="rv-item__stars">
+                @for (s of starsArray(); track s) {
+                  <i class="fas fa-star" [class.rv-filled]="s <= r.rating" [class.rv-empty]="s > r.rating"></i>
+                }
+              </div>
+            </div>
+            @if (r.text) {
+              <p class="rv-item__text">{{ r.text }}</p>
+            }
+          </div>
+        }
+      </div>
+    }
+
     <!-- ── RECENT ACTIVITY ────────────────────────────────────── -->
     @if (data.recentFavorites && data.recentFavorites.length > 0) {
       <div class="section-title">

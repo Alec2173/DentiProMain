@@ -26,3 +26,117 @@
   position: absolute;
   pointer-events: auto;
 }
+
+/* ══ MAP SKELETON ════════════════════════════════════════════ */
+.map-skeleton {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(160deg, #0a1628 0%, #060d1a 60%, #08101f 100%);
+  z-index: 10;
+  overflow: hidden;
+}
+
+/* Diagonal shimmer sweep — same style as card skeletons */
+.map-skeleton__shimmer {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    110deg,
+    transparent 20%,
+    rgba(30, 64, 120, 0.12) 40%,
+    rgba(59, 130, 246, 0.08) 50%,
+    rgba(30, 64, 120, 0.12) 60%,
+    transparent 80%
+  );
+  background-size: 300% 300%;
+  animation: map-sk-sweep 2s ease-in-out infinite;
+}
+
+/* Pin placeholders */
+.map-skeleton__pin {
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  border-radius: 50% 50% 50% 0;
+  transform: rotate(-45deg);
+  background: rgba(37, 99, 235, 0.22);
+  border: 2px solid rgba(59, 130, 246, 0.35);
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.08);
+  animation: map-sk-pin 2s ease-in-out infinite;
+}
+
+.map-skeleton__pin:nth-child(2) { animation-delay: 0.5s; opacity: 0.7; }
+.map-skeleton__pin:nth-child(3) { animation-delay: 1s;   opacity: 0.5; }
+
+/* Bottom label */
+.map-skeleton__label {
+  position: absolute;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 18px;
+  background: rgba(6, 13, 26, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 999px;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.35);
+  white-space: nowrap;
+  backdrop-filter: blur(8px);
+}
+
+.map-skeleton__label i { color: rgba(59, 130, 246, 0.5); }
+
+/* ══ FILTER PILL ═════════════════════════════════════════════ */
+.map-filter-pill {
+  position: absolute;
+  top: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 18px;
+  background: rgba(9, 22, 44, 0.92);
+  border: 1px solid rgba(59, 130, 246, 0.3);
+  border-radius: 999px;
+  color: #93c5fd;
+  font-size: 13px;
+  font-weight: 500;
+  backdrop-filter: blur(8px);
+  z-index: 10;
+  animation: map-sk-fadein 0.15s ease;
+}
+
+.map-filter-pill__dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #3b82f6;
+  animation: map-sk-dot 1.2s ease-in-out infinite;
+}
+.map-filter-pill__dot:nth-child(2) { animation-delay: 0.15s; }
+.map-filter-pill__dot:nth-child(3) { animation-delay: 0.3s; }
+
+/* ══ KEYFRAMES ═══════════════════════════════════════════════ */
+@keyframes map-sk-sweep {
+  0%   { background-position: 150% 0%; }
+  100% { background-position: -50% 0%; }
+}
+
+@keyframes map-sk-pin {
+  0%, 100% { box-shadow: 0 0 0 4px rgba(59,130,246,0.08); opacity: 1; }
+  50%       { box-shadow: 0 0 0 10px rgba(59,130,246,0.0); opacity: 0.7; }
+}
+
+@keyframes map-sk-dot {
+  0%, 80%, 100% { transform: scale(0.5); opacity: 0.3; }
+  40%            { transform: scale(1);  opacity: 1; }
+}
+
+@keyframes map-sk-fadein {
+  from { opacity: 0; transform: translateX(-50%) translateY(-4px); }
+  to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+}

@@ -41,6 +41,8 @@ export class DescriptonPageComponent implements OnInit, OnDestroy {
 
   private map: maplibregl.Map | null = null;
 
+  readonly clinicId = () => Number(this.route.snapshot.paramMap.get('id'));
+
   ngOnInit() {
     const id = this.route.snapshot.paramMap.get('id');
     this.clinicData.getClinicById(Number(id)).subscribe({
@@ -87,6 +89,8 @@ export class DescriptonPageComponent implements OnInit, OnDestroy {
       error: () => (this.isLoading = false),
     });
     this.favorites.loadAll();
+    this.loadReviews();
+    this.checkCanReview();
   }
 
   private initMap(lat: number, lng: number) {
@@ -149,14 +153,53 @@ export class DescriptonPageComponent implements OnInit, OnDestroy {
     return this.clinics?.id ? this.favorites.isFavorited(this.clinics.id) : false;
   }
 
-  // ── WHATSAPP ──────────────────────────────────────────────────
-  get whatsappUrl(): string | null {
-    const phone = this.clinics?.phone_public;
-    if (!phone) return null;
-    const digits = phone.replace(/\D/g, '');
-    const intl = digits.startsWith('0') ? '4' + digits : digits;
-    const text = encodeURIComponent(`Bună ziua! Am găsit clinica ${this.clinics.name} pe DentiPro și aș dori o programare.`);
-    return `https://wa.me/${intl}?text=${text}`;
+  // ── MESSAGE MODAL ─────────────────────────────────────────────
+  showMsgModal = false;
+  msgName = '';
+  msgEmail = '';
+  msgPhone = '';
+  msgBody = '';
+  msgSending = false;
+  msgSent = false;
+  msgError = '';
+
+  openMsgModal() {
+    this.showMsgModal = true;
+    this.msgSent = false;
+    this.msgError = '';
+    // Pre-fill from auth if logged in
+    if (this.auth.isLoggedIn && this.auth.currentUser) {
+      this.msgName = this.auth.currentUser.name || '';
+      this.msgEmail = this.auth.currentUser.email || '';
+    }
+  }
+
+  closeMsgModal() {
+    this.showMsgModal = false;
+  }
+
+  sendMsg() {
+    if (!this.msgName.trim()) { this.msgError = 'Introduceți numele.'; return; }
+    if (!this.msgEmail.trim() || !this.msgEmail.includes('@')) { this.msgError = 'Introduceți un email valid.'; return; }
+    if (!this.msgBody.trim()) { this.msgError = 'Mesajul nu poate fi gol.'; return; }
+    if (this.msgBody.length > 2000) { this.msgError = 'Mesajul este prea lung (max 2000 caractere).'; return; }
+
+    this.msgSending = true;
+    this.msgError = '';
+
+    this.http.post(`${API}/messages`, {
+      clinicId: this.clinics.id,
+      senderName: this.msgName.trim(),
+      senderEmail: this.msgEmail.trim(),
+      senderPhone: this.msgPhone.trim() || null,
+      body: this.msgBody.trim(),
+    }).subscribe({
+      next: () => { this.msgSending = false; this.msgSent = true; },
+      error: (err) => {
+        this.msgError = err.error?.error || 'A apărut o eroare. Încearcă din nou.';
+        this.msgSending = false;
+      },
+    });
   }
 
   // ── SERVICE INTEREST POPUP ────────────────────────────────────
@@ -227,6 +270,92 @@ export class DescriptonPageComponent implements OnInit, OnDestroy {
         this.bookingLoading = false;
       }
     });
+  }
+
+  // ── REVIEWS ───────────────────────────────────────────────────
+  reviews: any[] = [];
+  reviewsLoading = false;
+  avgRating: number | null = null;
+  reviewCount = 0;
+  canReview = false;
+
+  showReviewModal = false;
+  reviewRating = 0;
+  reviewHover = 0;
+  reviewText = '';
+  reviewSending = false;
+  reviewSent = false;
+  reviewError = '';
+
+  loadReviews() {
+    const id = this.clinicId();
+    this.reviewsLoading = true;
+    this.http.get<any>(`${API}/reviews/clinic/${id}`).subscribe({
+      next: (res) => {
+        this.reviews = res.reviews ?? [];
+        this.avgRating = res.avgRating ?? null;
+        this.reviewCount = res.count ?? this.reviews.length;
+        this.reviewsLoading = false;
+      },
+      error: () => { this.reviewsLoading = false; },
+    });
+  }
+
+  checkCanReview() {
+    if (!this.auth.isPatient) return;
+    const id = this.clinicId();
+    this.http.get<any>(`${API}/reviews/clinic/${id}/can-review`, { headers: this.headers }).subscribe({
+      next: (res) => { this.canReview = !!res.canReview; },
+      error: () => {},
+    });
+  }
+
+  openReviewModal() {
+    this.showReviewModal = true;
+    this.reviewRating = 0;
+    this.reviewHover = 0;
+    this.reviewText = '';
+    this.reviewError = '';
+    this.reviewSent = false;
+  }
+
+  closeReviewModal() { this.showReviewModal = false; }
+
+  setReviewRating(n: number) { this.reviewRating = n; }
+  hoverStar(n: number) { this.reviewHover = n; }
+  clearHover() { this.reviewHover = 0; }
+
+  submitReview() {
+    if (!this.reviewRating) { this.reviewError = 'Alege un număr de stele.'; return; }
+    if (this.reviewText.trim().length < 10) { this.reviewError = 'Scrie minim 10 caractere.'; return; }
+
+    this.reviewSending = true;
+    this.reviewError = '';
+    this.http.post(`${API}/reviews`, {
+      clinicId: this.clinicId(),
+      rating: this.reviewRating,
+      text: this.reviewText.trim(),
+    }, { headers: this.headers }).subscribe({
+      next: () => {
+        this.reviewSending = false;
+        this.reviewSent = true;
+        this.canReview = false;
+        this.loadReviews();
+      },
+      error: (err) => {
+        this.reviewError = err.error?.error || 'A apărut o eroare. Încearcă din nou.';
+        this.reviewSending = false;
+      },
+    });
+  }
+
+  starsArray(): number[] {
+    return [1, 2, 3, 4, 5];
+  }
+
+  formatReviewDate(d: string): string {
+    if (!d) return '';
+    return new Date(d).toLocaleDateString('ro-RO', { month: 'long', year: 'numeric' });
   }
 
   ngOnDestroy() {

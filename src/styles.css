@@ -507,6 +507,40 @@ select {
   line-height: 1.35;
 }
 
+/* ─── SERVICE PRICE (shown when filter active) ─── */
+
+.popup-service-price {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 8px;
+  background: rgba(16, 185, 129, 0.12);
+  border: 1px solid rgba(16, 185, 129, 0.25);
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #10b981;
+  margin-top: 2px;
+}
+
+.popup-price-icon {
+  font-size: 13px;
+  color: #10b981;
+  font-variation-settings: "FILL" 1;
+}
+
+.popup-service-label {
+  color: #6ee7b7;
+  font-weight: 500;
+}
+
+.popup-service-amount {
+  color: #10b981;
+  font-weight: 700;
+  padding-left: 4px;
+  border-left: 1px solid rgba(16, 185, 129, 0.3);
+}
+
 /* ─── FOOTER ROW ─── */
 
 .popup-footer {

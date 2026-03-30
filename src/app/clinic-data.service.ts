@@ -44,15 +44,16 @@ export class ClinicDataService {
   constructor(private http: HttpClient) {}
 
   /** Încarcă toate clinicile — folosit de hartă */
-  loadClinicsAuto(filters?: any): Observable<Clinic[]> {
+  loadClinicsAuto(): Observable<Clinic[]> {
     return this.http.get<Clinic[]>(`${this.apiUrl}?mode=map`);
   }
 
   /** Încarcă o pagină de clinici cu date complete (cards, finder) */
-  loadPage(params: { limit?: number; offset?: number; city?: string; service?: string }): Observable<ClinicsPage> {
+  loadPage(params: { limit?: number; offset?: number; city?: string; service?: string; maxPrice?: number | null }): Observable<ClinicsPage> {
     let p = new HttpParams().set('limit', String(params.limit ?? 24)).set('offset', String(params.offset ?? 0));
-    if (params.city)    p = p.set('city', params.city);
-    if (params.service) p = p.set('service', params.service);
+    if (params.city)     p = p.set('city', params.city);
+    if (params.service)  p = p.set('service', params.service);
+    if (params.maxPrice) p = p.set('maxPrice', String(params.maxPrice));
     return this.http.get<ClinicsPage>(this.apiUrl, { params: p });
   }
 

@@ -13,6 +13,10 @@ export class DataShareService {
   service$ = this.serviceSubject.asObservable();
   setService(service: string) { this.serviceSubject.next(service ?? ''); }
 
+  private maxPriceSubject = new BehaviorSubject<number | null>(null);
+  maxPrice$ = this.maxPriceSubject.asObservable();
+  setMaxPrice(p: number | null) { this.maxPriceSubject.next(p); }
+
   private filtersSubject = new BehaviorSubject<any>(null);
   filters$ = this.filtersSubject.asObservable();
   setFilters(filters: any) { this.filtersSubject.next(filters); }

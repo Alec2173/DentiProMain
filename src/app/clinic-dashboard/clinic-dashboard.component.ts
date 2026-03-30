@@ -83,7 +83,7 @@ export class ClinicDashboardComponent implements OnInit, OnDestroy {
   private scheduleFeedback(_state: string | null) {
     // skip2 (already skipped once before) → schedule once more, then mark done
     // no state → schedule normally
-    this.feedbackTimer = setTimeout(() => { this.showFeedback = true; }, 50000);
+    this.feedbackTimer = setTimeout(() => { this.showFeedback = true; }, 20000);
   }
 
   closeFeedback() {

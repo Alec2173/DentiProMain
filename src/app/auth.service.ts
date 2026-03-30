@@ -9,6 +9,7 @@ export interface AuthUser {
   role: 'clinic' | 'patient' | 'admin';
   clinicId: string | null;
   logoUrl: string | null;
+  created_at?: string;
 }
 
 const API = 'https://www.dentipro.ro/api';

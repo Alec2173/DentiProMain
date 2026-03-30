@@ -505,7 +505,7 @@
                 <td class="adm-mono">{{ r.email }}</td>
                 <td>
                   @if (r.emailSent) { <span class="adm-verify-ok"><i class="fal fa-check"></i> Trimis</span> }
-                  @else { <span class="adm-verify-no"><i class="fal fa-times"></i> Eroare</span> }
+                  @else { <span class="adm-verify-no" [title]="r.error ?? ''"><i class="fal fa-times"></i> Eroare{{ r.error ? ': ' + r.error : '' }}</span> }
                 </td>
               </tr>
             }

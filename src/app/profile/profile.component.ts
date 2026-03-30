@@ -122,6 +122,8 @@ export class ProfileComponent implements OnInit {
   }
 
   memberSince(): string {
-    return '2025';
+    const d = this.auth.currentUser?.created_at;
+    if (!d) return '2025';
+    return new Date(d).getFullYear().toString();
   }
 }

@@ -413,6 +413,95 @@
       </div>
     }
 
+    <!-- ── ÎNAINTE / DUPĂ ──────────────────────────────────────── -->
+    <div class="section-title">
+      <i class="fal fa-images"></i> Galerie Înainte / După
+    </div>
+
+    <!-- Upload form -->
+    <div class="ba-upload-card">
+      <div class="ba-upload-grid">
+
+        <div class="ba-slot">
+          <label class="ba-slot-label">Înainte</label>
+          <div class="ba-preview-wrap" (click)="baBeforeInput.click()">
+            @if (baBeforePreview) {
+              <img [src]="baBeforePreview" class="ba-preview-img" alt="Înainte" />
+              <span class="ba-change-hint"><i class="fal fa-camera"></i></span>
+            } @else {
+              <div class="ba-placeholder">
+                <i class="fal fa-plus-circle"></i>
+                <span>Adaugă foto</span>
+              </div>
+            }
+          </div>
+          <input #baBeforeInput type="file" accept="image/*" class="ba-hidden-input"
+            (change)="onBaFileChange($event, 'before')" />
+        </div>
+
+        <div class="ba-slot-arrow"><i class="fal fa-arrow-right"></i></div>
+
+        <div class="ba-slot">
+          <label class="ba-slot-label">După</label>
+          <div class="ba-preview-wrap" (click)="baAfterInput.click()">
+            @if (baAfterPreview) {
+              <img [src]="baAfterPreview" class="ba-preview-img" alt="După" />
+              <span class="ba-change-hint"><i class="fal fa-camera"></i></span>
+            } @else {
+              <div class="ba-placeholder">
+                <i class="fal fa-plus-circle"></i>
+                <span>Adaugă foto</span>
+              </div>
+            }
+          </div>
+          <input #baAfterInput type="file" accept="image/*" class="ba-hidden-input"
+            (change)="onBaFileChange($event, 'after')" />
+        </div>
+
+      </div>
+
+      <input class="ba-caption-input" type="text" [(ngModel)]="baCaption"
+        placeholder="Descriere (opțional) — ex: Implant dentar, 3 luni" maxlength="120" />
+
+      <button class="ba-upload-btn"
+        [disabled]="!baBeforeFile || !baAfterFile || baUploading"
+        (click)="uploadBeforeAfter()">
+        @if (baUploading) { <i class="fal fa-spinner fa-spin"></i> Se încarcă... }
+        @else { <i class="fal fa-cloud-upload"></i> Publică perechea }
+      </button>
+    </div>
+
+    <!-- List -->
+    @if (baLoading) {
+      <div class="msgs-loading"><i class="fal fa-spinner fa-spin"></i> Se încarcă...</div>
+    } @else if (beforeAfterList.length > 0) {
+      <div class="ba-list">
+        @for (ba of beforeAfterList; track ba.id) {
+          <div class="ba-item">
+            <div class="ba-item-imgs">
+              <div class="ba-img-wrap">
+                <span class="ba-img-tag">Înainte</span>
+                <img [src]="ba.before_url" alt="Înainte" />
+              </div>
+              <div class="ba-img-arrow"><i class="fal fa-arrow-right"></i></div>
+              <div class="ba-img-wrap">
+                <span class="ba-img-tag ba-img-tag--after">După</span>
+                <img [src]="ba.after_url" alt="După" />
+              </div>
+            </div>
+            @if (ba.caption) {
+              <p class="ba-item-caption">{{ ba.caption }}</p>
+            }
+            <button class="ba-delete-btn" (click)="deleteBeforeAfter(ba.id)"
+              [disabled]="baDeletingId === ba.id">
+              @if (baDeletingId === ba.id) { <i class="fal fa-spinner fa-spin"></i> }
+              @else { <i class="fal fa-trash-alt"></i> }
+            </button>
+          </div>
+        }
+      </div>
+    }
+
     <!-- ── RECENZII ────────────────────────────────────────────── -->
     <div class="section-title">
       <i class="fal fa-star"></i> Recenzii primite

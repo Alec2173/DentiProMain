@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -56,6 +56,7 @@ export class ClinicDashboardComponent implements OnInit, OnDestroy {
     this.initFeedback();
     this.loadMessages();
     this.loadClinicReviews();
+    this.loadBeforeAfter();
   }
 
   ngOnDestroy() {
@@ -237,6 +238,19 @@ export class ClinicDashboardComponent implements OnInit, OnDestroy {
     });
   }
 
+  // ── BEFORE/AFTER ───────────────────────────────────────────
+  @ViewChild('baBeforeInput') baBeforeInput!: ElementRef<HTMLInputElement>;
+  @ViewChild('baAfterInput') baAfterInput!: ElementRef<HTMLInputElement>;
+  beforeAfterList: any[] = [];
+  baLoading = false;
+  baUploading = false;
+  baCaption = '';
+  baBeforeFile: File | null = null;
+  baAfterFile: File | null = null;
+  baBeforePreview: string | null = null;
+  baAfterPreview: string | null = null;
+  baDeletingId: number | null = null;
+
   // ── REVIEWS ────────────────────────────────────────────────
   clinicReviews: any[] = [];
   reviewsLoading = false;
@@ -263,5 +277,65 @@ export class ClinicDashboardComponent implements OnInit, OnDestroy {
   formatReviewDate(d: string): string {
     if (!d) return '';
     return new Date(d).toLocaleDateString('ro-RO', { month: 'long', year: 'numeric', day: '2-digit' });
+  }
+
+  // ── BEFORE/AFTER ───────────────────────────────────────────
+  loadBeforeAfter() {
+    const clinicId = this.auth.currentUser?.clinicId;
+    if (!clinicId) return;
+    this.baLoading = true;
+    this.http.get<any[]>(`${API}/clinics/${clinicId}/before-after`).subscribe({
+      next: (list) => { this.beforeAfterList = list; this.baLoading = false; },
+      error: () => { this.baLoading = false; },
+    });
+  }
+
+  onBaFileChange(event: Event, side: 'before' | 'after') {
+    const file = (event.target as HTMLInputElement).files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      if (side === 'before') { this.baBeforeFile = file; this.baBeforePreview = e.target?.result as string; }
+      else { this.baAfterFile = file; this.baAfterPreview = e.target?.result as string; }
+    };
+    reader.readAsDataURL(file);
+  }
+
+  uploadBeforeAfter() {
+    if (!this.baBeforeFile || !this.baAfterFile) return;
+    const clinicId = this.auth.currentUser?.clinicId;
+    if (!clinicId) return;
+    this.baUploading = true;
+
+    const fd = new FormData();
+    fd.append('before', this.baBeforeFile);
+    fd.append('after', this.baAfterFile);
+    if (this.baCaption.trim()) fd.append('caption', this.baCaption.trim());
+
+    this.http.post<any>(`${API}/clinics/${clinicId}/before-after`, fd, { headers: new HttpHeaders({ Authorization: `Bearer ${this.auth.getToken()}` }) }).subscribe({
+      next: (item) => {
+        this.beforeAfterList.unshift(item);
+        this.baBeforeFile = null; this.baAfterFile = null;
+        this.baBeforePreview = null; this.baAfterPreview = null;
+        this.baCaption = '';
+        if (this.baBeforeInput) this.baBeforeInput.nativeElement.value = '';
+        if (this.baAfterInput) this.baAfterInput.nativeElement.value = '';
+        this.baUploading = false;
+      },
+      error: () => { this.baUploading = false; },
+    });
+  }
+
+  deleteBeforeAfter(id: number) {
+    const clinicId = this.auth.currentUser?.clinicId;
+    if (!clinicId || this.baDeletingId) return;
+    this.baDeletingId = id;
+    this.http.delete(`${API}/clinics/${clinicId}/before-after/${id}`, { headers: this.headers }).subscribe({
+      next: () => {
+        this.beforeAfterList = this.beforeAfterList.filter(b => b.id !== id);
+        this.baDeletingId = null;
+      },
+      error: () => { this.baDeletingId = null; },
+    });
   }
 }

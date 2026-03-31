@@ -43,6 +43,61 @@
         <span>Dashboard</span>
       </a>
 
+      <!-- ── CLOPOT NOTIFICĂRI ──────────────────────────── -->
+      <div class="cn-notif-wrap" (click)="toggleNotif($event)">
+        <button class="cn-notif-btn">
+          <i class="fal fa-bell"></i>
+          @if (unreadCount > 0) {
+            <span class="cn-notif-badge">{{ unreadCount > 9 ? '9+' : unreadCount }}</span>
+          }
+        </button>
+
+        @if (notifOpen) {
+          <div class="cn-notif-panel" (click)="$event.stopPropagation()">
+            <div class="cn-notif-header">
+              <span>Notificări</span>
+              @if (notifications.length > 0) {
+                <span class="cn-notif-count">{{ notifications.length }}</span>
+              }
+            </div>
+
+            @if (notifLoading) {
+              <div class="cn-notif-loading"><i class="fal fa-spinner fa-spin"></i></div>
+            } @else if (notifications.length === 0) {
+              <div class="cn-notif-empty">
+                <i class="fal fa-bell-slash"></i>
+                <span>Nicio notificare</span>
+              </div>
+            } @else {
+              <div class="cn-notif-list">
+                @for (n of notifications; track n.id) {
+                  <div class="cn-notif-item" [class.cn-notif-item--unread]="!n.read_at" (click)="goNotif(n)">
+                    <div class="cn-notif-icon">
+                      @if (n.type === 'new_post') { <i class="fal fa-file-medical-alt"></i> }
+                      @else { <i class="fal fa-bell"></i> }
+                    </div>
+                    <div class="cn-notif-text">
+                      <p class="cn-notif-title">{{ n.title }}</p>
+                      @if (n.body) {
+                        <p class="cn-notif-body">{{ n.body }}</p>
+                      }
+                      <span class="cn-notif-time">{{ timeAgo(n.created_at) }}</span>
+                    </div>
+                    @if (!n.read_at) {
+                      <span class="cn-notif-dot"></span>
+                    }
+                  </div>
+                }
+              </div>
+            }
+
+            <a routerLink="/feed" class="cn-notif-footer" (click)="notifOpen = false">
+              <i class="fal fa-comments-alt"></i> Vezi toate cererile pacienților
+            </a>
+          </div>
+        }
+      </div>
+
       <div class="cn-user-area" (click)="toggleUserMenu(); $event.stopPropagation()">
         <div class="cn-avatar">
           @if (authService.currentUser?.logoUrl) {

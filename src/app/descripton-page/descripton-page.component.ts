@@ -358,6 +358,22 @@ export class DescriptonPageComponent implements OnInit, OnDestroy {
     return new Date(d).toLocaleDateString('ro-RO', { month: 'long', year: 'numeric' });
   }
 
+  // ── WORKING HOURS ──────────────────────────────────────────
+  readonly DAYS_ORDER = [
+    { key: 'luni',     label: 'Luni' },
+    { key: 'marti',    label: 'Marți' },
+    { key: 'miercuri', label: 'Miercuri' },
+    { key: 'joi',      label: 'Joi' },
+    { key: 'vineri',   label: 'Vineri' },
+    { key: 'sambata',  label: 'Sâmbătă' },
+    { key: 'duminica', label: 'Duminică' },
+  ];
+
+  isTodayDay(key: string): boolean {
+    const map = ['duminica', 'luni', 'marti', 'miercuri', 'joi', 'vineri', 'sambata'];
+    return map[new Date().getDay()] === key;
+  }
+
   ngOnDestroy() {
     this.map?.remove();
   }

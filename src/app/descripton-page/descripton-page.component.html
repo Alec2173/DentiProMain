@@ -125,6 +125,28 @@
             }
           </div>
 
+          <!-- Program clinică -->
+          @if (clinics.working_hours) {
+            <div class="dp-info__divider"></div>
+            <div class="dp-hours-wrap">
+              <div class="dp-hours-header">
+                <i class="fal fa-clock"></i> Program
+              </div>
+              <div class="dp-hours-list">
+                @for (d of DAYS_ORDER; track d.key) {
+                  @if (clinics.working_hours[d.key]) {
+                    <div class="dp-hours-row" [class.dp-hours-row--today]="isTodayDay(d.key)">
+                      <span class="dp-hours-day" [class.dp-hours-day--today]="isTodayDay(d.key)">{{ d.label }}</span>
+                      <span class="dp-hours-val" [class.dp-hours-closed]="clinics.working_hours[d.key].closed">
+                        {{ clinics.working_hours[d.key].closed ? 'Închis' : (clinics.working_hours[d.key].open + ' – ' + clinics.working_hours[d.key].close) }}
+                      </span>
+                    </div>
+                  }
+                }
+              </div>
+            </div>
+          }
+
           <!-- Butoane -->
           <div class="dp-info__actions">
             <button class="dp-btn-book" (click)="openBooking()">

@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+import { HttpClient } from '@angular/common/http';
 import { ServiciiService } from '../../servicii.service';
 import { RoCitiesService } from '../../ro-cities.service';
 
@@ -12,6 +13,7 @@ import { RoCitiesService } from '../../ro-cities.service';
   styleUrl: './search-board-nd.component.css',
 })
 export class SearchBoardNdComponent implements OnInit {
+  stats: { clinics: number; cities: number; reviews: number; appointments: number } | null = null;
   // City: input text = filter + display
   searchCity = '';
   cityDropdownOpen = false;
@@ -28,11 +30,16 @@ export class SearchBoardNdComponent implements OnInit {
     private router: Router,
     private serviciiService: ServiciiService,
     private roCitiesService: RoCitiesService,
+    private http: HttpClient,
   ) {}
 
   ngOnInit() {
     this.services = this.serviciiService.getServices();
     this.cities = this.roCitiesService.getCities();
+    this.http.get<any>('https://www.dentipro.ro/api/stats/public').subscribe({
+      next: (s) => { this.stats = s; },
+      error: () => {},
+    });
   }
 
   get filteredCities(): string[] {

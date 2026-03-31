@@ -109,23 +109,23 @@
     <!-- Trust bar -->
     <div class="trust-bar">
       <div class="trust-item">
-        <span class="trust-num">70+</span>
+        <span class="trust-num">{{ stats ? stats.clinics + '+' : '70+' }}</span>
         <span class="trust-label">Clinici verificate</span>
       </div>
       <div class="trust-sep"></div>
       <div class="trust-item">
-        <span class="trust-num">20+</span>
-        <span class="trust-label">Orașe</span>
+        <span class="trust-num">{{ stats ? stats.cities + '+' : '20+' }}</span>
+        <span class="trust-label">Orașe acoperite</span>
       </div>
       <div class="trust-sep"></div>
       <div class="trust-item">
-        <span class="trust-num">26</span>
-        <span class="trust-label">Servicii disponibile</span>
+        <span class="trust-num">{{ stats ? stats.appointments + '+' : '100+' }}</span>
+        <span class="trust-label">Programări realizate</span>
       </div>
       <div class="trust-sep"></div>
       <div class="trust-item">
-        <span class="trust-num">100%</span>
-        <span class="trust-label">Clinici verificate</span>
+        <span class="trust-num">{{ stats ? stats.reviews + '+' : '50+' }}</span>
+        <span class="trust-label">Recenzii pacienți</span>
       </div>
     </div>
 

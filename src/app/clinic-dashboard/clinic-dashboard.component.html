@@ -345,6 +345,48 @@
       </div>
     }
 
+    <!-- ── CERERI DIN ORAȘUL TĂU ────────────────────────────── -->
+    @if (data.clinic?.city) {
+      <div class="section-title">
+        <i class="fal fa-file-medical-alt"></i> Cereri recente în <strong>{{ data.clinic.city }}</strong>
+        <a routerLink="/feed" class="section-link"><i class="fal fa-arrow-right"></i> Feed complet</a>
+      </div>
+
+      @if (cityPostsLoading) {
+        <div class="msgs-loading"><i class="fal fa-spinner fa-spin"></i> Se încarcă...</div>
+      } @else if (cityPosts.length === 0) {
+        <div class="msgs-empty">
+          <i class="fal fa-search"></i>
+          <span>Nicio cerere deschisă în {{ data.clinic.city }} momentan.</span>
+        </div>
+      } @else {
+        <div class="city-posts-list">
+          @for (post of cityPosts; track post.id) {
+            <a routerLink="/feed" class="city-post-item">
+              <div class="city-post-icon"><i class="fal fa-tooth"></i></div>
+              <div class="city-post-body">
+                <span class="city-post-title">{{ post.title }}</span>
+                @if (cityPostServices(post)) {
+                  <span class="city-post-services">{{ cityPostServices(post) }}</span>
+                }
+                <div class="city-post-meta">
+                  @if (post.budget_max) {
+                    <span class="city-post-budget"><i class="fal fa-coins"></i> max {{ post.budget_max | number }} RON</span>
+                  }
+                  <span class="city-post-offers"><i class="fal fa-handshake"></i> {{ post.offers_count }} oferte</span>
+                  <span class="city-post-time">{{ formatDate(post.created_at) }}</span>
+                </div>
+              </div>
+              <i class="fal fa-chevron-right city-post-arrow"></i>
+            </a>
+          }
+        </div>
+        <a routerLink="/feed" class="city-posts-more">
+          <i class="fal fa-plus-circle"></i> Trimite o ofertă
+        </a>
+      }
+    }
+
     <!-- ── MESAJE PRIMITE ────────────────────────────────────── -->
     <div class="section-title">
       <i class="fal fa-envelope"></i> Mesaje primite

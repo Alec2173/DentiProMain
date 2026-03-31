@@ -49,6 +49,10 @@ export class ClinicDashboardComponent implements OnInit, OnDestroy {
     return new HttpHeaders({ Authorization: `Bearer ${this.auth.getToken()}` });
   }
 
+  // ── CERERI DIN ORAȘ ────────────────────────────────────────
+  cityPosts: any[] = [];
+  cityPostsLoading = false;
+
   ngOnInit() {
     if (!this.auth.isClinic) { this.router.navigate(['/clinici']); return; }
     if (!this.auth.currentUser?.clinicId) { this.router.navigate(['/clinici/inscriere']); return; }
@@ -57,6 +61,7 @@ export class ClinicDashboardComponent implements OnInit, OnDestroy {
     this.loadMessages();
     this.loadClinicReviews();
     this.loadBeforeAfter();
+    this.loadCityPosts();
   }
 
   ngOnDestroy() {
@@ -236,6 +241,21 @@ export class ClinicDashboardComponent implements OnInit, OnDestroy {
       },
       error: () => { this.replySending = null; },
     });
+  }
+
+  loadCityPosts() {
+    this.cityPostsLoading = true;
+    this.http.get<any[]>(`${API}/feed/clinic-city`, { headers: this.headers }).subscribe({
+      next: (posts) => { this.cityPosts = posts; this.cityPostsLoading = false; },
+      error: () => { this.cityPostsLoading = false; },
+    });
+  }
+
+  cityPostServices(post: any): string {
+    try {
+      const s = Array.isArray(post.services) ? post.services : JSON.parse(post.services ?? '[]');
+      return s.slice(0, 3).join(', ');
+    } catch { return ''; }
   }
 
   // ── BEFORE/AFTER ───────────────────────────────────────────

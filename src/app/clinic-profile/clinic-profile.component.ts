@@ -52,6 +52,20 @@ export class ClinicProfileComponent implements OnInit, OnDestroy {
   editPriceMaxValue = '';
   editPriceType: 'fixed' | 'range' = 'fixed';
 
+  // ── WORKING HOURS ──────────────────────────────────────
+  readonly DAYS = [
+    { key: 'luni',      label: 'Luni' },
+    { key: 'marti',     label: 'Marți' },
+    { key: 'miercuri',  label: 'Miercuri' },
+    { key: 'joi',       label: 'Joi' },
+    { key: 'vineri',    label: 'Vineri' },
+    { key: 'sambata',   label: 'Sâmbătă' },
+    { key: 'duminica',  label: 'Duminică' },
+  ];
+  editingHours = false;
+  hoursDraft: Record<string, { open: string; close: string; closed: boolean }> = {};
+  hoursSaving = false;
+
   private map: maplibregl.Map | null = null;
   private marker: maplibregl.Marker | null = null;
   geocodingInProgress = false;
@@ -645,6 +659,43 @@ export class ClinicProfileComponent implements OnInit, OnDestroy {
     this.http.delete(`https://www.dentipro.ro/api/clinics/${this.clinic.id}/before-after/${id}`, headers).subscribe({
       next: () => { this.beforeAfterPairs = this.beforeAfterPairs.filter(p => p.id !== id); },
     });
+  }
+
+  // ── WORKING HOURS METHODS ──────────────────────────────
+  openHoursEdit() {
+    const defaults = { open: '09:00', close: '18:00', closed: false };
+    this.hoursDraft = {};
+    for (const d of this.DAYS) {
+      const existing = (this.clinic?.working_hours as any)?.[d.key];
+      this.hoursDraft[d.key] = existing
+        ? { open: existing.open ?? '09:00', close: existing.close ?? '18:00', closed: !!existing.closed }
+        : { ...defaults };
+    }
+    this.editingHours = true;
+  }
+
+  closeHoursEdit() { this.editingHours = false; }
+
+  saveHours() {
+    if (!this.clinic) return;
+    this.hoursSaving = true;
+    const token = this.authService.getToken() ?? '';
+    this.clinicService.updateClinic(this.clinic.id, { working_hours: this.hoursDraft } as any, token).subscribe({
+      next: () => {
+        (this.clinic as any).working_hours = { ...this.hoursDraft };
+        this.hoursSaving = false;
+        this.editingHours = false;
+      },
+      error: () => { this.hoursSaving = false; },
+    });
+  }
+
+  getHoursDisplay(key: string): string {
+    const h = (this.clinic?.working_hours as any)?.[key];
+    if (!h) return '—';
+    if (h.closed) return 'Închis';
+    if (h.open && h.close) return `${h.open} – ${h.close}`;
+    return '—';
   }
 
   ngOnDestroy() {

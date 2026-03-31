@@ -10,6 +10,12 @@ export interface ClinicService {
   price_max: number | null;
 }
 
+export interface WorkingDay {
+  open: string | null;
+  close: string | null;
+  closed: boolean;
+}
+
 export interface Clinic {
   id: number;
   name: string;
@@ -27,6 +33,7 @@ export interface Clinic {
   longitude: number;
   plan: string;
   status: string;
+  working_hours?: Record<string, WorkingDay> | null;
 }
 
 export interface ClinicsPage {

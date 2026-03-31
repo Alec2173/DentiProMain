@@ -637,6 +637,60 @@
             </div>
           </div>
 
+          <!-- ── PROGRAM CLINIC ──────────────────────────── -->
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title-group">
+                <div class="card-title-icon"><i class="fal fa-clock"></i></div>
+                <h2 class="card-title">Program de lucru</h2>
+              </div>
+              @if (isOwner && !editingHours) {
+                <button class="icon-btn" (click)="openHoursEdit()">
+                  <i class="fal fa-pencil"></i>
+                </button>
+              }
+            </div>
+
+            @if (!editingHours) {
+              <div class="hours-list">
+                @for (d of DAYS; track d.key) {
+                  <div class="hours-row" [class.hours-row--closed]="getHoursDisplay(d.key) === 'Închis'">
+                    <span class="hours-day">{{ d.label }}</span>
+                    <span class="hours-val">{{ getHoursDisplay(d.key) }}</span>
+                  </div>
+                }
+                @if (!clinic.working_hours && isOwner) {
+                  <p class="hours-hint"><i class="fal fa-info-circle"></i> Adaugă programul clinicii pentru a fi vizibil pe profil.</p>
+                }
+              </div>
+            }
+
+            @if (editingHours && isOwner) {
+              <div class="hours-edit-list">
+                @for (d of DAYS; track d.key) {
+                  <div class="hours-edit-row">
+                    <span class="hours-day">{{ d.label }}</span>
+                    <label class="hours-closed-toggle">
+                      <input type="checkbox" [(ngModel)]="hoursDraft[d.key].closed" />
+                      Închis
+                    </label>
+                    @if (!hoursDraft[d.key]?.closed) {
+                      <input type="time" class="hours-time-input" [(ngModel)]="hoursDraft[d.key].open" />
+                      <span class="hours-sep">–</span>
+                      <input type="time" class="hours-time-input" [(ngModel)]="hoursDraft[d.key].close" />
+                    }
+                  </div>
+                }
+                <div class="hours-edit-actions">
+                  <button class="btn-save-sm" (click)="saveHours()" [disabled]="hoursSaving">
+                    @if (hoursSaving) { <i class="fal fa-spinner fa-spin"></i> } @else { Salvează }
+                  </button>
+                  <button class="btn-cancel-sm" (click)="closeHoursEdit()">Anulează</button>
+                </div>
+              </div>
+            }
+          </div>
+
           <!-- PLAN & ABONAMENT (vizibil doar pentru owner) -->
           @if (isOwner) {
           <div class="card">

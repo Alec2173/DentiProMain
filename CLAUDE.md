@@ -209,4 +209,26 @@ STRIPE_PRICE_PRO_MONTHLY=price_xxx
 STRIPE_PRICE_PRO_ANNUAL=price_xxx
 ```
 
+## ⚠️ PUNCT DE REVENIRE — stare stabilă înainte de modificări majore
+
+Dacă ceva se strică sau vrem să revenim la forma funcțională cu Stripe + toate feature-urile de mai sus:
+
+```bash
+# Frontend (DentiProMain)
+git checkout 14d9528
+
+# Backend (DentiPro-backend)
+git checkout 4404eea
+```
+
+**Ce conține această stare:**
+- Stripe complet integrat (checkout, webhook, portal, subscription card în dashboard)
+- Formular înregistrare 7 pași cu selecție plan + redirect Stripe imediat
+- PlanCardComponent izolat, plan.model.ts sursă unică
+- Pricing page activă, toate paginile noi (/preturi, /pentru-clinici, /inregistrare, /contact)
+- Footer global, SEO, recenzii, before/after gallery, promoții, mesaje, notificări
+- Security: helmet, rate limiters, multer whitelist, parolă 8 caractere
+- Mailer migrat la Resend SDK
+- Build trece fără erori (ng build)
+
 <!-- /PENDING_TASKS -->

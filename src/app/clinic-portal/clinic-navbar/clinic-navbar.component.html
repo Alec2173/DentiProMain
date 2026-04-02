@@ -11,10 +11,7 @@
       <a routerLink="/clinici" routerLinkActive="active" [routerLinkActiveOptions]="{exact:true}">
         Beneficii
       </a>
-      <!-- HIDDEN_PRICING — de readus când lansăm
-           Data ascuns: 2026-03-20
-           Locație originală: clinic-navbar > nav links -->
-      <!-- <a routerLink="/clinici/pricing" routerLinkActive="active">Prețuri</a> -->
+      <a routerLink="/preturi" routerLinkActive="active">Prețuri</a>
       <a routerLink="/clinici/inscriere" routerLinkActive="active">
         Înregistrare
       </a>
@@ -125,6 +122,9 @@
               <a class="cn-dd-item" [routerLink]="['/clinic-profile', authService.currentUser?.clinicId]" (click)="userMenuOpen = false">
                 <i class="fal fa-store"></i> Profil public
               </a>
+              <a class="cn-dd-item" [routerLink]="['/clinic-profile', authService.currentUser?.clinicId]" [fragment]="'promotii'" (click)="userMenuOpen = false">
+                <i class="fal fa-tag"></i> Promoțiile mele
+              </a>
             }
             <a class="cn-dd-item" routerLink="/clinici/dashboard" (click)="userMenuOpen = false">
               <i class="fal fa-th-large"></i> Dashboard
@@ -132,12 +132,9 @@
             <a class="cn-dd-item" routerLink="/clinici/profil" (click)="userMenuOpen = false">
               <i class="fal fa-edit"></i> Editează profilul
             </a>
-            <!-- HIDDEN_PRICING — de readus când lansăm
-                 Data ascuns: 2026-03-20
-                 Locație originală: clinic-navbar > user dropdown -->
-            <!-- <a class="cn-dd-item" routerLink="/clinici/pricing" (click)="userMenuOpen = false">
+            <a class="cn-dd-item" routerLink="/clinici/pricing" (click)="userMenuOpen = false">
               <i class="fal fa-tag"></i> Plan & abonament
-            </a> -->
+            </a>
 
             <div class="cn-dd-divider"></div>
 
@@ -170,10 +167,7 @@
 @if (mobileMenuOpen) {
   <div class="cn-mobile-menu">
     <a routerLink="/clinici" (click)="mobileMenuOpen = false">Beneficii</a>
-    <!-- HIDDEN_PRICING — de readus când lansăm
-         Data ascuns: 2026-03-20
-         Locație originală: clinic-navbar > mobile menu -->
-    <!-- <a routerLink="/clinici/pricing" (click)="mobileMenuOpen = false">Prețuri</a> -->
+    <a routerLink="/clinici/pricing" (click)="mobileMenuOpen = false">Plan & abonament</a>
     <a routerLink="/clinici/inscriere" (click)="mobileMenuOpen = false">Înregistrare</a>
     <a routerLink="/contact" (click)="mobileMenuOpen = false">Contact & Ajutor</a>
 

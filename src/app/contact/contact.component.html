@@ -111,4 +111,58 @@
     </div>
   </div>
 
+  <!-- Contact Form -->
+  <div class="contact-form-section">
+    <div class="contact-form-card">
+      <div class="contact-form-header">
+        <i class="fal fa-paper-plane"></i>
+        <div>
+          <h2>Trimite-ne un mesaj</h2>
+          <p>Nu ai găsit răspunsul? Scrie-ne direct și îți răspundem în cel mai scurt timp.</p>
+        </div>
+      </div>
+
+      @if (formSuccess) {
+        <div class="form-success">
+          <i class="fal fa-check-circle"></i>
+          <div>
+            <strong>Mesaj trimis cu succes!</strong>
+            <p>Echipa DentiPro îți va răspunde în maxim 24 de ore la adresa de email furnizată.</p>
+          </div>
+        </div>
+      } @else {
+        <form class="contact-form" (ngSubmit)="submitForm()">
+          <div class="form-row-2">
+            <div class="form-group">
+              <label class="form-label">Numele tău <span class="form-optional">(opțional)</span></label>
+              <input class="form-input" type="text" [(ngModel)]="formName" name="name" placeholder="Ion Popescu" maxlength="60" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Email <span class="form-required">*</span></label>
+              <input class="form-input" type="email" [(ngModel)]="formEmail" name="email" placeholder="email@exemplu.ro" required />
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Mesaj <span class="form-required">*</span></label>
+            <textarea class="form-textarea" [(ngModel)]="formMessage" name="message" rows="5"
+              placeholder="Descrie-ne problema sau întrebarea ta cât mai detaliat..." maxlength="1000" required></textarea>
+            <span class="form-char-count">{{ formMessage.length }}/1000</span>
+          </div>
+          @if (formError) {
+            <div class="form-error">
+              <i class="fal fa-exclamation-circle"></i> {{ formError }}
+            </div>
+          }
+          <button class="form-submit" type="submit" [disabled]="formLoading">
+            @if (formLoading) {
+              <i class="fal fa-spinner fa-spin"></i> Se trimite...
+            } @else {
+              <i class="fal fa-paper-plane"></i> Trimite mesajul
+            }
+          </button>
+        </form>
+      }
+    </div>
+  </div>
+
 </div>

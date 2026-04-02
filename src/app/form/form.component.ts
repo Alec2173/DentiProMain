@@ -4,18 +4,22 @@ import { FormsModule } from '@angular/forms';
 import { RoCitiesService } from '../ro-cities.service';
 import { ServiciiService } from '../servicii.service';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { RouterLink, Router } from '@angular/router';
+import { RouterLink, Router, ActivatedRoute } from '@angular/router';
 import { AuthService } from '../auth.service';
 import { ClinicDataService } from '../clinic-data.service';
 import { SeoService } from '../seo.service';
 import { Map as MaplibreMap, Marker, NavigationControl } from 'maplibre-gl';
+import { PlanCardComponent } from '../pricing/plan-card/plan-card.component';
+import { PLANS } from '../pricing/plan.model';
 
 const MAPTILER_KEY = 'cwyGOMCDF8zwmBEDJrCr';
+
+const API = 'https://www.dentipro.ro/api';
 
 @Component({
   selector: 'app-form',
   standalone: true,
-  imports: [FormsModule, CommonModule, RouterLink],
+  imports: [FormsModule, CommonModule, RouterLink, PlanCardComponent],
   templateUrl: './form.component.html',
   styleUrl: './form.component.css',
 })
@@ -23,14 +27,15 @@ export class FormComponent implements OnInit, OnDestroy {
 
   // ── STEPS ──────────────────────────────────────────────────
   currentStep = 1;
-  readonly totalSteps = 6;
-  readonly stepLabels = ['Clinica', 'Profil', 'Locație', 'Servicii', 'Tarife', 'Finalizare'];
+  readonly totalSteps = 7;
+  readonly stepLabels = ['Clinica', 'Profil', 'Locație', 'Servicii', 'Tarife', 'Plan', 'Finalizare'];
   readonly stepDescriptions = [
     'Informații de bază',
     'Media & display',
     'Adresă & hartă',
     'Servicii oferite',
     'Prețuri servicii',
+    'Alege planul tău',
     'Verifică și trimite',
   ];
 
@@ -40,6 +45,8 @@ export class FormComponent implements OnInit, OnDestroy {
   existingClinicId: number | null = null;
   errorMessage = '';
   submitSuccess = false;
+  stripeRedirecting = false;
+  checkoutCanceled = false;   // user a anulat pe Stripe și s-a întors
   billingAnnual = false;
 
   // ── CITY DROPDOWN ──────────────────────────────────────────
@@ -88,74 +95,15 @@ export class FormComponent implements OnInit, OnDestroy {
     billingCycle: 'monthly',
   };
 
-  // ── PLANS ─────────────────────────────────────────────────
-  readonly plans = [
-    {
-      id: 'starter',
-      name: 'Starter',
-      tagline: 'Vizibilitate de bază, gratuit permanent',
-      monthlyPrice: 0,
-      annualMonthlyPrice: 0,
-      annualTotal: 0,
-      badge: null,
-      featured: false,
-      cta: 'Începe gratuit',
-      features: [
-        { text: 'Profil public pe platformă', included: true, tag: null },
-        { text: 'Marker pe harta interactivă', included: true, tag: null },
-        { text: 'Până la 5 imagini în galerie', included: true, tag: null },
-        { text: 'Apariție în rezultatele search', included: true, tag: null },
-        { text: 'Feed pacienți & oferte', included: false, tag: null },
-        { text: 'Apariție pe homepage', included: false, tag: null },
-        { text: 'Analytics & rapoarte', included: false, tag: null },
-        { text: 'Notificări pacienți 20km', included: false, tag: null },
-      ],
-    },
-    {
-      id: 'growth',
-      name: 'Growth',
-      tagline: 'Pentru clinici care vor să crească',
-      monthlyPrice: 49,
-      annualMonthlyPrice: 41,
-      annualTotal: 490,
-      badge: 'Cel mai ales',
-      featured: true,
-      cta: 'Activează Growth',
-      features: [
-        { text: 'Galerie nelimitată (foto + video)', included: true, tag: null },
-        { text: 'Prioritate în search față de Starter', included: true, tag: null },
-        { text: 'Apariție pe homepage', included: true, tag: 'NOU' },
-        { text: 'Feed pacienți — 10 oferte/lună', included: true, tag: null },
-        { text: 'Analytics de bază', included: true, tag: null },
-        { text: 'Notificări pacienți 20km', included: false, tag: null },
-        { text: 'Banderolă Promovat', included: false, tag: null },
-        { text: 'Suport prioritar 24h', included: false, tag: null },
-      ],
-    },
-    {
-      id: 'pro',
-      name: 'Pro',
-      tagline: 'Vizibilitate maximă, fără compromisuri',
-      monthlyPrice: 99,
-      annualMonthlyPrice: 83,
-      annualTotal: 990,
-      badge: null,
-      featured: false,
-      cta: 'Activează Pro',
-      features: [
-        { text: 'Top 3 poziții în search per oraș', included: true, tag: null },
-        { text: 'Banderolă Promovat vizibilă', included: true, tag: null },
-        { text: 'Oferte nelimitate în feed pacienți', included: true, tag: null },
-        { text: 'Notificări pacienți în raza 20km', included: true, tag: 'SMART' },
-        { text: 'Modul stocuri & alerte expirare', included: true, tag: 'NOU' },
-        { text: 'Analytics avansat & benchmark', included: true, tag: null },
-        { text: 'Suport prioritar 24h', included: true, tag: null },
-        { text: 'Toate beneficiile Growth incluse', included: true, tag: null },
-      ],
-    },
-  ];
+  // ── PLANS — sursă unică: plan.model.ts ─────────────────────
+  readonly plans = PLANS;
 
   private seo = inject(SeoService);
+
+  private get headers(): HttpHeaders {
+    const token = this.authService.getToken();
+    return token ? new HttpHeaders({ Authorization: `Bearer ${token}` }) : new HttpHeaders();
+  }
 
   constructor(
     private roCitiesService: RoCitiesService,
@@ -164,6 +112,7 @@ export class FormComponent implements OnInit, OnDestroy {
     private authService: AuthService,
     private clinicDataService: ClinicDataService,
     private router: Router,
+    private route: ActivatedRoute,
   ) {}
 
   ngOnInit() {
@@ -184,6 +133,21 @@ export class FormComponent implements OnInit, OnDestroy {
     this.cities = this.roCitiesService.getCities();
     this.serviceObject = this.serviciiService.getServices();
     this.tryPrefillFromExistingClinic();
+
+    // Pre-selectează planul din query param (?plan=growth)
+    const planParam = this.route.snapshot.queryParamMap.get('plan');
+    if (planParam && ['starter', 'growth', 'pro'].includes(planParam)) {
+      this.formData.selectedPlan = planParam;
+    }
+
+    // Detectează întoarcerea din Stripe după anulare
+    if (this.route.snapshot.queryParamMap.get('checkout') === 'canceled') {
+      this.checkoutCanceled = true;
+      // Navighează la step 6 direct dacă are clinică deja creată (din tentativa anterioară)
+      if (this.authService.currentUser?.clinicId) {
+        this.currentStep = 6;
+      }
+    }
   }
 
   private tryPrefillFromExistingClinic() {
@@ -473,6 +437,13 @@ export class FormComponent implements OnInit, OnDestroy {
   // ── NAVIGATION ────────────────────────────────────────────
   nextStep() {
     if (!this.validateStep(this.currentStep)) return;
+
+    // Step 6 + plan plătit → submit imediat + redirect Stripe
+    if (this.currentStep === 6 && this.formData.selectedPlan !== 'starter') {
+      this.submitForCheckout();
+      return;
+    }
+
     if (this.currentStep < this.totalSteps) {
       const entering = this.currentStep + 1;
       this.currentStep++;
@@ -485,6 +456,11 @@ export class FormComponent implements OnInit, OnDestroy {
         this.buildPriceList();
       }
     }
+  }
+
+  /** Indicator pentru butonul din step 6 când e plan plătit */
+  get isPaidPlanSelected(): boolean {
+    return this.formData.selectedPlan !== 'starter';
   }
 
   prevStep() {
@@ -507,6 +483,12 @@ export class FormComponent implements OnInit, OnDestroy {
     if (step === 3) {
       setTimeout(() => this.initLocationMap(), 80);
     }
+  }
+
+  /** Apelat din PlanCardComponent (selectable mode) în step 6 */
+  onPlanSelected(planId: string) {
+    this.formData.selectedPlan = planId;
+    this.formData.billingCycle = this.billingAnnual ? 'annual' : 'monthly';
   }
 
   // ── VALIDATION ────────────────────────────────────────────
@@ -577,18 +559,11 @@ export class FormComponent implements OnInit, OnDestroy {
   }
 
   // ── SUBMIT ────────────────────────────────────────────────
-  onSubmit() {
-    this.errorMessage = '';
-    if (!this.formData.termsAccepted || !this.formData.onWebAccepted) {
-      this.errorMessage =
-        'Trebuie să acceptați termenii și să fiți de acord cu publicarea datelor.';
-      return;
-    }
 
-    this.isLoading = true;
+  /** Construiește FormData din starea formularului */
+  private buildFormData(): FormData {
     const d = this.formData;
     const fd = new FormData();
-
     fd.append('name', d.name);
     fd.append('clientPhone', d.clientPhone);
     fd.append('managerPhone', d.managerPhone);
@@ -602,32 +577,77 @@ export class FormComponent implements OnInit, OnDestroy {
     fd.append('billingCycle', d.billingCycle);
     fd.append('customServices', JSON.stringify(this.customServices));
     fd.append('servicePrices', JSON.stringify(d.servicePrices));
-
     for (const s of d.selectedServices as string[]) fd.append('selectedServices', s);
     if (d.logo) fd.append('logo', d.logo);
     (d.clinicImages as File[]).forEach((img) => fd.append('clinicImages', img));
+    return fd;
+  }
 
-    const token = this.authService.getToken();
-    const headers = token ? new HttpHeaders({ Authorization: `Bearer ${token}` }) : undefined;
+  /**
+   * Apelat din step 6 când planul e Growth/Pro.
+   * Submit formular → backend creează clinica cu status pending_payment
+   * și returnează checkoutUrl → redirect imediat la Stripe.
+   */
+  submitForCheckout() {
+    this.isLoading = true;
+    this.errorMessage = '';
+    const d = this.formData;
+    const fd = this.buildFormData();
 
     const request$ = this.isUpdating && this.existingClinicId
-      ? this.http.put(`https://www.dentipro.ro/api/clinics/${this.existingClinicId}`, fd, { headers })
-      : this.http.post('https://www.dentipro.ro/api/clinics', fd, { headers });
+      ? this.http.put<any>(`${API}/clinics/${this.existingClinicId}`, fd, { headers: this.headers })
+      : this.http.post<any>(`${API}/clinics`, fd, { headers: this.headers });
 
     request$.subscribe({
-      next: (res: any) => {
-        this.isLoading = false;
-        this.submitSuccess = true;
-        if (res?.clinic && token) {
-          this.authService.refreshCurrentUser();
+      next: (res) => {
+        if (res?.clinic) this.authService.refreshCurrentUser();
+        const checkoutUrl = res?.checkoutUrl;
+        if (checkoutUrl) {
+          this.stripeRedirecting = true;
+          window.location.href = checkoutUrl;
+        } else {
+          // Stripe nu e configurat → arată success normal
+          this.isLoading = false;
+          this.submitSuccess = true;
         }
       },
       error: (err) => {
         console.error(err);
-        this.errorMessage =
-          'A apărut o eroare la trimitere. Vă rugăm să încercați mai târziu.';
+        this.errorMessage = 'A apărut o eroare. Vă rugăm să încercați din nou.';
+        this.isLoading = false;
+      },
+    });
+  }
+
+  /** Apelat din step 7 (Finalizare) — doar pentru planul Starter */
+  onSubmit() {
+    this.errorMessage = '';
+    if (!this.formData.termsAccepted || !this.formData.onWebAccepted) {
+      this.errorMessage =
+        'Trebuie să acceptați termenii și să fiți de acord cu publicarea datelor.';
+      return;
+    }
+
+    this.isLoading = true;
+    const fd = this.buildFormData();
+
+    const request$ = this.isUpdating && this.existingClinicId
+      ? this.http.put<any>(`${API}/clinics/${this.existingClinicId}`, fd, { headers: this.headers })
+      : this.http.post<any>(`${API}/clinics`, fd, { headers: this.headers });
+
+    request$.subscribe({
+      next: (res) => {
+        this.isLoading = false;
+        if (res?.clinic) this.authService.refreshCurrentUser();
+        this.submitSuccess = true;
+      },
+      error: (err) => {
+        console.error(err);
+        this.errorMessage = 'A apărut o eroare la trimitere. Vă rugăm să încercați mai târziu.';
         this.isLoading = false;
       },
     });
   }
 }
+
+

@@ -121,3 +121,92 @@ Global CSS variables define the design system in `src/styles.css`. Key theme val
 ### Language
 
 All UI text is in **Romanian** (`ro_RO`). Keep new UI strings in Romanian.
+
+---
+
+<!-- COMPLETED_TASKS: 2026-03-31 -->
+## Taskuri finalizate recent
+
+- [x] **Sistem notificări clinici** — clopot în navbar cu badge + dropdown; când un pacient postează în feed, toate clinicile din același oraș primesc notificare în site + email (`dp_notifications` table, `sendNewPostToClinic`)
+- [x] **Galerie Înainte/După** — upload (2 imagini → Cloudinary), preview live, captionă, delete; în clinic dashboard și profil public
+- [x] **Recenzii pacienți** — `dp_reviews` table, endpoints GET/POST/can-review; afișate pe profilul public și în clinic dashboard
+- [x] **Mesaje pacient → clinică** — modal "Trimite mesaj" pe profilul public, inbox cu reply în dashboard; email notificare la ambele capete
+- [x] **Ore funcționare clinică** — editabil în `/clinici/profil`, afișat pe profilul public cu evidențierea zilei curente (`working_hours` JSONB în `dp_clinics`)
+- [x] **Cereri recente din orașul tău** — secțiune în dashboard cu ultimele 5 cereri deschise din același oraș ca clinica (`GET /api/feed/clinic-city`)
+- [x] **Statistici reale pe landing page** — trust bar cu numere din DB: clinici active, orașe, programări, recenzii (`GET /api/stats/public`)
+- [x] **Email migrare nodemailer → Resend SDK** — `mailer.js` rescris complet; footer automat injectat în toate emailurile
+- [x] **Backend rate limiters** — `clinicAuthLimiter`, `offerLimiter`, `apptLimiter`, `loginLimiter`, `registerLimiter`, `adminLimiter`
+- [x] **`dp_reviews` migration** — `CREATE TABLE IF NOT EXISTS` în startup migrations, index pe `clinic_id`
+- [x] **`/auth/me` returnează `created_at`** — `memberSince()` în profil pacient afișează anul real din DB
+- [x] **Price filter în cards/map** — `maxPrice` în `DataShareService`, filtru aplicat în `CardsComponent` și `MapComponent`
+- [x] **Rating real pe carduri și hartă** — `avg_rating` și `review_count` din DB în loc de hardcodat "4.5"
+
+<!-- /COMPLETED_TASKS -->
+
+<!-- PENDING_TASKS: 2026-03-31 -->
+## Taskuri finalizate recent (continuare)
+
+- [x] **Email bun venit pacient** — `sendPatientWelcomeEmail` în mailer.js, apelat în `POST /auth/verify-email` când `role === 'patient'`
+- [x] **Filtre în feed după serviciu** — dropdown cu toate serviciile, param `service` adăugat în `GET /api/feed`
+- [x] **Clinici similare** pe profil public — `GET /api/clinics/:id/similar` (același oraș, sortate după rating), secțiune în `clinic-profile`
+- [x] **Statistici vizualizări profil** — `dp_clinic_profile_views` table, `POST /api/clinics/:id/view` (public), `GET /api/clinics/:id/views` (clinic auth), card nou "Vizualizări profil (30 zile)" în dashboard
+- [x] **Fix guard clinic-profile** — non-clinic users (pacienți, guests) pot acum accesa `/clinic-profile/:id`; redirect la auth doar pentru `/clinici/profil` fără ID
+- [x] **Sistem promoții clinici** — `dp_promotions` table; `GET/POST/DELETE /api/promotions`; secțiune în dashboard profil cu formular creare; vizibil pe profilul public; email automat la pacienții cu clinica la favorite (`sendPromotionToPatient`)
+
+## Taskuri finalizate recent (continuare 2)
+
+- [x] **Pagina înregistrare pacient** `/inregistrare` — pagină dedicată cu beneficii vizuale (layout split), form complet + verificare email; rută adăugată în `app.routes.ts`; link în footer
+- [x] **Email confirmare programare** — verificat și funcțional: `PATCH /appointments/:id/status` apelează `sendAppointmentStatusToPatient` la confirmare/anulare/finalizare
+- [x] **CTA recenzie în appointments** — buton "Recenzie" apare pe programările finalizate, duce la profilul clinicii la secțiunea recenzii
+- [x] **SEO pages dinamice** — `ClinicListComponent` generează H1, meta title/description, canonical, JSON-LD ItemList, breadcrumbs, seo footer text ✅ complet
+- [x] **Footer global** — adăugat în `AppComponent` (vizibil pe patient site, ascuns în portal clinici); coloane: pacienți, clinici, companie + social media + copyright
+- [x] **Contact form funcțional** — formular în `/contact` postează la `POST /api/support/message` (email, nume, mesaj); mesaj de succes/eroare
+
+## Taskuri finalizate recent (continuare 3)
+
+- [x] **Pagina `/preturi`** — completă: tabel prețuri orientative cu min/avg/max, categorii filtrate, bar chart vizual, SEO text, CTA spre finder
+- [x] **Pagina `/pentru-clinici`** — completă: hero, 6 beneficii, 3 planuri, formular lead capture (`POST /api/lead`), FAQ accordion, final CTA
+- [x] **Badge promoții active în dashboard** — card nou „Promoții active" în quick actions cu număr real din API, badge colorat
+- [x] **Link „Promoțiile mele"** în dropdown navbar clinică
+- [x] **Link „Prețuri" în navbar clinică** — deascuns (era hidden cu HIDDEN_PRICING comment), acum pointează la `/preturi`
+
+## ✅ PROIECT 100% COMPLET
+
+## Taskuri finalizate recent (continuare 4 — securitate + analytics)
+
+- [x] **Grafic vizualizări profil în dashboard** — card cu bar chart CSS pur, 30 zile zilnic din DB (`generate_series`), trend ±% față de săptămâna precedentă, tooltip nativ, afișat doar când există date
+- [x] **Security fix: parolă expusă în API** — `POST /api/admin/create-clinic-accounts` nu mai include câmpul `password` în răspunsul JSON
+- [x] **Security fix: rate limiting pe endpoint-uri publice** — `publicMsgLimiter` (10/oră) pe `/api/messages`, `/api/lead`, `/api/support/message`; `viewLimiter` (30/min) pe `/api/clinics/:id/view`
+- [x] **Security fix: multer file validation** — adăugat `limits: { fileSize: 8MB }` și whitelist MIME types (`jpeg/png/webp/gif`)
+- [x] **Security fix: erori server generice** — `500 err.message` din `create-clinic-accounts` înlocuit cu mesaj generic
+- [x] **Security fix: parolă minimă** — crescut de la 6 la 8 caractere
+
+## Taskuri finalizate recent (continuare 5 — pricing + Stripe)
+
+- [x] **Pricing deblocat** — `/clinici/pricing` activ (pricingGuard scos), link în navbar dropdown + mobile menu restaurat
+- [x] **`PlanCardComponent`** — componentă izolată per card (`src/app/pricing/plan-card/`), primește `@Input() plan`, `billingAnnual`, `selectable`, `selected`, emite `@Output() selectPlan`. Fiecare card poate fi modificat independent.
+- [x] **`plan.model.ts`** — sursă unică de adevăr pentru planuri (Starter/Growth/Pro). Folosit atât în `PricingComponent` cât și în `FormComponent` — nu mai există duplicare.
+- [x] **Prețuri în formularul de înregistrare** — step 6 nou "Plan" adăugat (formul are acum 7 pași). Folosește `PlanCardComponent` în mod selectable. Toggle lunar/anual. Pre-selectare din query param `?plan=growth`.
+- [x] **Stripe full integration (backend)** — `POST /api/stripe/create-checkout-session`, `POST /api/stripe/webhook` (raw body, semnătură verificată), `POST /api/stripe/portal`, `GET /api/stripe/subscription`. Webhook gestionează: `checkout.session.completed`, `customer.subscription.updated/deleted`, `invoice.payment_failed`.
+- [x] **Stripe DB migration** — `stripe_customer_id`, `stripe_subscription_id`, `stripe_subscription_status`, `current_period_end`, `trial_ends_at` adăugate în `dp_clinics`.
+- [x] **Stripe redirect după submit** — clinicile care aleg Growth/Pro sunt redirecționate la Stripe Checkout după submit; Starter → overlay success ca înainte.
+- [x] **Dashboard — card abonament** — arată planul curent, status (Activ/Trial/Restant), data reînnoire. Buton "Gestionează" → Stripe Billing Portal pentru planuri plătite; buton "Upgrade" → `/clinici/pricing` pentru Starter.
+- [x] **Dashboard — toast checkout success** — mesaj verde apare la întoarcerea din Stripe, reîncarcă datele.
+- [x] **Helmet security headers** — `app.use(helmet())` adăugat în backend.
+- [x] **CORS localhost exclus în producție** — `localhost:4200` exclus automat când `NODE_ENV=production`.
+- [x] **Flow plată imediat la alegere plan** — step 6 + "Continuă" pe plan plătit → submit imediat + redirect Stripe (nu mai așteaptă step 7). Starter rămâne cu step 7 + pending manual. Backend `POST /api/clinics` setează `status='pending_payment'` + returnează `checkoutUrl`. Webhook `checkout.session.completed` setează `status='active'` direct.
+- [x] **Cancel Stripe → revenire în formular** — `cancel_url` pointează la `/clinici/inscriere?checkout=canceled`; formul detectează param, arată banner amber și sare la step 6.
+- [x] **`PUT /api/clinics/:id` cu Stripe** — upgrade plan pe clinică existentă creează checkout session dacă nu are deja abonament activ; returnează `checkoutUrl` la fel ca POST.
+- [x] **Fix CSS budget angular.json** — `anyComponentStyle` crescut la 200kB warning / 300kB error (maplibre-gl.css depășea 100kB).
+
+### Variabile de mediu necesare pentru Stripe (în `.env` backend):
+```
+STRIPE_SECRET_KEY=sk_live_...
+STRIPE_WEBHOOK_SECRET=whsec_...
+STRIPE_PRICE_GROWTH_MONTHLY=price_xxx
+STRIPE_PRICE_GROWTH_ANNUAL=price_xxx
+STRIPE_PRICE_PRO_MONTHLY=price_xxx
+STRIPE_PRICE_PRO_ANNUAL=price_xxx
+```
+
+<!-- /PENDING_TASKS -->

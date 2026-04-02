@@ -54,6 +54,8 @@ export class FeedComponent implements OnInit {
   loadingMore = false;
   filterCity = '';
   appliedCity = '';
+  filterService = '';
+  appliedService = '';
 
   // My posts tab (patient)
   tab: 'all' | 'mine' = 'all';
@@ -123,8 +125,9 @@ export class FeedComponent implements OnInit {
 
     const offset = reset ? 0 : this.posts.length;
     const cityParam = this.appliedCity ? `&city=${encodeURIComponent(this.appliedCity)}` : '';
+    const serviceParam = this.appliedService ? `&service=${encodeURIComponent(this.appliedService)}` : '';
 
-    this.http.get<FeedPost[]>(`${API}/feed?limit=20&offset=${offset}${cityParam}`).subscribe({
+    this.http.get<FeedPost[]>(`${API}/feed?limit=20&offset=${offset}${cityParam}${serviceParam}`).subscribe({
       next: (data) => {
         if (reset) {
           this.posts = data;
@@ -144,12 +147,15 @@ export class FeedComponent implements OnInit {
 
   applyFilter() {
     this.appliedCity = this.filterCity.trim();
+    this.appliedService = this.filterService;
     this.loadFeed(true);
   }
 
   clearFilter() {
     this.filterCity = '';
     this.appliedCity = '';
+    this.filterService = '';
+    this.appliedService = '';
     this.loadFeed(true);
   }
 

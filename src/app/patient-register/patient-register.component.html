@@ -1,0 +1,138 @@
+<div class="reg-page">
+
+  <!-- ── LEFT — BENEFITS ──────────────────────────────────── -->
+  <div class="reg-left">
+    <div class="reg-brand">
+      <i class="fal fa-tooth"></i>
+      <span>DentiPro</span>
+    </div>
+    <h1 class="reg-headline">
+      Sănătatea ta dentară<br>
+      <span class="reg-gradient">începe aici</span>
+    </h1>
+    <p class="reg-subline">
+      Creează-ți un cont gratuit și accesează toate facilitățile platformei.
+    </p>
+    <div class="reg-benefits">
+      <div class="reg-benefit">
+        <div class="benefit-icon"><i class="fal fa-search"></i></div>
+        <div>
+          <strong>Caută clinici</strong>
+          <p>Filtrează după serviciu, oraș, preț și recenzii</p>
+        </div>
+      </div>
+      <div class="reg-benefit">
+        <div class="benefit-icon"><i class="fal fa-calendar-check"></i></div>
+        <div>
+          <strong>Programări online</strong>
+          <p>Confirmarea vine direct de la clinică</p>
+        </div>
+      </div>
+      <div class="reg-benefit">
+        <div class="benefit-icon"><i class="fal fa-comments"></i></div>
+        <div>
+          <strong>Cereri de tratament</strong>
+          <p>Postează problema ta și primești oferte de la clinici</p>
+        </div>
+      </div>
+      <div class="reg-benefit">
+        <div class="benefit-icon"><i class="fal fa-star"></i></div>
+        <div>
+          <strong>Recenzii verificate</strong>
+          <p>Lasă recenzii și ajuți alți pacienți să aleagă corect</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── RIGHT — FORM ─────────────────────────────────────── -->
+  <div class="reg-right">
+    <div class="reg-card">
+
+      @if (step === 'register') {
+
+        <h2 class="reg-card-title">Creează cont gratuit</h2>
+        <p class="reg-card-sub">Deja ai cont? <a routerLink="/" class="reg-link">Autentifică-te din homepage</a></p>
+
+        <form class="reg-form" (ngSubmit)="submitRegister()">
+          <div class="reg-field">
+            <label class="reg-label">Numele tău</label>
+            <input class="reg-input" type="text" [(ngModel)]="name" name="name" placeholder="Ion Popescu" required />
+          </div>
+          <div class="reg-field">
+            <label class="reg-label">Adresă de email</label>
+            <input class="reg-input" type="email" [(ngModel)]="email" name="email" placeholder="ion@email.ro" required />
+          </div>
+          <div class="reg-field">
+            <label class="reg-label">Parolă</label>
+            <div class="reg-pw-wrap">
+              <input class="reg-input" [type]="showPw ? 'text' : 'password'" [(ngModel)]="password" name="password" placeholder="Minim 6 caractere" required />
+              <button type="button" class="reg-pw-toggle" (click)="showPw = !showPw">
+                <i [class]="showPw ? 'fal fa-eye-slash' : 'fal fa-eye'"></i>
+              </button>
+            </div>
+          </div>
+          <div class="reg-field">
+            <label class="reg-label">Confirmă parola</label>
+            <input class="reg-input" type="password" [(ngModel)]="confirmPassword" name="confirm" placeholder="Repetă parola" required />
+          </div>
+
+          @if (error) {
+            <div class="reg-error"><i class="fal fa-exclamation-circle"></i> {{ error }}</div>
+          }
+
+          <button class="reg-submit" type="submit" [disabled]="loading">
+            @if (loading) { <i class="fal fa-spinner fa-spin"></i> Se creează contul... }
+            @else { <i class="fal fa-user-plus"></i> Creează cont }
+          </button>
+        </form>
+
+        <p class="reg-terms">
+          Prin înregistrare, ești de acord cu <a routerLink="/termeni" class="reg-link">Termenii și condițiile</a>
+          și <a routerLink="/GDPR" class="reg-link">Politica de confidențialitate</a>.
+        </p>
+
+      } @else {
+
+        <div class="reg-verify">
+          <div class="verify-icon"><i class="fal fa-envelope-open-text"></i></div>
+          <h2 class="reg-card-title">Verifică emailul</h2>
+          <p class="verify-desc">
+            Am trimis un cod de 6 cifre la <strong>{{ pendingEmail }}</strong>.<br>
+            Introdu-l mai jos pentru a activa contul.
+          </p>
+
+          <div class="reg-field">
+            <label class="reg-label">Cod de verificare</label>
+            <input class="reg-input reg-code-input" type="text" [(ngModel)]="verifyCode" name="code"
+              placeholder="000000" maxlength="6" inputmode="numeric" />
+          </div>
+
+          @if (error) {
+            <div class="reg-error"><i class="fal fa-exclamation-circle"></i> {{ error }}</div>
+          }
+
+          <button class="reg-submit" (click)="submitVerify()" [disabled]="loading">
+            @if (loading) { <i class="fal fa-spinner fa-spin"></i> Se verifică... }
+            @else { <i class="fal fa-check-circle"></i> Verifică și intră în cont }
+          </button>
+
+          <div class="verify-resend">
+            Nu ai primit codul?
+            <button class="resend-btn" (click)="resendCode()" [disabled]="resendCooldown > 0 || resendLoading">
+              @if (resendLoading) { Se trimite... }
+              @else if (resendCooldown > 0) { Retrimite în {{ resendCooldown }}s }
+              @else { Retrimite codul }
+            </button>
+            @if (resendSuccess) {
+              <span class="resend-ok"><i class="fal fa-check"></i> Cod retrimis!</span>
+            }
+          </div>
+        </div>
+
+      }
+
+    </div>
+  </div>
+
+</div>

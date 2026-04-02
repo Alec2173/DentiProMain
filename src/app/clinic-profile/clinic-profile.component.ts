@@ -96,15 +96,22 @@ export class ClinicProfileComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    if (!this.authService.isClinic) {
+    this.allServices = this.serviciiService.getServices();
+    const paramId = Number(this.route.snapshot.paramMap.get('id'));
+    const isOwnProfileRoute = isNaN(paramId) || paramId === 0;
+
+    // /clinici/profil (fără ID) — doar clinicile pot accesa
+    if (isOwnProfileRoute && !this.authService.isClinic) {
       this.router.navigate(['/clinici/autentificare']);
       return;
     }
-    this.allServices = this.serviciiService.getServices();
-    // Pagina de management intern — nu trebuie indexată
-    this.metaService.updateTag({ name: 'robots', content: 'noindex, nofollow' });
-    const paramId = Number(this.route.snapshot.paramMap.get('id'));
-    const id = isNaN(paramId) || paramId === 0
+
+    if (isOwnProfileRoute) {
+      // Pagina de management intern — nu trebuie indexată
+      this.metaService.updateTag({ name: 'robots', content: 'noindex, nofollow' });
+    }
+
+    const id = isOwnProfileRoute
       ? Number(this.authService.currentUser?.clinicId)
       : paramId;
 
@@ -121,6 +128,12 @@ export class ClinicProfileComponent implements OnInit, OnDestroy {
         this.isLoading = false;
         setTimeout(() => this.initClinicMap(), 200);
         this.loadBeforeAfter();
+        this.loadPromotions();
+        if (!this.isOwner) {
+          this.loadSimilarClinics();
+          // Înregistrează vizualizarea profilului (async)
+          this.http.post(`https://www.dentipro.ro/api/clinics/${clinic.id}/view`, {}).subscribe();
+        }
       },
       error: () => { this.isLoading = false; },
     });
@@ -696,6 +709,77 @@ export class ClinicProfileComponent implements OnInit, OnDestroy {
     if (h.closed) return 'Închis';
     if (h.open && h.close) return `${h.open} – ${h.close}`;
     return '—';
+  }
+
+  // ── SIMILAR CLINICS ────────────────────────────────────────
+  similarClinics: { id: number; name: string; city: string; logo_url: string | null; avg_rating: number | null; review_count: number }[] = [];
+
+  private loadSimilarClinics() {
+    if (!this.clinic || this.isOwner) return;
+    this.http.get<any[]>(`https://www.dentipro.ro/api/clinics/${this.clinic.id}/similar`).subscribe({
+      next: (data) => { this.similarClinics = data; },
+      error: () => {},
+    });
+  }
+
+  // ── PROMOTIONS ─────────────────────────────────────────────
+  promotions: { id: number; title: string; description: string | null; discount_pct: number | null; valid_until: string | null; services: string[] }[] = [];
+  loadingPromos = false;
+  showPromoForm = false;
+  promoTitle = '';
+  promoDesc = '';
+  promoDiscount = '';
+  promoValidUntil = '';
+  promoServices: Set<string> = new Set();
+  promoSaving = false;
+  promoError = '';
+
+  private loadPromotions() {
+    if (!this.clinic) return;
+    this.loadingPromos = true;
+    this.http.get<any[]>(`https://www.dentipro.ro/api/promotions/${this.clinic.id}`).subscribe({
+      next: (data) => { this.promotions = data; this.loadingPromos = false; },
+      error: () => { this.loadingPromos = false; },
+    });
+  }
+
+  openPromoForm() { this.showPromoForm = true; this.promoTitle = ''; this.promoDesc = ''; this.promoDiscount = ''; this.promoValidUntil = ''; this.promoServices = new Set(); this.promoError = ''; }
+  closePromoForm() { this.showPromoForm = false; }
+
+  togglePromoService(label: string) {
+    if (this.promoServices.has(label)) this.promoServices.delete(label);
+    else this.promoServices.add(label);
+  }
+
+  savePromo() {
+    if (!this.promoTitle.trim()) { this.promoError = 'Titlul este obligatoriu.'; return; }
+    this.promoSaving = true;
+    this.promoError = '';
+    const token = this.authService.getToken() ?? '';
+    const body = {
+      title: this.promoTitle.trim(),
+      description: this.promoDesc.trim() || null,
+      discount_pct: this.promoDiscount ? parseInt(this.promoDiscount) : null,
+      valid_until: this.promoValidUntil || null,
+      services: [...this.promoServices],
+    };
+    this.http.post<any>('https://www.dentipro.ro/api/promotions', body, { headers: { Authorization: `Bearer ${token}` } }).subscribe({
+      next: (promo) => { this.promotions.unshift(promo); this.promoSaving = false; this.closePromoForm(); },
+      error: (err) => { this.promoError = err?.error?.error || 'Eroare la salvare.'; this.promoSaving = false; },
+    });
+  }
+
+  deletePromo(id: number) {
+    const token = this.authService.getToken() ?? '';
+    this.http.delete(`https://www.dentipro.ro/api/promotions/${id}`, { headers: { Authorization: `Bearer ${token}` } }).subscribe({
+      next: () => { this.promotions = this.promotions.filter(p => p.id !== id); },
+      error: () => {},
+    });
+  }
+
+  formatPromoDate(d: string): string {
+    if (!d) return '';
+    return new Date(d).toLocaleDateString('ro-RO', { day: '2-digit', month: 'long', year: 'numeric' });
   }
 
   ngOnDestroy() {

@@ -1,5 +1,4 @@
 import { Routes } from '@angular/router';
-import { pricingGuard } from './guards/pricing.guard';
 
 export const routes: Routes = [
   // ── PATIENT SITE ──────────────────────────────────────────
@@ -52,10 +51,7 @@ export const routes: Routes = [
     loadComponent: () => import('./form/form.component').then((m) => m.FormComponent),
   },
   {
-    // HIDDEN_PRICING — de readus când lansăm (scoate canActivate)
-    // Data ascuns: 2026-03-20
     path: 'clinici/pricing',
-    canActivate: [pricingGuard],
     loadComponent: () => import('./pricing/pricing.component').then((m) => m.PricingComponent),
   },
   {
@@ -107,6 +103,11 @@ export const routes: Routes = [
   {
     path: 'contact',
     loadComponent: () => import('./contact/contact.component').then((m) => m.ContactComponent),
+  },
+
+  {
+    path: 'inregistrare',
+    loadComponent: () => import('./patient-register/patient-register.component').then((m) => m.PatientRegisterComponent),
   },
 
   // ── SEO ROUTES ─────────────────────────────────────────────

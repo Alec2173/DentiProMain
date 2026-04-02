@@ -5,7 +5,7 @@ import {
   signal,
   HostListener,
 } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { RouterOutlet, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { NavbarComponent } from './navbar/navbar.component';
 import { ClinicNavbarComponent } from './clinic-portal/clinic-navbar/clinic-navbar.component';
@@ -18,12 +18,13 @@ import * as CookieConsent from 'vanilla-cookieconsent';
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, CommonModule, NavbarComponent, ClinicNavbarComponent, LeftSidebarComponent, SupportWidgetComponent],
+  imports: [RouterOutlet, RouterLink, CommonModule, NavbarComponent, ClinicNavbarComponent, LeftSidebarComponent, SupportWidgetComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css',
 })
 export class AppComponent implements OnInit, AfterViewInit {
   isClinicPortal = false;
+  readonly currentYear = new Date().getFullYear();
 
   isLeftSidebarCollapsed = signal<boolean>(false);
   screenWidth = signal<number>(window.innerWidth);

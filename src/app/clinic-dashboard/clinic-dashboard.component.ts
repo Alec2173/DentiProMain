@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Router, RouterLink } from '@angular/router';
+import { Router, RouterLink, ActivatedRoute } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { DecimalPipe } from '@angular/common';
 import { AuthService } from '../auth.service';
@@ -43,7 +43,12 @@ export class ClinicDashboardComponent implements OnInit, OnDestroy {
     { id: 'facturare',          label: 'Facturare și evidență plăți' },
   ];
 
-  constructor(private http: HttpClient, public auth: AuthService, private router: Router) {}
+  constructor(
+    private http: HttpClient,
+    public auth: AuthService,
+    private router: Router,
+    private route: ActivatedRoute,
+  ) {}
 
   get headers(): HttpHeaders {
     return new HttpHeaders({ Authorization: `Bearer ${this.auth.getToken()}` });
@@ -52,6 +57,26 @@ export class ClinicDashboardComponent implements OnInit, OnDestroy {
   // ── CERERI DIN ORAȘ ────────────────────────────────────────
   cityPosts: any[] = [];
   cityPostsLoading = false;
+
+  // ── STATISTICI VIZUALIZĂRI ─────────────────────────────────
+  profileViews: { total: number; last7days: number; last30days: number } | null = null;
+  viewsChart: { date: string; count: number }[] = [];
+  viewsTrend: number = 0; // % față de perioada precedentă
+
+  // ── PROMOȚII ACTIVE ─────────────────────────────────────────
+  activePromoCount = 0;
+
+  // ── STRIPE / ABONAMENT ───────────────────────────────────────
+  subscription: {
+    plan: string;
+    status: string;
+    subscriptionId: string | null;
+    currentPeriodEnd: string | null;
+    trialEndsAt: string | null;
+    hasStripe: boolean;
+  } | null = null;
+  stripePortalLoading = false;
+  checkoutSuccessToast = false;
 
   ngOnInit() {
     if (!this.auth.isClinic) { this.router.navigate(['/clinici']); return; }
@@ -62,6 +87,10 @@ export class ClinicDashboardComponent implements OnInit, OnDestroy {
     this.loadClinicReviews();
     this.loadBeforeAfter();
     this.loadCityPosts();
+    this.loadProfileViews();
+    this.loadActivePromos();
+    this.loadSubscription();
+    this.checkCheckoutSuccess();
   }
 
   ngOnDestroy() {
@@ -256,6 +285,101 @@ export class ClinicDashboardComponent implements OnInit, OnDestroy {
       const s = Array.isArray(post.services) ? post.services : JSON.parse(post.services ?? '[]');
       return s.slice(0, 3).join(', ');
     } catch { return ''; }
+  }
+
+  loadProfileViews() {
+    const clinicId = this.auth.currentUser?.clinicId;
+    if (!clinicId) return;
+    this.http.get<any>(`${API}/clinics/${clinicId}/views`, { headers: this.headers }).subscribe({
+      next: (data) => { this.profileViews = data; },
+      error: () => {},
+    });
+    this.http.get<{ date: string; count: number }[]>(`${API}/clinics/${clinicId}/views/chart`, { headers: this.headers }).subscribe({
+      next: (data) => {
+        this.viewsChart = data;
+        // Trend: compară ultima săptămână vs săptămâna precedentă
+        const last7 = data.slice(-7).reduce((s, d) => s + d.count, 0);
+        const prev7 = data.slice(-14, -7).reduce((s, d) => s + d.count, 0);
+        this.viewsTrend = prev7 === 0 ? (last7 > 0 ? 100 : 0) : Math.round(((last7 - prev7) / prev7) * 100);
+      },
+      error: () => {},
+    });
+  }
+
+  get viewsChartMax(): number {
+    return Math.max(...this.viewsChart.map(d => d.count), 1);
+  }
+
+  viewBarHeight(count: number): number {
+    return Math.max((count / this.viewsChartMax) * 100, count > 0 ? 4 : 1);
+  }
+
+  formatChartDate(dateStr: string): string {
+    const d = new Date(dateStr);
+    return d.getDate() + '/' + (d.getMonth() + 1);
+  }
+
+  loadActivePromos() {
+    const clinicId = this.auth.currentUser?.clinicId;
+    if (!clinicId) return;
+    this.http.get<any[]>(`${API}/promotions/${clinicId}`).subscribe({
+      next: (data) => { this.activePromoCount = data.length; },
+      error: () => {},
+    });
+  }
+
+  // ── STRIPE / ABONAMENT ───────────────────────────────────────
+  loadSubscription() {
+    this.http.get<any>(`${API}/stripe/subscription`, { headers: this.headers }).subscribe({
+      next: (data) => { this.subscription = data; },
+      error: () => { this.subscription = { plan: this.data?.clinic?.plan ?? 'starter', status: 'inactive', subscriptionId: null, currentPeriodEnd: null, trialEndsAt: null, hasStripe: false }; },
+    });
+  }
+
+  openStripePortal() {
+    this.stripePortalLoading = true;
+    this.http.post<{ portalUrl: string }>(`${API}/stripe/portal`, {}, { headers: this.headers }).subscribe({
+      next: (res) => { window.location.href = res.portalUrl; },
+      error: () => { this.stripePortalLoading = false; alert('Eroare la deschiderea portalului. Contactați suportul.'); },
+    });
+  }
+
+  checkCheckoutSuccess() {
+    const checkout = this.route.snapshot.queryParamMap.get('checkout');
+    if (checkout === 'success') {
+      this.checkoutSuccessToast = true;
+      // Reload subscription după 2s să preia datele actualizate de webhook
+      setTimeout(() => {
+        this.loadSubscription();
+        this.load(); // reîncarcă dashboard data
+      }, 2000);
+      setTimeout(() => { this.checkoutSuccessToast = false; }, 6000);
+      // Curăță query param din URL fără reload
+      this.router.navigate([], { queryParams: {}, replaceUrl: true });
+    }
+  }
+
+  get planLabel(): string {
+    const p = this.subscription?.plan ?? this.data?.clinic?.plan ?? 'starter';
+    return p.charAt(0).toUpperCase() + p.slice(1);
+  }
+
+  get planStatusLabel(): string {
+    const s = this.subscription?.status ?? 'inactive';
+    const map: Record<string, string> = {
+      active:   'Activ',
+      trialing: 'Trial activ',
+      past_due: 'Plată restantă',
+      canceled: 'Anulat',
+      inactive: 'Inactiv',
+    };
+    return map[s] ?? s;
+  }
+
+  formatPeriodEnd(dateStr: string | null): string {
+    if (!dateStr) return '—';
+    const d = new Date(dateStr);
+    return d.toLocaleDateString('ro-RO', { day: 'numeric', month: 'long', year: 'numeric' });
   }
 
   // ── BEFORE/AFTER ───────────────────────────────────────────

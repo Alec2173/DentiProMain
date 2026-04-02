@@ -734,6 +734,102 @@
         </div>
       </div>
 
+      <!-- ── PROMOTIONS CARD ──────────────────────────────── -->
+      @if (isOwner || promotions.length > 0) {
+        <div class="card promos-card">
+          <div class="card-header">
+            <div class="card-title-group">
+              <div class="card-title-icon promo-icon-yellow"><i class="fal fa-tag"></i></div>
+              <h2 class="card-title">Promoții active</h2>
+            </div>
+            @if (isOwner) {
+              <button class="map-edit-trigger" (click)="openPromoForm()">
+                <i class="fal fa-plus"></i> <span>Adaugă promoție</span>
+              </button>
+            }
+          </div>
+
+          @if (loadingPromos) {
+            <div class="promos-loading"><i class="fal fa-spinner fa-spin"></i> Se încarcă...</div>
+          } @else if (promotions.length === 0) {
+            <p class="promos-empty">Nu există promoții active momentan.</p>
+          } @else {
+            <div class="promos-list">
+              @for (promo of promotions; track promo.id) {
+                <div class="promo-item">
+                  <div class="promo-badge-wrap">
+                    @if (promo.discount_pct) {
+                      <span class="promo-discount-badge">-{{ promo.discount_pct }}%</span>
+                    } @else {
+                      <span class="promo-tag-icon"><i class="fal fa-tag"></i></span>
+                    }
+                  </div>
+                  <div class="promo-body">
+                    <p class="promo-title">{{ promo.title }}</p>
+                    @if (promo.description) {
+                      <p class="promo-desc">{{ promo.description }}</p>
+                    }
+                    @if (promo.valid_until) {
+                      <p class="promo-valid">
+                        <i class="fal fa-calendar-alt"></i> Valabilă până la {{ formatPromoDate(promo.valid_until) }}
+                      </p>
+                    }
+                    @if (promo.services && promo.services.length > 0) {
+                      <div class="promo-services">
+                        @for (svc of promo.services; track svc) {
+                          <span class="promo-svc-chip">{{ svc }}</span>
+                        }
+                      </div>
+                    }
+                  </div>
+                  @if (isOwner) {
+                    <button class="promo-delete-btn" (click)="deletePromo(promo.id)" title="Șterge promoția">
+                      <i class="fal fa-trash"></i>
+                    </button>
+                  }
+                </div>
+              }
+            </div>
+          }
+        </div>
+      }
+
+      <!-- ── SIMILAR CLINICS ────────────────────────────────── -->
+      @if (!isOwner && similarClinics.length > 0) {
+        <div class="card similar-card">
+          <div class="card-header">
+            <div class="card-title-group">
+              <div class="card-title-icon similar-icon-blue"><i class="fal fa-clinic-medical"></i></div>
+              <h2 class="card-title">Clinici similare din {{ clinic!.city }}</h2>
+            </div>
+          </div>
+          <div class="similar-list">
+            @for (sim of similarClinics; track sim.id) {
+              <a [routerLink]="['/clinic-profile', sim.id]" class="similar-item">
+                <div class="similar-avatar">
+                  @if (sim.logo_url) {
+                    <img [src]="sim.logo_url" [alt]="sim.name" class="similar-logo" />
+                  } @else {
+                    <span class="similar-initials">{{ sim.name[0] }}</span>
+                  }
+                </div>
+                <div class="similar-info">
+                  <p class="similar-name">{{ sim.name }}</p>
+                  <p class="similar-city"><i class="fal fa-map-marker-alt"></i> {{ sim.city }}</p>
+                </div>
+                @if (sim.avg_rating) {
+                  <div class="similar-rating">
+                    <i class="fas fa-star similar-star"></i>
+                    <span>{{ sim.avg_rating }}</span>
+                  </div>
+                }
+                <i class="fal fa-chevron-right similar-arrow"></i>
+              </a>
+            }
+          </div>
+        </div>
+      }
+
       <!-- ── MAP CARD ──────────────────────────────────────── -->
       <div class="card map-location-card">
 
@@ -826,6 +922,64 @@
       </div>
 
     </div>
+
+    <!-- ═══════════════════════════════════════════
+         PROMOTIONS MODAL
+    ═══════════════════════════════════════════ -->
+
+    @if (showPromoForm) {
+      <div class="modal-backdrop" (click)="closePromoForm()">
+        <div class="modal-card" (click)="$event.stopPropagation()">
+          <div class="modal-header">
+            <div class="modal-title-group">
+              <div class="modal-title-icon"><i class="fal fa-tag"></i></div>
+              <h3>Adaugă promoție</h3>
+            </div>
+            <button class="icon-btn" (click)="closePromoForm()"><i class="fal fa-times"></i></button>
+          </div>
+          <div class="modal-body">
+            <div class="modal-section">
+              <label class="modal-label">Titlu promoție <span style="color:#ef4444">*</span></label>
+              <input class="modal-input" type="text" [(ngModel)]="promoTitle" placeholder="ex: -20% implanturi dentare în mai" maxlength="100" />
+            </div>
+            <div class="modal-section">
+              <label class="modal-label">Descriere (opțional)</label>
+              <textarea class="modal-textarea" [(ngModel)]="promoDesc" placeholder="Detalii suplimentare despre promoție..." rows="3" maxlength="300"></textarea>
+            </div>
+            <div class="modal-row-2">
+              <div class="modal-section">
+                <label class="modal-label">Reducere %</label>
+                <input class="modal-input" type="number" [(ngModel)]="promoDiscount" placeholder="ex: 20" min="1" max="100" />
+              </div>
+              <div class="modal-section">
+                <label class="modal-label">Valabilă până la</label>
+                <input class="modal-input" type="date" [(ngModel)]="promoValidUntil" />
+              </div>
+            </div>
+            <div class="modal-section">
+              <label class="modal-label">Servicii incluse (opțional)</label>
+              <div class="services-chips">
+                @for (svc of allServices; track svc.id) {
+                  <button type="button" class="svc-chip" [class.selected]="promoServices.has(svc.label)" (click)="togglePromoService(svc.label)">
+                    {{ svc.label }}
+                  </button>
+                }
+              </div>
+            </div>
+            @if (promoError) {
+              <div class="svc-save-error"><i class="fal fa-exclamation-circle"></i> {{ promoError }}</div>
+            }
+          </div>
+          <div class="modal-footer">
+            <button class="btn-cancel-lg" (click)="closePromoForm()">Renunță</button>
+            <button class="btn-save-lg" (click)="savePromo()" [disabled]="promoSaving">
+              @if (promoSaving) { <span class="map-spin"></span> Se salvează... }
+              @else { <i class="fal fa-check"></i> Publică promoția }
+            </button>
+          </div>
+        </div>
+      </div>
+    }
 
     <!-- ═══════════════════════════════════════════
          SERVICES MODAL

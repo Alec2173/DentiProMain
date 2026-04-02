@@ -7,6 +7,61 @@
 
 <router-outlet />
 
+@if (!isClinicPortal) {
+  <footer class="site-footer">
+    <div class="footer-inner">
+
+      <div class="footer-brand">
+        <div class="footer-logo">
+          <i class="fal fa-tooth"></i>
+          <span>DentiPro</span>
+        </div>
+        <p class="footer-tagline">Platforma care conectează pacienții cu clinicile dentare din România.</p>
+        <div class="footer-socials">
+          <a href="https://www.facebook.com/dentipro.ro" target="_blank" rel="noopener" class="footer-social" title="Facebook">
+            <i class="fab fa-facebook-f"></i>
+          </a>
+          <a href="https://www.instagram.com/dentipro.ro" target="_blank" rel="noopener" class="footer-social" title="Instagram">
+            <i class="fab fa-instagram"></i>
+          </a>
+        </div>
+      </div>
+
+      <div class="footer-col">
+        <h4 class="footer-col-title">Pacienți</h4>
+        <a routerLink="/inregistrare" class="footer-link">Creează cont</a>
+        <a routerLink="/finder" class="footer-link">Găsește o clinică</a>
+        <a routerLink="/feed" class="footer-link">Cereri de tratament</a>
+        <a routerLink="/harta" class="footer-link">Hartă clinici</a>
+        <a routerLink="/appointments" class="footer-link">Programările mele</a>
+        <a routerLink="/favorites" class="footer-link">Favorite</a>
+      </div>
+
+      <div class="footer-col">
+        <h4 class="footer-col-title">Clinici</h4>
+        <a routerLink="/clinici" class="footer-link">De ce DentiPro?</a>
+        <a routerLink="/clinici/inscriere" class="footer-link">Înregistrează-ți clinica</a>
+        <a routerLink="/clinici/autentificare" class="footer-link">Portal clinici</a>
+        <a routerLink="/preturi" class="footer-link">Prețuri și planuri</a>
+      </div>
+
+      <div class="footer-col">
+        <h4 class="footer-col-title">Companie</h4>
+        <a routerLink="/contact" class="footer-link">Contact</a>
+        <a routerLink="/GDPR" class="footer-link">Politică de confidențialitate</a>
+        <a routerLink="/termeni" class="footer-link">Termeni și condiții</a>
+      </div>
+
+    </div>
+
+    <div class="footer-bottom">
+      <span>© {{ currentYear }} DentiPro. Toate drepturile rezervate.</span>
+      <span class="footer-bottom-sep">·</span>
+      <a href="mailto:office.dentipro@gmail.com" class="footer-bottom-link">office.dentipro&#64;gmail.com</a>
+    </div>
+  </footer>
+}
+
 @if (isClinicPortal) {
   <app-support-widget></app-support-widget>
 }

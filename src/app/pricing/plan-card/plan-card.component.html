@@ -1,0 +1,90 @@
+<div class="plan-card" [class.featured]="plan.featured" [class.selected]="selected" [class.selectable]="selectable">
+
+  @if (plan.featured) {
+    <div class="featured-glow"></div>
+  }
+
+  @if (plan.badge) {
+    <div class="plan-badge">{{ plan.badge }}</div>
+  }
+
+  @if (plan.id === 'pro') {
+    <div class="pro-corner-badge">PROMOVAT</div>
+  }
+
+  @if (selected) {
+    <div class="selected-mark">
+      <span class="material-symbols-outlined">check_circle</span>
+    </div>
+  }
+
+  <!-- HEAD -->
+  <div class="plan-head">
+    <div class="plan-name">{{ plan.name }}</div>
+    <div class="plan-tagline">{{ plan.tagline }}</div>
+  </div>
+
+  <!-- PRICE -->
+  <div class="plan-price-block">
+    @if (displayPrice === 0) {
+      <div class="price-main">Gratuit</div>
+      <div class="price-sub">pentru totdeauna</div>
+    } @else {
+      <div class="price-row">
+        <span class="price-main">{{ displayPrice }}€</span>
+        <span class="price-period">/lună</span>
+      </div>
+      @if (billingAnnual) {
+        <div class="price-annual">facturat {{ plan.annualTotal }}€/an</div>
+      } @else {
+        <div class="price-sub">facturat lunar</div>
+      }
+    }
+  </div>
+
+  <!-- CTA -->
+  @if (selectable) {
+    <button
+      class="plan-cta"
+      [class.featured-cta]="plan.featured"
+      [class.active-cta]="selected"
+      (click)="onCta($event)"
+    >
+      @if (selected) {
+        <span class="material-symbols-outlined">check</span>
+        Selectat
+      } @else {
+        {{ plan.cta }}
+        <span class="material-symbols-outlined">arrow_forward</span>
+      }
+    </button>
+  } @else {
+    <a
+      [routerLink]="defaultCtaRoute"
+      [queryParams]="defaultCtaParams"
+      class="plan-cta"
+      [class.featured-cta]="plan.featured"
+    >
+      {{ plan.cta }}
+      <span class="material-symbols-outlined">arrow_forward</span>
+    </a>
+  }
+
+  <div class="plan-divider"></div>
+
+  <!-- FEATURES -->
+  <ul class="features-list">
+    @for (feat of plan.features; track feat.text) {
+      <li class="feat-item" [class.excluded]="!feat.included">
+        <span class="material-symbols-outlined feat-icon">
+          {{ feat.included ? 'check' : 'remove' }}
+        </span>
+        <span class="feat-text">{{ feat.text }}</span>
+        @if (feat.tag) {
+          <span class="feat-tag" [class]="'tag-' + feat.tag.toLowerCase()">{{ feat.tag }}</span>
+        }
+      </li>
+    }
+  </ul>
+
+</div>

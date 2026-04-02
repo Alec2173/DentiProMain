@@ -1,5 +1,16 @@
 <div class="dashboard-page">
 
+  <!-- ── CHECKOUT SUCCESS TOAST ────────────────────────────── -->
+  @if (checkoutSuccessToast) {
+    <div class="checkout-toast">
+      <i class="fal fa-check-circle"></i>
+      <div>
+        <strong>Plată confirmată!</strong>
+        Planul tău <strong>{{ planLabel }}</strong> este acum activ. Mulțumim!
+      </div>
+    </div>
+  }
+
   <!-- ── SKELETON LOADING ──────────────────────────────────── -->
   @if (isLoading) {
     <div class="skeleton-wrap">
@@ -96,7 +107,65 @@
         </div>
       </div>
 
+      <div class="stat-card stat-views">
+        <div class="stat-icon">
+          <i class="fal fa-eye"></i>
+        </div>
+        <div class="stat-body">
+          <span class="stat-value">{{ profileViews?.last30days ?? '—' }}</span>
+          <span class="stat-label">Vizualizări profil (30 zile)</span>
+          @if (profileViews && profileViews.last7days !== undefined) {
+            <span class="stat-sub">{{ profileViews.last7days }} în ultimele 7 zile</span>
+          }
+        </div>
+      </div>
+
     </div>
+
+    <!-- ── ANALYTICS VIZUALIZĂRI PROFIL ─────────────────────────── -->
+    @if (viewsChart.length > 0) {
+      <div class="analytics-card">
+        <div class="analytics-header">
+          <div class="analytics-title">
+            <i class="fal fa-chart-bar"></i>
+            <span>Vizualizări profil — ultimele 30 de zile</span>
+          </div>
+          <div class="analytics-summary">
+            <span class="analytics-total">{{ profileViews?.last30days ?? 0 }} total</span>
+            @if (viewsTrend !== 0) {
+              <span class="analytics-trend" [class.trend-up]="viewsTrend > 0" [class.trend-down]="viewsTrend < 0">
+                <i class="fal" [class.fa-arrow-up]="viewsTrend > 0" [class.fa-arrow-down]="viewsTrend < 0"></i>
+                {{ viewsTrend > 0 ? '+' : '' }}{{ viewsTrend }}% față de săptămâna precedentă
+              </span>
+            } @else {
+              <span class="analytics-trend trend-neutral">— față de săptămâna precedentă</span>
+            }
+          </div>
+        </div>
+
+        <div class="analytics-chart">
+          @for (bar of viewsChart; track bar.date) {
+            <div class="chart-col" [title]="formatChartDate(bar.date) + ': ' + bar.count + ' vizualizări'">
+              <div class="chart-bar-wrap">
+                <div class="chart-bar" [style.height.%]="viewBarHeight(bar.count)" [class.chart-bar--empty]="bar.count === 0"></div>
+              </div>
+              <span class="chart-label">{{ formatChartDate(bar.date) }}</span>
+            </div>
+          }
+        </div>
+
+        <div class="analytics-footer">
+          <span class="analytics-hint">
+            <i class="fal fa-info-circle"></i>
+            Fiecare vizualizare unică a profilului tău public este contorizată o dată pe zi.
+          </span>
+          <span class="analytics-7d">
+            <i class="fal fa-calendar-week"></i>
+            Ultimele 7 zile: <strong>{{ profileViews?.last7days ?? 0 }}</strong>
+          </span>
+        </div>
+      </div>
+    }
 
     <!-- ── PROFILE COMPLETION ─────────────────────────────────── -->
     @if (profileCompletion < 100) {
@@ -205,6 +274,47 @@
     }
 
     <!-- ── QUICK ACTIONS ──────────────────────────────────────── -->
+    <!-- ── ABONAMENT CURENT ──────────────────────────────────── -->
+    @if (subscription) {
+      <div class="subscription-card" [class.sub-starter]="subscription.plan === 'starter'" [class.sub-growth]="subscription.plan === 'growth'" [class.sub-pro]="subscription.plan === 'pro'">
+        <div class="sub-left">
+          <div class="sub-plan-badge">
+            @if (subscription.plan === 'pro') { <i class="fal fa-crown"></i> }
+            @else if (subscription.plan === 'growth') { <i class="fal fa-rocket"></i> }
+            @else { <i class="fal fa-seedling"></i> }
+            {{ planLabel }}
+          </div>
+          <div class="sub-info">
+            <span class="sub-status" [class.status-active]="subscription.status === 'active' || subscription.status === 'trialing'" [class.status-warn]="subscription.status === 'past_due'" [class.status-off]="subscription.status === 'canceled' || subscription.status === 'inactive'">
+              <i class="fal" [class.fa-check-circle]="subscription.status === 'active'" [class.fa-clock]="subscription.status === 'trialing'" [class.fa-exclamation-circle]="subscription.status === 'past_due'" [class.fa-times-circle]="subscription.status === 'canceled' || subscription.status === 'inactive'"></i>
+              {{ planStatusLabel }}
+            </span>
+            @if (subscription.trialEndsAt) {
+              <span class="sub-meta">Trial până la {{ formatPeriodEnd(subscription.trialEndsAt) }}</span>
+            } @else if (subscription.currentPeriodEnd && subscription.plan !== 'starter') {
+              <span class="sub-meta">Reînnoire: {{ formatPeriodEnd(subscription.currentPeriodEnd) }}</span>
+            } @else if (subscription.plan === 'starter') {
+              <span class="sub-meta">Gratuit permanent — fără card necesar</span>
+            }
+          </div>
+        </div>
+        <div class="sub-right">
+          @if (subscription.hasStripe) {
+            <button class="sub-manage-btn" (click)="openStripePortal()" [disabled]="stripePortalLoading">
+              @if (stripePortalLoading) { <i class="fal fa-spinner fa-spin"></i> }
+              @else { <i class="fal fa-credit-card"></i> }
+              Gestionează
+            </button>
+          } @else {
+            <a routerLink="/clinici/pricing" class="sub-upgrade-btn">
+              <i class="fal fa-arrow-up"></i>
+              Upgrade
+            </a>
+          }
+        </div>
+      </div>
+    }
+
     <div class="section-title">
       <i class="fal fa-bolt"></i> Acțiuni rapide
     </div>
@@ -245,16 +355,51 @@
         <i class="fal fa-chevron-right action-arrow"></i>
       </a>
 
-      <a routerLink="/clinici/pricing" class="action-card action-plan">
-        <div class="action-icon">
-          <i class="fal fa-crown"></i>
-        </div>
-        <div class="action-text">
-          <span class="action-label">Plan &amp; Prețuri</span>
-          <span class="action-sub">Upgrade pentru mai multă vizibilitate</span>
-        </div>
-        <i class="fal fa-chevron-right action-arrow"></i>
-      </a>
+      @if (subscription?.hasStripe) {
+        <button class="action-card action-plan" (click)="openStripePortal()" [disabled]="stripePortalLoading">
+          <div class="action-icon">
+            <i class="fal" [class.fa-crown]="!stripePortalLoading" [class.fa-spinner]="stripePortalLoading" [class.fa-spin]="stripePortalLoading"></i>
+          </div>
+          <div class="action-text">
+            <span class="action-label">Gestionează abonamentul</span>
+            <span class="action-sub">Facturi, card, upgrade/downgrade</span>
+          </div>
+          <i class="fal fa-chevron-right action-arrow"></i>
+        </button>
+      } @else {
+        <a routerLink="/clinici/pricing" class="action-card action-plan">
+          <div class="action-icon">
+            <i class="fal fa-crown"></i>
+          </div>
+          <div class="action-text">
+            <span class="action-label">Upgrade plan</span>
+            <span class="action-sub">Growth sau Pro pentru mai multă vizibilitate</span>
+          </div>
+          <i class="fal fa-chevron-right action-arrow"></i>
+        </a>
+      }
+
+      @if (auth.currentUser?.clinicId) {
+        <a [routerLink]="['/clinic-profile', auth.currentUser?.clinicId]" [fragment]="'promotii'" class="action-card action-promo">
+          <div class="action-icon">
+            <i class="fal fa-tag"></i>
+          </div>
+          <div class="action-text">
+            <span class="action-label">Promoții active</span>
+            <span class="action-sub">
+              @if (activePromoCount > 0) {
+                {{ activePromoCount }} promoții publicate
+              } @else {
+                Publică prima promoție
+              }
+            </span>
+          </div>
+          @if (activePromoCount > 0) {
+            <span class="promo-count-badge">{{ activePromoCount }}</span>
+          }
+          <i class="fal fa-chevron-right action-arrow"></i>
+        </a>
+      }
 
     </div>
 

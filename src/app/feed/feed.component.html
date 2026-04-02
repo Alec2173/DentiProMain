@@ -54,6 +54,15 @@
             </button>
           }
         </div>
+        <div class="filter-select-wrap">
+          <i class="fal fa-tooth filter-icon"></i>
+          <select class="filter-select" [(ngModel)]="filterService" (change)="applyFilter()">
+            <option value="">Toate serviciile</option>
+            @for (svc of allServices; track svc.id) {
+              <option [value]="svc.label">{{ svc.label }}</option>
+            }
+          </select>
+        </div>
         <button class="filter-btn" (click)="applyFilter()">
           <i class="fal fa-search"></i>
         </button>

@@ -1,6 +1,39 @@
 <div class="main" (click)="closeCityDropdown()">
 
   <!-- ══════════════════════════════════════════
+       CHECKOUT ANULAT — banner
+  ══════════════════════════════════════════ -->
+  @if (checkoutCanceled) {
+    <div class="canceled-banner">
+      <span class="material-symbols-outlined">info</span>
+      <div>
+        <strong>Plata a fost anulată.</strong>
+        Clinica ta a fost salvată — alege din nou planul și finalizează plata când ești gata.
+      </div>
+      <button class="canceled-close" (click)="checkoutCanceled = false">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+    </div>
+  }
+
+  <!-- ══════════════════════════════════════════
+       STRIPE REDIRECTING OVERLAY
+  ══════════════════════════════════════════ -->
+  @if (stripeRedirecting) {
+    <div class="success-overlay">
+      <div class="success-card">
+        <div class="stripe-loading">
+          <span class="material-symbols-outlined spinning">sync</span>
+        </div>
+        <h2>Redirecționare spre Stripe...</h2>
+        <p>
+          Clinica ta a fost înregistrată. Te redirecționăm acum spre pagina de plată securizată.
+        </p>
+      </div>
+    </div>
+  }
+
+  <!-- ══════════════════════════════════════════
        SUCCESS OVERLAY
   ══════════════════════════════════════════ -->
   @if (submitSuccess) {
@@ -58,7 +91,7 @@
 
     <!-- PROGRESS STEPS -->
     <div class="progress-steps">
-      @for (step of [1, 2, 3, 4, 5, 6]; track step) {
+      @for (step of [1, 2, 3, 4, 5, 6, 7]; track step) {
         <div
           class="ps-step"
           [class.active]="currentStep === step"
@@ -76,7 +109,7 @@
             <span class="ps-name">{{ stepLabels[step - 1] }}</span>
           </div>
         </div>
-        @if (step < 6) {
+        @if (step < 7) {
           <div class="ps-line" [class.done]="currentStep > step"></div>
         }
       }
@@ -516,22 +549,18 @@
       }
 
       <!-- ═══════════════════════════════════════
-           STEP 6 — FINALIZARE (revizuire + confirmare)
+           STEP 6 — PLAN
       ═══════════════════════════════════════ -->
       @if (currentStep === 6) {
         <div class="step-header">
           <div class="step-num">06</div>
           <div>
-            <h2 class="step-title">Finalizare</h2>
-            <p class="step-sub">Verifică datele și trimite cererea</p>
+            <h2 class="step-title">Alege planul</h2>
+            <p class="step-sub">Poți face upgrade sau downgrade oricând. Growth și Pro includ 14 zile trial gratuit.</p>
           </div>
         </div>
 
-        <!-- PRICING_HIDDEN_START
-             HIDDEN_PRICING — de readus când lansăm
-             Data ascuns: 2026-03-20
-             Locație originală: form.component.html — step 6, billing toggle + plan cards + plan note -->
-        <!--
+        <!-- BILLING TOGGLE -->
         <div class="billing-toggle-wrap">
           <span class="billing-opt" [class.active]="!billingAnnual">Lunar</span>
           <button class="billing-toggle" (click)="toggleBilling()">
@@ -543,53 +572,48 @@
           </span>
         </div>
 
-        <div class="plan-cards">
+        <!-- PLAN CARDS — componente izolate, editabile separat -->
+        <div class="plan-cards-grid">
           @for (plan of plans; track plan.id) {
-            <div class="plan-card" [class.featured]="plan.featured"
-              [class.selected]="formData.selectedPlan === plan.id" (click)="selectPlan(plan.id)">
-              @if (plan.badge) { <div class="plan-badge">{{ plan.badge }}</div> }
-              @if (formData.selectedPlan === plan.id) {
-                <div class="plan-selected-mark"><span class="material-symbols-outlined">check_circle</span></div>
-              }
-              <div class="plan-name">{{ plan.name }}</div>
-              <div class="plan-tagline">{{ plan.tagline }}</div>
-              <div class="plan-price-row">
-                @if (getDisplayPrice(plan) === 0) {
-                  <span class="plan-price">Gratuit</span>
-                } @else {
-                  <span class="plan-price">{{ getDisplayPrice(plan) }}€</span>
-                  <span class="plan-period">/lună</span>
-                }
-              </div>
-              @if (billingAnnual && plan.annualTotal > 0) {
-                <div class="plan-annual-note">facturat {{ plan.annualTotal }}€/an</div>
-              }
-              <div class="plan-divider"></div>
-              <ul class="plan-features">
-                @for (feat of plan.features; track feat.text) {
-                  <li class="plan-feat" [class.excluded]="!feat.included">
-                    <span class="material-symbols-outlined feat-icon">{{ feat.included ? 'check' : 'remove' }}</span>
-                    <span class="feat-text">{{ feat.text }}</span>
-                    @if (feat.tag) { <span class="feat-tag" [class]="'tag-' + feat.tag.toLowerCase()">{{ feat.tag }}</span> }
-                  </li>
-                }
-              </ul>
-              <button class="plan-cta" [class.active]="formData.selectedPlan === plan.id"
-                (click)="$event.stopPropagation(); selectPlan(plan.id)">
-                @if (formData.selectedPlan === plan.id) {
-                  <span class="material-symbols-outlined">check</span> Selectat
-                } @else { {{ plan.cta }} }
-              </button>
-            </div>
+            <app-plan-card
+              [plan]="plan"
+              [billingAnnual]="billingAnnual"
+              [selectable]="true"
+              [selected]="formData.selectedPlan === plan.id"
+              (selectPlan)="onPlanSelected($event)"
+            />
           }
         </div>
 
         <p class="plan-note">
           <span class="material-symbols-outlined">info</span>
-          Planul Starter este permanent gratuit. La plata anuală economisești echivalentul a 2 luni.
+          Starter este permanent gratuit. La plata anuală economisești 2 luni față de plata lunară.
         </p>
-        -->
-        <!-- PRICING_HIDDEN_END -->
+
+        @if (isPaidPlanSelected) {
+          <div class="stripe-note">
+            <span class="material-symbols-outlined">lock</span>
+            <span>
+              Plata se face securizat prin <strong>Stripe</strong> — Visa, Mastercard, Amex.
+              Vei beneficia de <strong>14 zile trial gratuit</strong> fără card reținut.
+              Prin continuare accepți <a routerLink="/termeni" target="_blank">Termenii</a> și <a routerLink="/GDPR" target="_blank">GDPR</a>.
+              Clinica ta devine <strong>activă imediat</strong> după confirmare.
+            </span>
+          </div>
+        }
+      }
+
+      <!-- ═══════════════════════════════════════
+           STEP 7 — FINALIZARE (revizuire + confirmare)
+      ═══════════════════════════════════════ -->
+      @if (currentStep === 7) {
+        <div class="step-header">
+          <div class="step-num">07</div>
+          <div>
+            <h2 class="step-title">Finalizare</h2>
+            <p class="step-sub">Verifică datele și trimite cererea</p>
+          </div>
+        </div>
 
         <!-- SUMMARY -->
         <div class="section-label" style="margin-top: 24px;">Rezumat înregistrare</div>
@@ -694,10 +718,23 @@
         }
 
         @if (currentStep < totalSteps) {
-          <button class="btn-next" (click)="nextStep()">
-            Continuă
-            <span class="material-symbols-outlined">arrow_forward</span>
-          </button>
+          @if (currentStep === 6 && isPaidPlanSelected) {
+            <button class="btn-next btn-checkout" (click)="nextStep()" [disabled]="isLoading" [class.loading]="isLoading">
+              @if (isLoading) {
+                <span class="spinner"></span>
+                Se procesează...
+              } @else {
+                <span class="material-symbols-outlined">lock</span>
+                Continuă la plată
+                <span class="material-symbols-outlined">arrow_forward</span>
+              }
+            </button>
+          } @else {
+            <button class="btn-next" (click)="nextStep()">
+              Continuă
+              <span class="material-symbols-outlined">arrow_forward</span>
+            </button>
+          }
         } @else {
           <button
             class="btn-submit"

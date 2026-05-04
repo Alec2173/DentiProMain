@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+import { DecimalPipe, LowerCasePipe } from '@angular/common';
 import { AuthService } from '../auth.service';
 
 const API = 'https://www.dentipro.ro/api';
@@ -11,11 +12,12 @@ interface AdminClinic {
   name: string;
   email: string;
   city: string;
-  status: 'active' | 'pending' | 'suspended';
+  status: 'active' | 'pending' | 'suspended' | 'pending_payment';
   plan: string;
   created_at: string;
   logo_url: string | null;
   phone_public: string;
+  stripe_subscription_status: string | null;
   has_address: boolean;
   has_description: boolean;
   user_id: number | null;
@@ -25,6 +27,10 @@ interface AdminClinic {
   last_login_at: string | null;
   image_count: number;
   service_count: number;
+  review_count: number;
+  avg_rating: number | null;
+  appointment_count: number;
+  views_30d: number;
 }
 
 interface AddClinicForm {
@@ -38,7 +44,7 @@ interface AddClinicForm {
 @Component({
   selector: 'app-admin',
   standalone: true,
-  imports: [FormsModule],
+  imports: [FormsModule, DecimalPipe, LowerCasePipe],
   templateUrl: './admin.component.html',
   styleUrl: './admin.component.css',
 })
@@ -46,8 +52,9 @@ export class AdminComponent implements OnInit {
   clinics: AdminClinic[] = [];
   filtered: AdminClinic[] = [];
   isLoading = true;
-  filterStatus: 'all' | 'active' | 'pending' | 'suspended' = 'all';
+  filterStatus: 'all' | 'active' | 'pending' | 'suspended' | 'pending_payment' = 'all';
   filterOnboarding: 'all' | 'never_logged' | 'not_verified' | 'incomplete' = 'all';
+  filterPlan: 'all' | 'starter' | 'growth' | 'pro' = 'all';
   searchQuery = '';
   confirmDeleteId: number | null = null;
   adminPage = 0;
@@ -55,6 +62,7 @@ export class AdminComponent implements OnInit {
 
   // Dev tools dropdown
   showDevTools = false;
+  showExportPanel = false;
   creatingAccounts = false;
   onboarding = false;
   onboardResult: any[] | null = null;
@@ -65,6 +73,8 @@ export class AdminComponent implements OnInit {
   simulateResult: any[] | null = null;
   resendingEmails = false;
   resendResult: any[] | null = null;
+  sendingReengagement = false;
+  reengagementResult: any[] | null = null;
 
   // Add clinic
   showAddClinic = false;
@@ -76,6 +86,17 @@ export class AdminComponent implements OnInit {
   sendingProfileEmails = false;
   profileEmailsResult: any[] | null = null;
 
+  // Email stats
+  emailStats: any | null = null;
+  emailStatsLoading = false;
+
+  // Platform stats
+  platformStats: any | null = null;
+
+  // Business overview
+  businessOverview: any | null = null;
+  businessOverviewLoading = false;
+
   // Feedback
   feedbackList: any[] | null = null;
 
@@ -86,6 +107,11 @@ export class AdminComponent implements OnInit {
   get unreadMessages(): number {
     return this.supportMessages?.filter(m => !m.is_read).length ?? 0;
   }
+
+  readonly DEV_EMAILS = ['adminclinica@dentipro.ro', 'adminpacient@dentipro.ro'];
+
+  creatingDevAccounts = false;
+  devAccountsResult: any | null = null;
 
   readonly TEST_CLINICS: AddClinicForm[] = [
     { name: 'Clinica Test Alec 1', email: 'alec.constant300604@gmail.com',    city: 'București',  phone: '0700000001', plan: 'starter' },
@@ -106,6 +132,8 @@ export class AdminComponent implements OnInit {
       return;
     }
     this.load();
+    this.loadPlatformStats();
+    this.loadBusinessOverview();
   }
 
   private headers(): HttpHeaders {
@@ -128,8 +156,9 @@ export class AdminComponent implements OnInit {
   }
 
   applyFilter() {
-    let list = this.clinics;
+    let list = this.clinics.filter(c => !this.DEV_EMAILS.includes(c.email?.toLowerCase()));
     if (this.filterStatus !== 'all') list = list.filter(c => c.status === this.filterStatus);
+    if (this.filterPlan !== 'all') list = list.filter(c => c.plan === this.filterPlan);
     if (this.filterOnboarding === 'never_logged') list = list.filter(c => !c.last_login_at);
     if (this.filterOnboarding === 'not_verified')  list = list.filter(c => c.user_id && !c.email_verified);
     if (this.filterOnboarding === 'incomplete')    list = list.filter(c => !this.isProfileComplete(c));
@@ -155,11 +184,13 @@ export class AdminComponent implements OnInit {
   nextPage() { if (this.adminPage < this.totalPages - 1) this.adminPage++; }
 
   isProfileComplete(c: AdminClinic): boolean {
-    return c.image_count > 0 && c.service_count > 0 && c.has_address;
+    const hasMedia = c.image_count > 0 || !!c.logo_url;
+    return hasMedia && c.service_count > 0 && c.has_address;
   }
 
   profileScore(c: AdminClinic): number {
-    return [c.image_count > 0, c.service_count > 0, c.has_address, c.has_description]
+    const hasMedia = c.image_count > 0 || !!c.logo_url;
+    return [hasMedia, c.service_count > 0, c.has_address, c.has_description]
       .filter(Boolean).length;
   }
 
@@ -185,12 +216,18 @@ export class AdminComponent implements OnInit {
     });
   }
 
-  get pendingCount()     { return this.clinics.filter(c => c.status === 'pending').length; }
-  get activeCount()      { return this.clinics.filter(c => c.status === 'active').length; }
-  get suspendedCount()   { return this.clinics.filter(c => c.status === 'suspended').length; }
-  get neverLoggedCount() { return this.clinics.filter(c => !c.last_login_at).length; }
-  get notVerifiedCount() { return this.clinics.filter(c => c.user_id && !c.email_verified).length; }
-  get incompleteCount()  { return this.clinics.filter(c => !this.isProfileComplete(c)).length; }
+  get pendingCount()        { return this.clinics.filter(c => c.status === 'pending').length; }
+  get activeCount()         { return this.clinics.filter(c => c.status === 'active').length; }
+  get suspendedCount()      { return this.clinics.filter(c => c.status === 'suspended').length; }
+  get pendingPaymentCount() { return this.clinics.filter(c => c.status === 'pending_payment').length; }
+  get neverLoggedCount()    { return this.clinics.filter(c => !c.last_login_at).length; }
+  get notVerifiedCount()    { return this.clinics.filter(c => c.user_id && !c.email_verified).length; }
+  get incompleteCount()     { return this.clinics.filter(c => !this.isProfileComplete(c)).length; }
+  get starterCount()        { return this.clinics.filter(c => c.plan === 'starter').length; }
+  get growthCount()         { return this.clinics.filter(c => c.plan === 'growth').length; }
+  get proCount()            { return this.clinics.filter(c => c.plan === 'pro').length; }
+  get paidCount()           { return this.clinics.filter(c => c.plan === 'growth' || c.plan === 'pro').length; }
+  get pastDueCount()        { return this.clinics.filter(c => c.stripe_subscription_status === 'past_due').length; }
 
   // ── ADD CLINIC ────────────────────────────────────────────
   openAddClinic() {
@@ -341,6 +378,35 @@ export class AdminComponent implements OnInit {
 
   closeResendResult() { this.resendResult = null; }
 
+  sendReengagementEmails() {
+    const count = this.clinics.filter(c => c.user_id && !c.email_verified).length;
+    if (!confirm(`Trimiți emailul de reactivare la ${count} clinici cu email neverificat?`)) return;
+    this.sendingReengagement = true;
+    this.reengagementResult = null;
+    this.http.post<any>(`${API}/admin/send-reengagement-emails`, { loginUrl: 'https://www.dentipro.ro/clinici/autentificare' }, { headers: this.headers() }).subscribe({
+      next: (res) => { this.sendingReengagement = false; this.reengagementResult = res.results; },
+      error: (err) => { this.sendingReengagement = false; alert('❌ Eroare: ' + (err.error?.error ?? err.message)); },
+    });
+  }
+
+  closeReengagementResult() { this.reengagementResult = null; }
+
+  createDevAccounts() {
+    if (!confirm('Creezi/resetezi conturile dev adminclinica + adminpacient cu parola "banubada"?')) return;
+    this.creatingDevAccounts = true;
+    this.devAccountsResult = null;
+    const body = {
+      clinic:  { email: 'adminclinica@dentipro.ro',  name: 'Admin Clinică',  role: 'clinic',  password: 'banubada' },
+      patient: { email: 'adminpacient@dentipro.ro',  name: 'Admin Pacient',  role: 'patient', password: 'banubada' },
+    };
+    this.http.post<any>(`${API}/admin/create-dev-accounts`, body, { headers: this.headers() }).subscribe({
+      next: (res) => { this.creatingDevAccounts = false; this.devAccountsResult = res; },
+      error: (err) => { this.creatingDevAccounts = false; alert('❌ Eroare: ' + (err.error?.error ?? err.message)); },
+    });
+  }
+
+  closeDevAccountsResult() { this.devAccountsResult = null; }
+
   runOnboarding() {
     if (!confirm('Creezi conturi noi + trimiți emailuri de bun venit tuturor clinicilor fără cont?')) return;
     this.onboarding = true;
@@ -352,6 +418,56 @@ export class AdminComponent implements OnInit {
   }
 
   closeOnboardResult() { this.onboardResult = null; }
+
+  // ── PLATFORM STATS ────────────────────────────────────────
+  loadPlatformStats() {
+    this.http.get<any>(`${API}/admin/platform-stats`, { headers: this.headers() }).subscribe({
+      next: (data) => { this.platformStats = data; },
+      error: () => {},
+    });
+  }
+
+  loadBusinessOverview() {
+    this.businessOverviewLoading = true;
+    this.http.get<any>(`${API}/admin/business-overview`, { headers: this.headers() }).subscribe({
+      next: (data) => { this.businessOverview = data; this.businessOverviewLoading = false; },
+      error: () => { this.businessOverviewLoading = false; },
+    });
+  }
+
+  get maxDailyClinic(): number {
+    if (!this.businessOverview?.dailyNewClinics?.length) return 1;
+    return Math.max(1, ...this.businessOverview.dailyNewClinics.map((d: any) => d.new_clinics));
+  }
+
+  // ── EMAIL STATS ───────────────────────────────────────────
+  loadEmailStats() {
+    this.emailStatsLoading = true;
+    this.emailStats = null;
+    this.http.get<any>(`${API}/admin/email-stats`, { headers: this.headers() }).subscribe({
+      next: (data) => { this.emailStats = data; this.emailStatsLoading = false; },
+      error: (err) => { this.emailStatsLoading = false; alert('❌ ' + (err.error?.error ?? err.message)); },
+    });
+  }
+
+  get totalEmailsSent(): number {
+    return this.emailStats?.byType?.reduce((s: number, r: any) => s + Number(r.total_sent), 0) ?? 0;
+  }
+
+  emailTypeLabel(type: string): string {
+    const map: Record<string, string> = {
+      appt_reminder: 'Reminder programare',
+      review_request: 'Cerere recenzie',
+      patient_reengagement: 'Re-engagement pacient',
+      clinic_no_activity: 'Fără activitate (clinică)',
+      clinic_open_requests: 'Digest cereri deschise',
+      clinic_profile_reminder: 'Reminder profil',
+      clinic_onboarding: 'Onboarding clinică',
+      payment_failed: 'Plată eșuată',
+      subscription_canceled: 'Abonament anulat',
+    };
+    return map[type] ?? type;
+  }
 
   exitToPatient() {
     this.auth.logout();
@@ -378,5 +494,39 @@ export class AdminComponent implements OnInit {
     const days = Math.floor(h / 24);
     if (days < 7) return `acum ${days} zile`;
     return this.formatDate(d);
+  }
+
+  // ── EXPORT CLINICI INACTIVE ───────────────────────────────
+  exportingInactive = false;
+  exportInactiveDays = 0;
+  exportInactiveStatus = '';
+  exportInactivePlan = '';
+
+  exportInactiveClinics() {
+    this.exportingInactive = true;
+    const params: string[] = [];
+    if (this.exportInactiveDays > 0) params.push(`days=${this.exportInactiveDays}`);
+    if (this.exportInactiveStatus) params.push(`status=${this.exportInactiveStatus}`);
+    if (this.exportInactivePlan) params.push(`plan=${this.exportInactivePlan}`);
+    const qs = params.length ? `?${params.join('&')}` : '';
+
+    this.http.get(`${API}/admin/export/inactive-clinics${qs}`, {
+      headers: this.headers(),
+      responseType: 'blob',
+    }).subscribe({
+      next: (blob) => {
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `inactive-clinics-${new Date().toISOString().slice(0, 10)}.csv`;
+        a.click();
+        URL.revokeObjectURL(url);
+        this.exportingInactive = false;
+      },
+      error: (err) => {
+        this.exportingInactive = false;
+        alert('❌ Export eșuat: ' + (err.error?.error ?? err.message));
+      },
+    });
   }
 }

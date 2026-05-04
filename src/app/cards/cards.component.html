@@ -1,17 +1,19 @@
 <div class="main">
 
   @if (isLoading) {
-    <div class="card-list-inner">
-      @for (i of [1, 2, 3, 4, 5, 6]; track i) {
-        <div class="card skeleton-card">
-          <div class="card-image skeleton"></div>
-          <div class="card-info skeleton-info">
-            <div class="skeleton-line skeleton"></div>
-            <div class="skeleton-line skeleton small"></div>
-            <div class="skeleton-line skeleton tiny"></div>
+    <div class="viewport">
+      <div class="card-list-inner">
+        @for (i of [1, 2, 3, 4, 5, 6]; track i) {
+          <div class="card skeleton-card">
+            <div class="card-image skeleton"></div>
+            <div class="card-info skeleton-info">
+              <div class="skeleton-line skeleton"></div>
+              <div class="skeleton-line skeleton small"></div>
+              <div class="skeleton-line skeleton tiny"></div>
+            </div>
           </div>
-        </div>
-      }
+        }
+      </div>
     </div>
   }
 
@@ -20,14 +22,28 @@
       <div class="card-list-inner">
 
         @for (clinic of clinics; track clinic.id) {
-          <a class="card promoted" [routerLink]="['/descripton', clinic.id]">
-            <div class="promo-badge">PROMOVAT</div>
+          <a class="card"
+             [class.card--pro]="clinic.plan === 'pro'"
+             [class.card--growth]="clinic.plan === 'growth'"
+             [routerLink]="['/descripton', clinic.id]"
+             (click)="onClinicClick(clinic)">
+
+            @if (clinic.plan === 'pro') {
+              <div class="promo-badge promo-badge--pro">★ VIP</div>
+            } @else if (clinic.plan === 'growth') {
+              <div class="promo-badge promo-badge--growth">Promovat</div>
+            }
 
             <div class="card-image">
               @if (clinic.images?.length > 0) {
-                <img [src]="clinic.images[0]" [alt]="clinic.name + ' — clinică dentară din ' + clinic.city" loading="lazy" />
+                <img [src]="clinic.images[0]" [alt]="clinic.name + (clinic.city ? ' — ' + clinic.city : '') + ' — clinică dentară'" loading="lazy" decoding="async" />
               } @else {
-                <img src="no-img.jpg" alt="Clinică dentară DentiPro" />
+                <div class="card-image__placeholder">
+                  <svg class="card-image__placeholder-tooth" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 2C9.5 2 8 3.5 7 4.5C6 5.5 4 5.5 3 7C2 8.5 2 10 2.5 12C3 14 4 15 4 17C4 19 4.5 22 6 22C7.5 22 8 20 9 18C9.5 17 10.5 16.5 12 16.5C13.5 16.5 14.5 17 15 18C16 20 16.5 22 18 22C19.5 22 20 19 20 17C20 15 21 14 21.5 12C22 10 22 8.5 21 7C20 5.5 18 5.5 17 4.5C16 3.5 14.5 2 12 2Z" stroke="#60a5fa" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                  <span class="card-image__placeholder-initials">{{ clinicInitials(clinic.name) }}</span>
+                </div>
               }
             </div>
 
@@ -37,7 +53,7 @@
                   @if (clinic.logo_url) {
                     <img [src]="clinic.logo_url" [alt]="'Logo ' + clinic.name" loading="lazy" />
                   } @else {
-                    <img src="no-img.jpg" alt="Logo clinică" />
+                    <div class="logo--initials">{{ clinicInitials(clinic.name)[0] }}</div>
                   }
                 </div>
                 <span class="city">{{ clinic.city }}</span>
@@ -71,7 +87,11 @@
         }
 
         @if (clinics.length === 0 && !isLoading) {
-          <div class="cards-empty">Nicio clinică găsită.</div>
+          <div class="cards-empty">
+            <span class="material-symbols-outlined cards-empty-icon">search_off</span>
+            <p class="cards-empty-title">Nicio clinică găsită</p>
+            <p class="cards-empty-sub">Încearcă să schimbi filtrele sau extinde căutarea.</p>
+          </div>
         }
 
         <!-- Sentinel pentru infinite scroll -->

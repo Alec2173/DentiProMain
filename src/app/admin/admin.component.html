@@ -23,6 +23,11 @@
         {{ sendingProfileEmails ? 'Se trimite...' : 'Email profil incomplet (' + incompleteCount + ')' }}
       </button>
 
+      <button class="adm-profile-btn" (click)="sendReengagementEmails()" [disabled]="sendingReengagement">
+        <i class="fal fa-user-clock"></i>
+        {{ sendingReengagement ? 'Se trimite...' : 'Email reactivare — neverificați (' + notVerifiedCount + ')' }}
+      </button>
+
       <button class="adm-messages-btn" (click)="loadSupportMessages()">
         <i class="fal fa-comments"></i> Mesaje
         @if (unreadMessages > 0) {
@@ -33,6 +38,46 @@
       <button class="adm-feedback-btn" (click)="loadFeedbacks()">
         <i class="fal fa-star"></i> Feedbackuri
       </button>
+
+      <button class="adm-email-stats-btn" (click)="loadEmailStats()">
+        <i class="fal fa-chart-bar"></i> Email stats
+      </button>
+
+      <!-- Export clinici inactive -->
+      <div class="adm-devtools-wrap">
+        <button class="adm-export-btn" (click)="showExportPanel = !showExportPanel">
+          <i class="fal fa-file-csv"></i> Export CSV
+        </button>
+        @if (showExportPanel) {
+          <div class="adm-devtools-dropdown adm-export-panel" (click)="$event.stopPropagation()">
+            <p class="adm-export-title"><i class="fal fa-filter"></i> Export clinici inactive</p>
+            <label class="adm-export-label">Fără login în ultimele (0 = niciodată):
+              <input type="number" [(ngModel)]="exportInactiveDays" min="0" class="adm-export-input" placeholder="0" />
+              zile
+            </label>
+            <label class="adm-export-label">Status:
+              <select [(ngModel)]="exportInactiveStatus" class="adm-export-select">
+                <option value="">Toate</option>
+                <option value="active">Activ</option>
+                <option value="pending">Pending</option>
+                <option value="pending_payment">Pending payment</option>
+                <option value="suspended">Suspendat</option>
+              </select>
+            </label>
+            <label class="adm-export-label">Plan:
+              <select [(ngModel)]="exportInactivePlan" class="adm-export-select">
+                <option value="">Toate</option>
+                <option value="starter">Starter</option>
+                <option value="growth">Growth</option>
+                <option value="pro">Pro</option>
+              </select>
+            </label>
+            <button class="adm-export-download-btn" (click)="exportInactiveClinics(); showExportPanel=false" [disabled]="exportingInactive">
+              <i class="fal fa-download"></i> {{ exportingInactive ? 'Se exportă...' : 'Descarcă CSV' }}
+            </button>
+          </div>
+        }
+      </div>
 
       <button class="adm-refresh" (click)="load()">
         <i class="fal fa-sync-alt"></i>
@@ -61,6 +106,9 @@
             <button (click)="simulateClinics(); showDevTools=false" [disabled]="simulating">
               <i class="fal fa-play-circle"></i> Simulare clinici test
             </button>
+            <button (click)="createDevAccounts(); showDevTools=false" [disabled]="creatingDevAccounts">
+              <i class="fal fa-user-shield"></i> Conturi dev (clinică + pacient)
+            </button>
           </div>
         }
       </div>
@@ -71,33 +119,183 @@
     </div>
   </div>
 
+  <!-- MRR / PLATFORM OVERVIEW -->
+  @if (platformStats) {
+    <div class="adm-platform-bar">
+      <div class="adm-plat-kpi adm-plat-mrr">
+        <span class="adm-plat-num">{{ platformStats.mrr | number }} RON</span>
+        <span class="adm-plat-label">MRR estimat</span>
+      </div>
+      <div class="adm-plat-sep"></div>
+      <div class="adm-plat-kpi" (click)="filterPlan='growth'; filterStatus='all'; filterOnboarding='all'; applyFilter()" style="cursor:pointer">
+        <span class="adm-plat-num adm-plat-growth">{{ platformStats.plans.growth }}</span>
+        <span class="adm-plat-label">Growth</span>
+      </div>
+      <div class="adm-plat-kpi" (click)="filterPlan='pro'; filterStatus='all'; filterOnboarding='all'; applyFilter()" style="cursor:pointer">
+        <span class="adm-plat-num adm-plat-pro">{{ platformStats.plans.pro }}</span>
+        <span class="adm-plat-label">Pro</span>
+      </div>
+      <div class="adm-plat-kpi" (click)="filterPlan='starter'; filterStatus='all'; filterOnboarding='all'; applyFilter()" style="cursor:pointer">
+        <span class="adm-plat-num">{{ platformStats.plans.starter }}</span>
+        <span class="adm-plat-label">Starter</span>
+      </div>
+      <div class="adm-plat-sep"></div>
+      @if (platformStats.trialing > 0) {
+        <div class="adm-plat-kpi adm-plat-warn">
+          <span class="adm-plat-num">{{ platformStats.trialing }}</span>
+          <span class="adm-plat-label">În trial</span>
+        </div>
+      }
+      @if (platformStats.pastDue > 0) {
+        <div class="adm-plat-kpi adm-plat-danger" (click)="filterStatus='active'; filterOnboarding='all'; applyFilter()" style="cursor:pointer">
+          <span class="adm-plat-num">{{ platformStats.pastDue }}</span>
+          <span class="adm-plat-label">Plată restantă</span>
+        </div>
+      }
+      @if (platformStats.pendingPayment > 0) {
+        <div class="adm-plat-kpi adm-plat-danger" (click)="filterStatus='pending_payment'; filterOnboarding='all'; applyFilter()" style="cursor:pointer">
+          <span class="adm-plat-num">{{ platformStats.pendingPayment }}</span>
+          <span class="adm-plat-label">Plată în așteptare</span>
+        </div>
+      }
+      <div class="adm-plat-sep"></div>
+      <div class="adm-plat-kpi">
+        <span class="adm-plat-num">{{ platformStats.totalAppointments | number }}</span>
+        <span class="adm-plat-label">Programări totale</span>
+      </div>
+      <div class="adm-plat-kpi">
+        <span class="adm-plat-num">{{ platformStats.totalReviews | number }}</span>
+        <span class="adm-plat-label">
+          Recenzii
+          @if (platformStats.avgReviewRating) { · ⭐ {{ platformStats.avgReviewRating }} }
+        </span>
+      </div>
+    </div>
+  }
+
+  <!-- BUSINESS OVERVIEW -->
+  @if (businessOverview) {
+    <div class="adm-biz">
+      <div class="adm-biz-header">
+        <span class="adm-biz-title">Business Overview — ultimele 30 zile</span>
+        <button class="adm-biz-refresh" (click)="loadBusinessOverview()" title="Reîncarcă">
+          <i class="fal fa-sync"></i>
+        </button>
+      </div>
+
+      <div class="adm-biz-kpis">
+        <div class="adm-biz-kpi adm-biz-mrr">
+          <span class="adm-biz-num">{{ businessOverview.mrr | number }} RON</span>
+          <span class="adm-biz-lbl">MRR</span>
+        </div>
+        <div class="adm-biz-kpi">
+          <span class="adm-biz-num">{{ businessOverview.growthPaying }}</span>
+          <span class="adm-biz-lbl">Growth plătitori</span>
+        </div>
+        <div class="adm-biz-kpi">
+          <span class="adm-biz-num">{{ businessOverview.proPaying }}</span>
+          <span class="adm-biz-lbl">Pro plătitori</span>
+        </div>
+        <div class="adm-biz-kpi adm-biz-churn">
+          <span class="adm-biz-num">{{ businessOverview.churnThisMonth }}</span>
+          <span class="adm-biz-lbl">Churn luna asta</span>
+        </div>
+        <div class="adm-biz-kpi">
+          <span class="adm-biz-num">{{ businessOverview.bookings30d }}</span>
+          <span class="adm-biz-lbl">Programări (30z)</span>
+        </div>
+        <div class="adm-biz-kpi">
+          <span class="adm-biz-num">{{ businessOverview.widgetBookings30d }}</span>
+          <span class="adm-biz-lbl">Via widget</span>
+        </div>
+      </div>
+
+      <!-- Conversion funnel -->
+      <div class="adm-biz-funnel">
+        <div class="adm-funnel-row">
+          <span class="adm-funnel-label">Înregistrate</span>
+          <div class="adm-funnel-bar-wrap">
+            <div class="adm-funnel-bar" style="width:100%; background: rgba(37,99,235,.5)"></div>
+          </div>
+          <span class="adm-funnel-num">{{ businessOverview.funnel.total_registered }}</span>
+        </div>
+        <div class="adm-funnel-row">
+          <span class="adm-funnel-label">Profil complet</span>
+          <div class="adm-funnel-bar-wrap">
+            <div class="adm-funnel-bar" [style.width.%]="businessOverview.funnel.total_registered > 0 ? (businessOverview.funnel.profile_complete / businessOverview.funnel.total_registered) * 100 : 0" style="background: rgba(14,165,233,.5)"></div>
+          </div>
+          <span class="adm-funnel-num">{{ businessOverview.funnel.profile_complete }}</span>
+        </div>
+        <div class="adm-funnel-row">
+          <span class="adm-funnel-label">Plătitor</span>
+          <div class="adm-funnel-bar-wrap">
+            <div class="adm-funnel-bar" [style.width.%]="businessOverview.funnel.total_registered > 0 ? (businessOverview.funnel.paying / businessOverview.funnel.total_registered) * 100 : 0" style="background: rgba(16,185,129,.5)"></div>
+          </div>
+          <span class="adm-funnel-num">{{ businessOverview.funnel.paying }}</span>
+        </div>
+      </div>
+
+      <!-- Top cities + daily chart side by side -->
+      <div class="adm-biz-bottom">
+        <!-- Top cities -->
+        <div class="adm-biz-cities">
+          <p class="adm-biz-section-title">Top 5 orașe</p>
+          @for (c of businessOverview.topCities; track c.city) {
+            <div class="adm-city-row">
+              <span class="adm-city-name">{{ c.city }}</span>
+              <span class="adm-city-count">{{ c.clinic_count }} clinici</span>
+            </div>
+          }
+        </div>
+
+        <!-- Daily new clinics bar chart -->
+        <div class="adm-biz-chart">
+          <p class="adm-biz-section-title">Înregistrări zilnice (30z)</p>
+          <div class="adm-chart-bars">
+            @for (d of businessOverview.dailyNewClinics; track d.day) {
+              <div class="adm-chart-bar-col" [title]="d.day + ': ' + d.new_clinics">
+                <div class="adm-chart-bar" [style.height.%]="maxDailyClinic > 0 ? (d.new_clinics / maxDailyClinic) * 100 : 0"></div>
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+
   <!-- STATS -->
   <div class="adm-stats">
-    <div class="adm-stat adm-stat-total" (click)="filterStatus='all'; filterOnboarding='all'; applyFilter()">
+    <div class="adm-stat adm-stat-total" (click)="filterStatus='all'; filterPlan='all'; filterOnboarding='all'; applyFilter()">
       <span class="adm-stat-num">{{ clinics.length }}</span>
       <span class="adm-stat-label">Total clinici</span>
     </div>
-    <div class="adm-stat adm-stat-pending" (click)="filterStatus='pending'; filterOnboarding='all'; applyFilter()">
+    <div class="adm-stat adm-stat-pending" (click)="filterStatus='pending'; filterPlan='all'; filterOnboarding='all'; applyFilter()">
       <span class="adm-stat-num">{{ pendingCount }}</span>
       <span class="adm-stat-label">În așteptare</span>
     </div>
-    <div class="adm-stat adm-stat-active" (click)="filterStatus='active'; filterOnboarding='all'; applyFilter()">
+    <div class="adm-stat adm-stat-active" (click)="filterStatus='active'; filterPlan='all'; filterOnboarding='all'; applyFilter()">
       <span class="adm-stat-num">{{ activeCount }}</span>
       <span class="adm-stat-label">Active</span>
     </div>
-    <div class="adm-stat adm-stat-suspended" (click)="filterStatus='suspended'; filterOnboarding='all'; applyFilter()">
+    <div class="adm-stat adm-stat-suspended" (click)="filterStatus='suspended'; filterPlan='all'; filterOnboarding='all'; applyFilter()">
       <span class="adm-stat-num">{{ suspendedCount }}</span>
       <span class="adm-stat-label">Suspendate</span>
     </div>
-    <div class="adm-stat adm-stat-never" (click)="filterStatus='all'; filterOnboarding='never_logged'; applyFilter()">
+    @if (pendingPaymentCount > 0) {
+      <div class="adm-stat adm-stat-payment" (click)="filterStatus='pending_payment'; filterPlan='all'; filterOnboarding='all'; applyFilter()">
+        <span class="adm-stat-num">{{ pendingPaymentCount }}</span>
+        <span class="adm-stat-label">Plată pending</span>
+      </div>
+    }
+    <div class="adm-stat adm-stat-never" (click)="filterStatus='all'; filterPlan='all'; filterOnboarding='never_logged'; applyFilter()">
       <span class="adm-stat-num">{{ neverLoggedCount }}</span>
       <span class="adm-stat-label">Niciodată logat</span>
     </div>
-    <div class="adm-stat adm-stat-unverified" (click)="filterStatus='all'; filterOnboarding='not_verified'; applyFilter()">
+    <div class="adm-stat adm-stat-unverified" (click)="filterStatus='all'; filterPlan='all'; filterOnboarding='not_verified'; applyFilter()">
       <span class="adm-stat-num">{{ notVerifiedCount }}</span>
       <span class="adm-stat-label">Email neverificat</span>
     </div>
-    <div class="adm-stat adm-stat-incomplete" (click)="filterStatus='all'; filterOnboarding='incomplete'; applyFilter()">
+    <div class="adm-stat adm-stat-incomplete" (click)="filterStatus='all'; filterPlan='all'; filterOnboarding='incomplete'; applyFilter()">
       <span class="adm-stat-num">{{ incompleteCount }}</span>
       <span class="adm-stat-label">Profil incomplet</span>
     </div>
@@ -115,6 +313,11 @@
       <button [class.active]="filterStatus==='pending'" (click)="filterStatus='pending'; applyFilter()">Pending</button>
       <button [class.active]="filterStatus==='active'" (click)="filterStatus='active'; applyFilter()">Active</button>
       <button [class.active]="filterStatus==='suspended'" (click)="filterStatus='suspended'; applyFilter()">Suspendate</button>
+      @if (pendingPaymentCount > 0) {
+        <button [class.active]="filterStatus==='pending_payment'" (click)="filterStatus='pending_payment'; applyFilter()" class="tab-warning">
+          Plată pending ({{ pendingPaymentCount }})
+        </button>
+      }
     </div>
     <div class="adm-filter-tabs" style="margin-top: 8px;">
       <button [class.active]="filterOnboarding==='all'" (click)="filterOnboarding='all'; applyFilter()">Toți</button>
@@ -127,6 +330,23 @@
       <button [class.active]="filterOnboarding==='incomplete'" (click)="filterOnboarding='incomplete'; applyFilter()" class="tab-warning">
         Profil incomplet ({{ incompleteCount }})
       </button>
+    </div>
+    <div class="adm-filter-tabs adm-filter-plans" style="margin-top: 8px;">
+      <button [class.active]="filterPlan==='all'" (click)="filterPlan='all'; applyFilter()">Toate planurile</button>
+      <button [class.active]="filterPlan==='starter'" (click)="filterPlan='starter'; applyFilter()">
+        Starter ({{ starterCount }})
+      </button>
+      <button [class.active]="filterPlan==='growth'" (click)="filterPlan='growth'; applyFilter()" class="tab-growth">
+        Growth ({{ growthCount }})
+      </button>
+      <button [class.active]="filterPlan==='pro'" (click)="filterPlan='pro'; applyFilter()" class="tab-pro">
+        Pro ({{ proCount }})
+      </button>
+      @if (pastDueCount > 0) {
+        <button class="tab-warning" (click)="filterStatus='active'; filterPlan='all'; filterOnboarding='all'; applyFilter()">
+          Plată restantă ({{ pastDueCount }})
+        </button>
+      }
     </div>
   </div>
 
@@ -197,11 +417,18 @@
                 <span class="adm-badge adm-badge-{{ clinic.status }}">{{ clinic.status }}</span>
               </td>
 
-              <td class="adm-plan">{{ clinic.plan }}</td>
+              <td class="adm-plan-cell">
+                <span class="adm-plan-badge adm-plan-{{ clinic.plan }}">{{ clinic.plan }}</span>
+                @if (clinic.stripe_subscription_status && clinic.plan !== 'starter') {
+                  <span class="adm-sub-status adm-sub-{{ clinic.stripe_subscription_status }}">
+                    {{ clinic.stripe_subscription_status }}
+                  </span>
+                }
+              </td>
 
               <td class="adm-profile-cell">
                 <div class="adm-profile-dots">
-                  <span class="adm-dot" [class.filled]="clinic.image_count > 0" title="Poze ({{ clinic.image_count }})">
+                  <span class="adm-dot" [class.filled]="clinic.image_count > 0 || clinic.logo_url" title="Media — logo: {{ clinic.logo_url ? '✓' : '✗' }}, poze galerie: {{ clinic.image_count }}">
                     <i class="fal fa-image"></i>
                   </span>
                   <span class="adm-dot" [class.filled]="clinic.service_count > 0" title="Servicii ({{ clinic.service_count }})">
@@ -214,9 +441,27 @@
                     <i class="fal fa-align-left"></i>
                   </span>
                 </div>
-                <span class="adm-profile-score" [class.complete]="profileScore(clinic) === 4">
-                  {{ profileScore(clinic) }}/4
-                </span>
+                <div class="adm-profile-meta">
+                  <span class="adm-profile-score" [class.complete]="profileScore(clinic) === 4">
+                    {{ profileScore(clinic) }}/4
+                  </span>
+                  @if (clinic.appointment_count > 0) {
+                    <span class="adm-mini-stat" title="Programări totale">
+                      <i class="fal fa-calendar-check"></i> {{ clinic.appointment_count }}
+                    </span>
+                  }
+                  @if (clinic.review_count > 0) {
+                    <span class="adm-mini-stat" title="Recenzii (rating mediu {{ clinic.avg_rating }})">
+                      <i class="fal fa-star"></i> {{ clinic.review_count }}
+                      @if (clinic.avg_rating) { · {{ clinic.avg_rating }} }
+                    </span>
+                  }
+                  @if (clinic.views_30d > 0) {
+                    <span class="adm-mini-stat" title="Vizualizări profil 30 zile">
+                      <i class="fal fa-eye"></i> {{ clinic.views_30d }}
+                    </span>
+                  }
+                </div>
               </td>
 
               <td class="adm-login-cell">
@@ -692,6 +937,87 @@
   </div>
 }
 
+<!-- ── EMAIL STATS MODAL ──────────────────────────────── -->
+@if (emailStats !== null || emailStatsLoading) {
+  <div class="adm-modal-overlay" (click)="emailStats = null">
+    <div class="adm-modal adm-modal-wide adm-modal-emailstats" (click)="$event.stopPropagation()">
+      <div class="adm-modal-header">
+        <h3><i class="fal fa-chart-bar"></i> Email Automation — Statistici</h3>
+        <button class="adm-btn adm-btn-view" (click)="emailStats = null"><i class="fal fa-times"></i></button>
+      </div>
+
+      @if (emailStatsLoading) {
+        <div style="padding:40px; text-align:center; color:#64748b;">
+          <i class="fal fa-spinner fa-spin" style="font-size:24px;"></i>
+        </div>
+      } @else if (emailStats) {
+
+        <div class="adm-email-summary">
+          <div class="adm-email-kpi">
+            <span class="adm-email-kpi-num">{{ totalEmailsSent }}</span>
+            <span class="adm-email-kpi-label">Total emailuri trimise</span>
+          </div>
+          <div class="adm-email-kpi">
+            <span class="adm-email-kpi-num">{{ emailStats.throttledUsersLast24h }}</span>
+            <span class="adm-email-kpi-label">Utilizatori throttled (24h)</span>
+          </div>
+          <div class="adm-email-kpi">
+            <span class="adm-email-kpi-num">{{ emailStats.byType.length }}</span>
+            <span class="adm-email-kpi-label">Tipuri active</span>
+          </div>
+        </div>
+
+        <div class="adm-accounts-table-wrap">
+          <table class="adm-accounts-table">
+            <thead>
+              <tr>
+                <th>Tip email</th>
+                <th>Prioritate</th>
+                <th>Trimise</th>
+                <th>Deschise</th>
+                <th>Clickuri</th>
+                <th>Open rate</th>
+                <th>Click rate</th>
+                <th>Ultimul trimis</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (row of emailStats.byType; track row.email_type) {
+                <tr>
+                  <td><strong>{{ emailTypeLabel(row.email_type) }}</strong></td>
+                  <td>
+                    <span class="adm-priority-badge adm-priority-{{ row.priority | lowercase }}">
+                      {{ row.priority }}
+                    </span>
+                  </td>
+                  <td>{{ row.total_sent }}</td>
+                  <td>{{ row.total_opened }}</td>
+                  <td>{{ row.total_clicked }}</td>
+                  <td>
+                    <span class="adm-rate-badge" [class.rate-good]="row.open_rate_pct >= 20" [class.rate-mid]="row.open_rate_pct >= 10 && row.open_rate_pct < 20">
+                      {{ row.open_rate_pct ?? 0 }}%
+                    </span>
+                  </td>
+                  <td>
+                    <span class="adm-rate-badge" [class.rate-good]="row.click_rate_pct >= 5">
+                      {{ row.click_rate_pct ?? 0 }}%
+                    </span>
+                  </td>
+                  <td class="adm-date">{{ formatDate(row.last_sent) }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+
+      <div class="adm-modal-actions" style="margin-top: 16px;">
+        <button class="adm-modal-cancel" (click)="emailStats = null">Închide</button>
+      </div>
+    </div>
+  </div>
+}
+
 <!-- ── CONFIRM DELETE MODAL ───────────────────────────── -->
 @if (confirmDeleteId !== null) {
   <div class="adm-modal-overlay" (click)="cancelDelete()">
@@ -708,3 +1034,63 @@
     </div>
   </div>
 }
+
+<!-- ── REENGAGEMENT EMAILS RESULT MODAL ──────────────── -->
+@if (reengagementResult !== null) {
+  <div class="adm-modal-overlay" (click)="closeReengagementResult()">
+    <div class="adm-modal adm-modal-wide" (click)="$event.stopPropagation()">
+      <div class="adm-modal-header">
+        <h3><i class="fal fa-user-clock"></i> Email reactivare — {{ reengagementResult.length }} clinici</h3>
+        <button class="adm-btn adm-btn-view" (click)="closeReengagementResult()"><i class="fal fa-times"></i></button>
+      </div>
+      <div class="adm-accounts-table-wrap">
+        <table class="adm-accounts-table">
+          <thead><tr><th>Clinică</th><th>Email</th><th>Trimis</th></tr></thead>
+          <tbody>
+            @for (r of reengagementResult; track r.email) {
+              <tr>
+                <td>{{ r.clinicName }}</td>
+                <td class="adm-mono">{{ r.email }}</td>
+                <td>
+                  @if (r.emailSent) { <span class="adm-verify-ok"><i class="fal fa-check"></i> Trimis</span> }
+                  @else { <span class="adm-verify-no" [title]="r.error ?? ''"><i class="fal fa-times"></i> Eroare{{ r.error ? ': ' + r.error : '' }}</span> }
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+      <div class="adm-modal-actions" style="margin-top: 20px;">
+        <button class="adm-modal-cancel" (click)="closeReengagementResult()">Închide</button>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- ── DEV ACCOUNTS RESULT MODAL ─────────────────────── -->
+@if (devAccountsResult !== null) {
+  <div class="adm-modal-overlay" (click)="closeDevAccountsResult()">
+    <div class="adm-modal" (click)="$event.stopPropagation()">
+      <div class="adm-modal-header">
+        <h3><i class="fal fa-user-shield"></i> Conturi dev create</h3>
+        <button class="adm-btn adm-btn-view" (click)="closeDevAccountsResult()"><i class="fal fa-times"></i></button>
+      </div>
+      <div style="padding: 20px; display: flex; flex-direction: column; gap: 16px;">
+        <div>
+          <div style="font-weight: 600; margin-bottom: 6px;"><i class="fal fa-clinic-medical"></i> Clinică</div>
+          <div class="adm-mono">adminclinica&#64;dentipro.ro / banubada</div>
+          <div style="font-size: 12px; opacity: .6; margin-top: 4px;">{{ devAccountsResult.clinic ?? 'creat/resetat' }}</div>
+        </div>
+        <div>
+          <div style="font-weight: 600; margin-bottom: 6px;"><i class="fal fa-user"></i> Pacient</div>
+          <div class="adm-mono">adminpacient&#64;dentipro.ro / banubada</div>
+          <div style="font-size: 12px; opacity: .6; margin-top: 4px;">{{ devAccountsResult.patient ?? 'creat/resetat' }}</div>
+        </div>
+      </div>
+      <div class="adm-modal-actions">
+        <button class="adm-modal-cancel" (click)="closeDevAccountsResult()">Închide</button>
+      </div>
+    </div>
+  </div>
+}
+

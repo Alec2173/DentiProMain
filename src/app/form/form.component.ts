@@ -10,9 +10,9 @@ import { ClinicDataService } from '../clinic-data.service';
 import { SeoService } from '../seo.service';
 import { Map as MaplibreMap, Marker, NavigationControl } from 'maplibre-gl';
 import { PlanCardComponent } from '../pricing/plan-card/plan-card.component';
-import { PLANS } from '../pricing/plan.model';
-
-const MAPTILER_KEY = 'cwyGOMCDF8zwmBEDJrCr';
+import { PLANS, PAID_PLANS_ENABLED } from '../pricing/plan.model';
+import { AnalyticsService } from '../analytics.service';
+import { ConfigService } from '../config.service';
 
 const API = 'https://www.dentipro.ro/api';
 
@@ -27,14 +27,10 @@ export class FormComponent implements OnInit, OnDestroy {
 
   // ── STEPS ──────────────────────────────────────────────────
   currentStep = 1;
-  readonly totalSteps = 7;
-  readonly stepLabels = ['Clinica', 'Profil', 'Locație', 'Servicii', 'Tarife', 'Plan', 'Finalizare'];
+  readonly totalSteps = 3;
+  readonly stepLabels = ['Clinica', 'Plan', 'Finalizare'];
   readonly stepDescriptions = [
-    'Informații de bază',
-    'Media & display',
-    'Adresă & hartă',
-    'Servicii oferite',
-    'Prețuri servicii',
+    'Informații esențiale',
     'Alege planul tău',
     'Verifică și trimite',
   ];
@@ -96,9 +92,11 @@ export class FormComponent implements OnInit, OnDestroy {
   };
 
   // ── PLANS — sursă unică: plan.model.ts ─────────────────────
-  readonly plans = PLANS;
+  readonly paidPlansEnabled = PAID_PLANS_ENABLED;
+  readonly plans = PAID_PLANS_ENABLED ? PLANS : PLANS.filter(p => p.id === 'starter');
 
   private seo = inject(SeoService);
+  private config = inject(ConfigService);
 
   private get headers(): HttpHeaders {
     const token = this.authService.getToken();
@@ -113,6 +111,7 @@ export class FormComponent implements OnInit, OnDestroy {
     private clinicDataService: ClinicDataService,
     private router: Router,
     private route: ActivatedRoute,
+    private analytics: AnalyticsService,
   ) {}
 
   ngOnInit() {
@@ -133,20 +132,19 @@ export class FormComponent implements OnInit, OnDestroy {
     this.cities = this.roCitiesService.getCities();
     this.serviceObject = this.serviciiService.getServices();
     this.tryPrefillFromExistingClinic();
+    if (!this.isUpdating) this.analytics.signupStarted();
 
     // Pre-selectează planul din query param (?plan=growth)
     const planParam = this.route.snapshot.queryParamMap.get('plan');
     if (planParam && ['starter', 'growth', 'pro'].includes(planParam)) {
-      this.formData.selectedPlan = planParam;
+      this.formData.selectedPlan = PAID_PLANS_ENABLED ? planParam : 'starter';
     }
 
     // Detectează întoarcerea din Stripe după anulare
     if (this.route.snapshot.queryParamMap.get('checkout') === 'canceled') {
       this.checkoutCanceled = true;
-      // Navighează la step 6 direct dacă are clinică deja creată (din tentativa anterioară)
-      if (this.authService.currentUser?.clinicId) {
-        this.currentStep = 6;
-      }
+      this.currentStep = 2; // du direct la selecția planului
+      this.analytics.paymentCanceled(this.formData.selectedPlan);
     }
   }
 
@@ -251,7 +249,7 @@ export class FormComponent implements OnInit, OnDestroy {
     const q = this.addressSearch.trim();
     if (!q) return;
     this.addressSearchLoading = true;
-    const url = `https://api.maptiler.com/geocoding/${encodeURIComponent(q)}.json?key=${MAPTILER_KEY}&country=ro&limit=6&language=ro`;
+    const url = `https://api.maptiler.com/geocoding/${encodeURIComponent(q)}.json?key=${this.config.getMaptilerKey()}&country=ro&limit=6&language=ro`;
     this.http.get<any>(url).subscribe({
       next: (res) => {
         this.addressResults = (res.features ?? []).map((f: any) => ({
@@ -297,7 +295,7 @@ export class FormComponent implements OnInit, OnDestroy {
 
     this.mapInstance = new MaplibreMap({
       container: el,
-      style: `https://api.maptiler.com/maps/streets-v2/style.json?key=${MAPTILER_KEY}`,
+      style: `https://api.maptiler.com/maps/streets-v2/style.json?key=${this.config.getMaptilerKey()}`,
       center: [25.0, 45.9],
       zoom: 6,
     });
@@ -438,23 +436,18 @@ export class FormComponent implements OnInit, OnDestroy {
   nextStep() {
     if (!this.validateStep(this.currentStep)) return;
 
-    // Step 6 + plan plătit → submit imediat + redirect Stripe
-    if (this.currentStep === 6 && this.formData.selectedPlan !== 'starter') {
+    // Step 2 + plan plătit → submit imediat + redirect Stripe
+    if (this.currentStep === 2 && this.formData.selectedPlan !== 'starter') {
+      this.analytics.signupStepCompleted(2, 'Plan');
       this.submitForCheckout();
       return;
     }
 
     if (this.currentStep < this.totalSteps) {
-      const entering = this.currentStep + 1;
+      this.analytics.signupStepCompleted(this.currentStep, this.stepLabels[this.currentStep - 1]);
       this.currentStep++;
       this.errorMessage = '';
       window.scrollTo({ top: 0, behavior: 'smooth' });
-
-      if (entering === 3) {
-        setTimeout(() => this.initLocationMap(), 80);
-      } else if (entering === 5) {
-        this.buildPriceList();
-      }
     }
   }
 
@@ -465,14 +458,9 @@ export class FormComponent implements OnInit, OnDestroy {
 
   prevStep() {
     if (this.currentStep > 1) {
-      const entering = this.currentStep - 1;
       this.currentStep--;
       this.errorMessage = '';
       window.scrollTo({ top: 0, behavior: 'smooth' });
-
-      if (entering === 3) {
-        setTimeout(() => this.initLocationMap(), 80);
-      }
     }
   }
 
@@ -480,9 +468,6 @@ export class FormComponent implements OnInit, OnDestroy {
     if (step >= this.currentStep) return;
     this.currentStep = step;
     this.errorMessage = '';
-    if (step === 3) {
-      setTimeout(() => this.initLocationMap(), 80);
-    }
   }
 
   /** Apelat din PlanCardComponent (selectable mode) în step 6 */
@@ -501,14 +486,6 @@ export class FormComponent implements OnInit, OnDestroy {
         this.errorMessage = 'Numele clinicii este obligatoriu.';
         return false;
       }
-      if (!/^\d{10}$/.test(d.clientPhone)) {
-        this.errorMessage = 'Telefonul afișat pe platformă trebuie să conțină exact 10 cifre.';
-        return false;
-      }
-      if (!/^\d{10}$/.test(d.managerPhone)) {
-        this.errorMessage = 'Telefonul managerului trebuie să conțină exact 10 cifre.';
-        return false;
-      }
       if (!d.email) {
         this.errorMessage = 'Email-ul este obligatoriu.';
         return false;
@@ -523,34 +500,6 @@ export class FormComponent implements OnInit, OnDestroy {
       }
       if (!d.city) {
         this.errorMessage = 'Selectați orașul din lista de sugestii.';
-        return false;
-      }
-    }
-
-    if (step === 3) {
-      if (!d.location.lat || !d.location.lng) {
-        this.errorMessage = 'Adăugați locația clinicii — căutați adresa sau dați click pe hartă.';
-        return false;
-      }
-    }
-
-    if (step === 4) {
-      const total = d.selectedServices.length;
-      if (total < 5) {
-        this.errorMessage = `Selectați cel puțin 5 servicii. Ați selectat ${total} — mai aveți nevoie de ${5 - total}.`;
-        return false;
-      }
-    }
-
-    if (step === 5) {
-      const empty = (d.servicePrices as any[]).filter((p) => {
-        if (p.priceType === 'range') {
-          return p.price === '' || p.price === null || p.priceMax === '' || p.priceMax === null;
-        }
-        return p.price === '' || p.price === null || p.price === undefined;
-      });
-      if (empty.length > 0) {
-        this.errorMessage = `Completați prețul pentru toate serviciile. ${empty.length} rămase fără preț.`;
         return false;
       }
     }
@@ -603,17 +552,18 @@ export class FormComponent implements OnInit, OnDestroy {
         if (res?.clinic) this.authService.refreshCurrentUser();
         const checkoutUrl = res?.checkoutUrl;
         if (checkoutUrl) {
+          this.analytics.paymentStarted(this.formData.selectedPlan, this.formData.billingCycle || 'monthly');
           this.stripeRedirecting = true;
           window.location.href = checkoutUrl;
         } else {
-          // Stripe nu e configurat → arată success normal
+          // Plan plătit fără URL de checkout = eroare de configurare
           this.isLoading = false;
-          this.submitSuccess = true;
+          this.errorMessage = 'Plata nu a putut fi inițiată. Contactați suportul la office.dentipro@gmail.com.';
         }
       },
       error: (err) => {
         console.error(err);
-        this.errorMessage = 'A apărut o eroare. Vă rugăm să încercați din nou.';
+        this.errorMessage = err?.error?.error || 'A apărut o eroare. Vă rugăm să încercați din nou.';
         this.isLoading = false;
       },
     });
@@ -640,6 +590,7 @@ export class FormComponent implements OnInit, OnDestroy {
         this.isLoading = false;
         if (res?.clinic) this.authService.refreshCurrentUser();
         this.submitSuccess = true;
+        this.analytics.signupCompleted('starter');
       },
       error: (err) => {
         console.error(err);

@@ -1,9 +1,10 @@
 import { Component, OnInit, OnDestroy, AfterViewInit, ViewChild, ElementRef, ChangeDetectorRef } from '@angular/core';
-import { Subject, takeUntil } from 'rxjs';
+import { Subject, takeUntil, combineLatest, debounceTime } from 'rxjs';
 import { ClinicDataService } from '../clinic-data.service';
-import { DataShareService } from '../data-share.service';
+import { DataShareService, MapBounds } from '../data-share.service';
 import { FavoritesService } from '../favorites.service';
 import { AuthService } from '../auth.service';
+import { AnalyticsService } from '../analytics.service';
 import { RouterLink } from '@angular/router';
 import { DecimalPipe } from '@angular/common';
 
@@ -25,9 +26,10 @@ export class CardsComponent implements OnInit, AfterViewInit, OnDestroy {
   private city = '';
   private service = '';
   private maxPrice: number | null = null;
+  private bounds: MapBounds | null = null;
   private offset = 0;
 
-  activeService = '';  // exposed to template for price display
+  activeService = '';
   private readonly PAGE_SIZE = 24;
   private destroy$ = new Subject<void>();
   private observer?: IntersectionObserver;
@@ -41,6 +43,7 @@ export class CardsComponent implements OnInit, AfterViewInit, OnDestroy {
     public favorites: FavoritesService,
     public auth: AuthService,
     private cdr: ChangeDetectorRef,
+    private analytics: AnalyticsService,
   ) {}
 
   ngOnInit() {
@@ -49,19 +52,22 @@ export class CardsComponent implements OnInit, AfterViewInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe(ids => this.favoritedIds = ids);
 
-    this.dataShareService.city$
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(city => { this.city = city || ''; this.reload(); });
-
-    this.dataShareService.service$
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(service => { this.service = service || ''; this.activeService = this.service; this.reload(); });
-
-    this.dataShareService.maxPrice$
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(p => { this.maxPrice = p; this.reload(); });
-
-    this.loadPage(true);
+    combineLatest([
+      this.dataShareService.city$,
+      this.dataShareService.service$,
+      this.dataShareService.maxPrice$,
+      this.dataShareService.bounds$,
+    ]).pipe(
+      debounceTime(60),
+      takeUntil(this.destroy$),
+    ).subscribe(([city, service, maxPrice, bounds]) => {
+      this.city = city || '';
+      this.service = service || '';
+      this.activeService = this.service;
+      this.maxPrice = maxPrice;
+      this.bounds = bounds;
+      this.reload();
+    });
   }
 
   ngAfterViewInit() {
@@ -97,20 +103,35 @@ export class CardsComponent implements OnInit, AfterViewInit, OnDestroy {
     if (initial) this.isLoading = true;
     else this.isLoadingMore = true;
 
-    this.clinicData.loadPage({ limit: this.PAGE_SIZE, offset: this.offset, city: this.city || undefined, service: this.service || undefined, maxPrice: this.maxPrice })
+    const params: Parameters<typeof this.clinicData.loadPage>[0] = {
+      limit: this.PAGE_SIZE,
+      offset: this.offset,
+      service: this.service || undefined,
+      maxPrice: this.maxPrice,
+    };
+
+    if (this.bounds) {
+      params.swLat = this.bounds.swLat;
+      params.swLng = this.bounds.swLng;
+      params.neLat = this.bounds.neLat;
+      params.neLng = this.bounds.neLng;
+    } else if (this.city) {
+      params.city = this.city;
+    }
+
+    this.clinicData.loadPage(params)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (res) => {
-          // Parse then apply client-side price post-filter as a reliable fallback
-          const parsed = this.parseClinics(res.clinics).filter(c => this.matchesPrice(c));
-          this.clinics = initial ? parsed : [...this.clinics, ...parsed];
+          const raw = this.parseClinics(res.clinics);
+          const filtered = raw.filter(c => this.matchesPrice(c));
+          this.clinics = initial ? filtered : [...this.clinics, ...filtered];
           this.total = res.total;
           this.hasMore = res.hasMore;
-          this.offset += parsed.length;
+          this.offset += raw.length;
           this.isLoading = false;
           this.isLoadingMore = false;
           this.cdr.detectChanges();
-          // Re-osservă sentinel-ul după ce DOM-ul s-a actualizat
           if (this.hasMore && this.sentinelRef) {
             this.setupObserver();
           }
@@ -128,18 +149,20 @@ export class CardsComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private parseClinics(data: any[]): any[] {
-    return data.map((c) => {
-      let images: string[] = [];
-      if (Array.isArray(c.images) && c.images.length > 0) {
-        images = c.images;
-      } else if (typeof c.clinic_images === 'string') {
-        try { images = JSON.parse(c.clinic_images || '[]'); } catch { images = []; }
-      }
-      return { ...c, images, logo_url: c.logo_url || c.logo_path || null };
-    });
+    const planRank = (p: string) => p === 'pro' ? 0 : p === 'growth' ? 1 : 2;
+    return data
+      .map((c) => {
+        let images: string[] = [];
+        if (Array.isArray(c.images) && c.images.length > 0) {
+          images = c.images;
+        } else if (typeof c.clinic_images === 'string') {
+          try { images = JSON.parse(c.clinic_images || '[]'); } catch { images = []; }
+        }
+        return { ...c, images, logo_url: c.logo_url || c.logo_path || null };
+      })
+      .sort((a, b) => planRank(a.plan) - planRank(b.plan));
   }
 
-  /** Client-side price filter fallback — ensures maxPrice is respected even if backend doesn't filter */
   private matchesPrice(clinic: any): boolean {
     if (!this.maxPrice) return true;
     const services: any[] = clinic.services || [];
@@ -154,7 +177,6 @@ export class CardsComponent implements OnInit, AfterViewInit, OnDestroy {
       return !!svc && svc.price_min !== null && svc.price_min <= this.maxPrice!;
     }
 
-    // No service filter: at least one service must be within budget
     return services.some((s: any) => s.price_min !== null && s.price_min <= this.maxPrice!);
   }
 
@@ -166,7 +188,6 @@ export class CardsComponent implements OnInit, AfterViewInit, OnDestroy {
       .replace(/[țţ]/g, 't');
   }
 
-  /** Returns { label, price } for the active service on a given clinic */
   getServiceInfo(clinic: any): { label: string; price: string | null } | null {
     if (!this.activeService || !clinic.services?.length) return null;
     const norm = this.normalizeRo(this.activeService);
@@ -187,14 +208,27 @@ export class CardsComponent implements OnInit, AfterViewInit, OnDestroy {
     return { label: svc.label ?? '', price };
   }
 
+  onClinicClick(clinic: any) {
+    this.analytics.clinicCardClicked(clinic.id, clinic.name, 'cards');
+  }
+
   toggleFavorite(clinicId: number, event: Event) {
     event.preventDefault();
     event.stopPropagation();
     if (!this.auth.isLoggedIn) return;
+    const action = this.favorites.isFavorited(clinicId) ? 'removed' : 'added';
     this.favorites.toggle(clinicId);
+    this.analytics.favoriteToggled(clinicId, action);
   }
 
   trackByClinicId(_index: number, clinic: any) {
     return clinic.id;
+  }
+
+  clinicInitials(name: string): string {
+    if (!name) return '?';
+    const words = name.split(/\s+/).filter(Boolean);
+    if (words.length >= 2) return (words[0][0] + words[1][0]).toUpperCase();
+    return (words[0]?.[0] || '?').toUpperCase();
   }
 }

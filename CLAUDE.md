@@ -239,13 +239,17 @@ All UI text is in **Romanian** (`ro_RO`). Keep new UI strings in Romanian.
 
 ### Flux Deploy pe Render
 
-1. `git add -A && git commit -m "..."` — commit local
-2. `git push origin main` — push pe GitHub (repo: Alec2173/DentiProMain)
-3. Pe [render.com](https://render.com) → selectezi serviciul → **Manual Deploy → Deploy latest commit**
-   - Render preia automat ultimul commit de pe branch `main`
-   - Nu ai nevoie să specifici commit hash — "latest commit" = ce tocmai ai pushat
+Există UN singur serviciu pe Render — backend-ul Express (`Alec2173/dental-backend`) care servește **și** API-ul **și** frontend-ul Angular din `public/browser/`.
 
-Backend deploy: același flux din repo-ul `DentiPro-backend` (repo separat pe GitHub).
+**Pași obligatorii la fiecare deploy:**
+
+1. Build frontend: `ng build --configuration production` (în DentiProMain)
+2. Copiez build în backend: `rm -rf ../DentiPro-backend/public/browser && cp -r dist/dental/browser ../DentiPro-backend/public/`
+3. Commit backend: `cd ../DentiPro-backend && git add -A && git commit -m "feat: ..."`
+4. Push backend: `git push origin main` → repo: `Alec2173/dental-backend`
+5. Pe [render.com](https://render.com) → serviciul backend → **Manual Deploy → Deploy latest commit**
+
+> **Dacă pe Render apare un commit vechi** = backend-ul nu a fost pushat. Repo-ul frontend (`Alec2173/DentiProMain`) nu se deployează pe Render, e doar pentru backup/colaborare.
 
 ### Rollback Point
 

@@ -138,6 +138,45 @@
       </div>
     }
 
+    <!-- ── PERFORMANCE OVERVIEW STRIP ──────────────────────────── -->
+    <div class="perf-strip">
+      <div class="perf-score-block">
+        <div class="perf-ring" [style.--score]="overallScore">
+          <svg viewBox="0 0 56 56" class="perf-ring-svg">
+            <circle cx="28" cy="28" r="24" class="perf-ring-bg"/>
+            <circle cx="28" cy="28" r="24" class="perf-ring-fill"
+              [style.stroke-dashoffset]="151 - (151 * overallScore / 100)"
+              [style.stroke]="overallScoreColor"/>
+          </svg>
+          <span class="perf-score-num" [style.color]="overallScoreColor">{{ overallScore }}</span>
+        </div>
+        <div>
+          <div class="perf-label">{{ overallScoreLabel }}</div>
+          <div class="perf-sub">Scor clinic</div>
+        </div>
+      </div>
+      <div class="perf-divider"></div>
+      <div class="perf-kpis">
+        <div class="perf-kpi">
+          <span class="perf-kpi-val">{{ profileViews?.last30days ?? '—' }}</span>
+          <span class="perf-kpi-label">Vizualizări / 30 zile</span>
+        </div>
+        <div class="perf-kpi">
+          <span class="perf-kpi-val">{{ data?.stats?.completedAppointments ?? 0 }}</span>
+          <span class="perf-kpi-label">Programări finalizate</span>
+        </div>
+        <div class="perf-kpi">
+          <span class="perf-kpi-val">{{ profileCompletion }}%</span>
+          <span class="perf-kpi-label">Profil completat</span>
+        </div>
+      </div>
+      @if (profileCompletion < 100) {
+        <a routerLink="/clinici/profil" class="perf-complete-cta">
+          <i class="fal fa-arrow-up"></i> Completează profilul
+        </a>
+      }
+    </div>
+
     <!-- ── STATS GRID ─────────────────────────────────────────── -->
     <div class="stats-grid">
 

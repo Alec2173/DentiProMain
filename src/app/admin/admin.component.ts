@@ -175,6 +175,7 @@ export class AdminComponent implements OnInit {
     }
     this.filtered = list;
     this.adminPage = 0;
+    this.updatePage();
   }
 
   private recomputeCounts(clinics: AdminClinic[]): void {
@@ -213,14 +214,17 @@ export class AdminComponent implements OnInit {
     this.pastDueCount = pastDue;
   }
 
-  get pagedClinics() {
+  // Array paginat explicit — nu getter (evita re-render la fiecare CD cycle)
+  pagedClinics: AdminClinic[] = [];
+
+  private updatePage() {
     const start = this.adminPage * this.adminPageSize;
-    return this.filtered.slice(start, start + this.adminPageSize);
+    this.pagedClinics = this.filtered.slice(start, start + this.adminPageSize);
   }
 
   get totalPages() { return Math.ceil(this.filtered.length / this.adminPageSize); }
-  prevPage() { if (this.adminPage > 0) this.adminPage--; }
-  nextPage() { if (this.adminPage < this.totalPages - 1) this.adminPage++; }
+  prevPage() { if (this.adminPage > 0) { this.adminPage--; this.updatePage(); } }
+  nextPage() { if (this.adminPage < this.totalPages - 1) { this.adminPage++; this.updatePage(); } }
 
   private hasClinicMedia(c: AdminClinic): boolean {
     return c.image_count > 0 || !!c.logo_url;

@@ -16,7 +16,10 @@
 /* ── PAGE ──────────────────────────────────────────────────── */
 .dashboard-page {
   min-height: 100vh;
-  background: #080b14;
+  background:
+    radial-gradient(ellipse 900px 600px at 0% 0%, rgba(37,99,235,0.08), transparent 50%),
+    radial-gradient(ellipse 600px 500px at 100% 80%, rgba(139,92,246,0.06), transparent 50%),
+    linear-gradient(160deg, #020b18 0%, #061428 50%, #020b18 100%);
   padding: 40px 24px 80px;
   max-width: 1000px;
   margin: 0 auto;
@@ -3513,4 +3516,134 @@ a.completion-card--clickable:hover {
   .inv-table td:nth-child(3),
   .inv-table th:nth-child(4),
   .inv-table td:nth-child(4) { display: none; }
+}
+
+/* ════════════════════════════════════════════════════
+   PERFORMANCE OVERVIEW STRIP (redesign FAZA 5)
+═══════════════════════════════════════════════════ */
+.perf-strip {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  background: rgba(255,255,255,0.025);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 20px;
+  padding: 22px 28px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.perf-score-block {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-shrink: 0;
+}
+
+.perf-ring {
+  position: relative;
+  width: 56px;
+  height: 56px;
+  flex-shrink: 0;
+}
+
+.perf-ring-svg {
+  width: 56px;
+  height: 56px;
+  transform: rotate(-90deg);
+}
+
+.perf-ring-bg {
+  fill: none;
+  stroke: rgba(255,255,255,0.07);
+  stroke-width: 4;
+}
+
+.perf-ring-fill {
+  fill: none;
+  stroke-width: 4;
+  stroke-linecap: round;
+  stroke-dasharray: 151;
+  transition: stroke-dashoffset 0.6s ease, stroke 0.3s;
+}
+
+.perf-score-num {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.perf-label {
+  font-size: 15px;
+  font-weight: 700;
+  color: white;
+}
+
+.perf-sub {
+  font-size: 12px;
+  color: rgba(255,255,255,0.35);
+  margin-top: 2px;
+}
+
+.perf-divider {
+  width: 1px;
+  height: 44px;
+  background: rgba(255,255,255,0.08);
+  flex-shrink: 0;
+}
+
+.perf-kpis {
+  display: flex;
+  gap: 28px;
+  flex: 1;
+  flex-wrap: wrap;
+}
+
+.perf-kpi {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.perf-kpi-val {
+  font-size: 22px;
+  font-weight: 800;
+  color: white;
+  letter-spacing: -0.03em;
+  line-height: 1;
+}
+
+.perf-kpi-label {
+  font-size: 11.5px;
+  color: rgba(255,255,255,0.4);
+}
+
+.perf-complete-cta {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  background: rgba(37,99,235,0.12);
+  border: 1px solid rgba(37,99,235,0.3);
+  border-radius: 10px;
+  padding: 9px 16px;
+  color: #60a5fa;
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background 0.15s;
+  margin-left: auto;
+}
+
+.perf-complete-cta:hover { background: rgba(37,99,235,0.2); }
+
+@media (max-width: 700px) {
+  .perf-strip { flex-direction: column; align-items: flex-start; }
+  .perf-divider { width: 100%; height: 1px; }
+  .perf-complete-cta { margin-left: 0; width: 100%; justify-content: center; }
 }

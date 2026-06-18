@@ -237,6 +237,12 @@ All UI text is in **Romanian** (`ro_RO`). Keep new UI strings in Romanian.
 - Pagini SEO per oraș — parțial implementat (București, Cluj-Napoca, Timișoara, Iași, Brașov via `CitySeoComponent`); alte orașe neadăugate
 - Comparare clinici side-by-side
 
+### Permisiuni pentru Claude Code
+
+**Idei proprii:** Ai permisiunea explicită de a introduce funcționalități sau îmbunătățiri neprecizate explicit, dacă le consideri valoroase pentru proiect. Condiție obligatorie: documentează fiecare idee în `ideas.md` (ce ai implementat, de ce, unde în cod) pentru ca directorul să poată revizui și decide ce rămâne.
+
+Excepție: modificările breaking sau cu impact mare pe UX (restructurare majoră de route-uri, schimbare de brand, ștergeri de date) necesită aprobare explicită înainte de implementare.
+
 ### Flux Deploy pe Render
 
 Există UN singur serviciu pe Render — backend-ul Express (`Alec2173/dental-backend`) care servește **și** API-ul **și** frontend-ul Angular din `public/browser/`.

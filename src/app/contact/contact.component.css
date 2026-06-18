@@ -1,6 +1,9 @@
 .contact-page {
   min-height: 100vh;
-  background: #080b14;
+  background:
+    radial-gradient(ellipse 700px 500px at 30% 0%, rgba(37,99,235,0.1), transparent 60%),
+    radial-gradient(ellipse 500px 400px at 70% 80%, rgba(139,92,246,0.07), transparent 50%),
+    linear-gradient(160deg, #020b18 0%, #061428 50%, #020b18 100%);
   padding: 60px 24px 80px;
   max-width: 860px;
   margin: 0 auto;

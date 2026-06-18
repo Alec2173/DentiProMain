@@ -1,11 +1,11 @@
 /* ── WRAP ──────────────────────────────────────────────── */
 .adm-wrap {
   min-height: 100vh;
-  background: #0a0a0f;
+  background: linear-gradient(160deg, #020b18 0%, #061428 60%, #020b18 100%);
   padding: 32px;
   font-family: 'Inter', sans-serif;
   color: #e2e8f0;
-  overflow-x: hidden;
+  /* overflow-x: hidden eliminat — cauza randarilor incomplete pe rânduri cu dropdown */
 }
 
 /* ── HEADER ─────────────────────────────────────────────── */

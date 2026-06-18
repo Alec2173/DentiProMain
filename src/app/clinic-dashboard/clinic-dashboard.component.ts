@@ -417,6 +417,30 @@ export class ClinicDashboardComponent implements OnInit, OnDestroy {
     return 'low';
   }
 
+  /** Scor global 0-100 bazat pe profil + activitate + vizualizări */
+  get overallScore(): number {
+    const profile = this.profileCompletion;
+    const views   = Math.min(100, (this.profileViews?.last30days ?? 0) * 2);
+    const appts   = Math.min(100, (this.data?.stats?.completedAppointments ?? 0) * 10);
+    return Math.round((profile * 0.5) + (views * 0.3) + (appts * 0.2));
+  }
+
+  get overallScoreLabel(): string {
+    const s = this.overallScore;
+    if (s >= 80) return 'Excelent';
+    if (s >= 60) return 'Bun';
+    if (s >= 40) return 'În creștere';
+    return 'Începător';
+  }
+
+  get overallScoreColor(): string {
+    const s = this.overallScore;
+    if (s >= 80) return '#4ade80';
+    if (s >= 60) return '#fbbf24';
+    if (s >= 40) return '#60a5fa';
+    return '#f87171';
+  }
+
   get shouldShowUpgradeNudge(): boolean {
     return (this.subscription?.plan === 'starter') &&
       (this.performanceTier === 'medium' || this.performanceTier === 'high');

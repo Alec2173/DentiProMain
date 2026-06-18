@@ -1,11 +1,9 @@
-<!-- ── STICKY WIDGET ─────────────────────────────────────────── -->
 <div class="sw-wrap">
 
-  <!-- Buton flotant -->
-  <button class="sw-fab" (click)="toggle()" [class.sw-fab--open]="isOpen" title="Ajutor și suport">
+  <!-- ── FAB ──────────────────────────────────────────────── -->
+  <button class="sw-fab" (click)="toggle()" [class.sw-fab--open]="isOpen" title="Ajutor DentiPro">
     @if (!isOpen) {
-      <i class="fal fa-comment-question"></i>
-      <span class="sw-fab-label">Ajutor</span>
+      <i class="fal fa-comment-smile"></i>
       @if (unreadReplies > 0) {
         <span class="sw-badge">{{ unreadReplies }}</span>
       }
@@ -14,144 +12,186 @@
     }
   </button>
 
-  <!-- Panel -->
+  <!-- ── PANEL ─────────────────────────────────────────────── -->
   @if (isOpen) {
     <div class="sw-panel">
 
+      <!-- Header -->
       <div class="sw-header">
-        <div class="sw-header-icon"><i class="fal fa-headset"></i></div>
-        <div>
-          <div class="sw-header-title">Echipa DentiPro</div>
-          <div class="sw-header-sub">Răspundem în cel mai scurt timp</div>
+        <div class="sw-header-avatar">
+          <i class="fal fa-robot"></i>
+          <span class="sw-online-dot"></span>
         </div>
+        <div class="sw-header-info">
+          <div class="sw-header-title">Asistent DentiPro</div>
+          <div class="sw-header-sub">
+            @if (mode === 'bot') { Răspuns instant · powered by AI }
+            @else { Echipa DentiPro · răspuns în 24h }
+          </div>
+        </div>
+        @if (mode !== 'bot') {
+          <button class="sw-back-btn" (click)="backToBot()" title="Înapoi la asistent">
+            <i class="fal fa-robot"></i>
+          </button>
+        }
+        @if (auth.isClinic && history.length > 0 && mode === 'bot') {
+          <button class="sw-history-btn" (click)="mode = 'human'" title="Mesaje anterioare">
+            <i class="fal fa-history"></i>
+          </button>
+        }
       </div>
 
-      <!-- Istoricul conversațiilor (doar clinici logati) -->
-      @if (auth.isClinic) {
-        @if (loadingHistory) {
-          <div class="sw-loading"><i class="fal fa-spinner fa-spin"></i></div>
+      <!-- ══════════ BOT MODE ══════════ -->
+      @if (mode === 'bot') {
+
+        <div class="sw-messages">
+          @for (msg of botMessages; track msg.timestamp) {
+            <div class="sw-msg" [class.sw-msg--user]="msg.role === 'user'" [class.sw-msg--bot]="msg.role === 'assistant'">
+              @if (msg.role === 'assistant') {
+                <div class="sw-msg-avatar"><i class="fal fa-robot"></i></div>
+              }
+              <div class="sw-msg-bubble">
+                <div class="sw-msg-text">{{ msg.content }}</div>
+                <div class="sw-msg-time">{{ formatTime(msg.timestamp) }}</div>
+              </div>
+            </div>
+          }
+
+          @if (botTyping) {
+            <div class="sw-msg sw-msg--bot">
+              <div class="sw-msg-avatar"><i class="fal fa-robot"></i></div>
+              <div class="sw-msg-bubble sw-msg-bubble--typing">
+                <span></span><span></span><span></span>
+              </div>
+            </div>
+          }
+
+          <div #messagesEnd></div>
+        </div>
+
+        <!-- Sugestii rapide (doar la început) -->
+        @if (botMessages.length <= 1 && !botTyping) {
+          <div class="sw-suggestions">
+            <button class="sw-chip" (click)="userInput = 'Cât costă un abonament?'; sendBotMessage()">
+              💰 Prețuri planuri
+            </button>
+            <button class="sw-chip" (click)="userInput = 'Cum fac o programare?'; sendBotMessage()">
+              📅 Cum fac programare
+            </button>
+            <button class="sw-chip" (click)="userInput = 'Cum înscriu clinica mea?'; sendBotMessage()">
+              🏥 Înscrie clinica
+            </button>
+            <button class="sw-chip" (click)="userInput = 'Ce sunt punctele DentiPro?'; sendBotMessage()">
+              🎁 Puncte recompensă
+            </button>
+          </div>
         }
 
-        @if (!loadingHistory && history.length > 0) {
-          <div class="sw-history">
-            @for (m of history; track m.id) {
-              <!-- Antet conversație (click pentru expand) -->
-              <div class="sw-thread-header" (click)="toggleThread(m.id)"
-                   [class.sw-thread-closed]="m.status === 'closed'">
-                <div class="sw-thread-preview">
-                  {{ m.message.length > 60 ? (m.message.slice(0,60) + '…') : m.message }}
-                </div>
-                <div class="sw-thread-meta">
-                  @if (m.status === 'closed') {
-                    <span class="sw-thread-badge sw-thread-badge--closed">Închis</span>
-                  } @else if (hasUnseenAdminReply(m)) {
-                    <span class="sw-thread-badge sw-thread-badge--new">Răspuns nou</span>
-                  }
-                  <span class="sw-thread-count">
-                    <i class="fal fa-comment-alt"></i> {{ (m.replies?.length ?? 0) + 1 }}
-                  </span>
-                  <i class="fal" [class.fa-chevron-down]="activeThreadId !== m.id"
-                     [class.fa-chevron-up]="activeThreadId === m.id"></i>
-                </div>
-              </div>
+        <!-- Input -->
+        <div class="sw-input-row">
+          <textarea class="sw-input" [(ngModel)]="userInput"
+            (keydown)="onBotKeydown($event)"
+            placeholder="Scrie o întrebare..." rows="1"></textarea>
+          <button class="sw-send-btn" (click)="sendBotMessage()" [disabled]="!canSendBot">
+            <i class="fal fa-paper-plane"></i>
+          </button>
+        </div>
 
-              <!-- Thread expandat -->
-              @if (activeThreadId === m.id) {
-                <div class="sw-thread-body">
-
-                  <!-- Mesaj original -->
-                  <div class="sw-bubble sw-bubble--me">
-                    <span class="sw-bubble-text">{{ m.message }}</span>
-                    <span class="sw-bubble-date">{{ formatDate(m.created_at) }}</span>
-                  </div>
-
-                  <!-- Replies -->
-                  @for (r of m.replies; track r.id) {
-                    @if (r.sender === 'clinic') {
-                      <div class="sw-bubble sw-bubble--me">
-                        <span class="sw-bubble-text">{{ r.body }}</span>
-                        <span class="sw-bubble-date">{{ formatDate(r.created_at) }}</span>
-                      </div>
-                    } @else {
-                      <div class="sw-bubble sw-bubble--them">
-                        <span class="sw-bubble-from">DentiPro</span>
-                        <span class="sw-bubble-text">{{ r.body }}</span>
-                        <span class="sw-bubble-date">{{ formatDate(r.created_at) }}</span>
-                      </div>
-                    }
-                  }
-
-                  @if (m.replies?.length === 0) {
-                    <div class="sw-pending">
-                      <i class="fal fa-clock"></i> Răspuns în așteptare
-                    </div>
-                  }
-
-                  <!-- Follow-up form (dacă nu e închis) -->
-                  @if (m.status !== 'closed') {
-                    <div class="sw-followup-form">
-                      <textarea class="sw-textarea sw-textarea--sm" [(ngModel)]="followUp"
-                        placeholder="Trimite un mesaj următor..." rows="2"></textarea>
-                      <button class="sw-send-btn sw-send-btn--sm"
-                        (click)="sendFollowUp(m)" [disabled]="!followUp.trim() || sendingFollowUp">
-                        @if (sendingFollowUp) { <i class="fal fa-spinner fa-spin"></i> }
-                        @else { <i class="fal fa-paper-plane"></i> Trimite }
-                      </button>
-                    </div>
-                  } @else {
-                    <div class="sw-closed-note"><i class="fal fa-lock"></i> Conversație închisă</div>
-                  }
-                </div>
-              }
-            }
-          </div>
+        <!-- Escaladare -->
+        @if (showEscalateBtn) {
+          <button class="sw-escalate-btn" (click)="escalateToHuman()">
+            <i class="fal fa-headset"></i> Vorbește cu echipa
+          </button>
+        } @else {
+          <button class="sw-escalate-link" (click)="escalateToHuman()">
+            Preferi să vorbești cu o persoană reală?
+          </button>
         }
       }
 
-      <!-- Formular mesaj nou -->
-      @if (sent && !activeThreadId) {
-        <div class="sw-sent">
-          <i class="fal fa-check-circle"></i>
-          <span>Mesajul tău a fost trimis! Îți vom răspunde în curând.</span>
-        </div>
-        <button class="sw-new-btn" (click)="sent = false">
-          <i class="fal fa-plus"></i> Trimite alt mesaj
-        </button>
-      } @else if (!activeThreadId) {
-        <div class="sw-form">
-          <p class="sw-form-label">
-            <i class="fal fa-question-circle"></i>
-            Ai o întrebare sau o problemă?
-          </p>
+      <!-- ══════════ HUMAN FORM ══════════ -->
+      @if (mode === 'human-form') {
+        <div class="sw-human-form">
+          <div class="sw-human-notice">
+            <i class="fal fa-headset"></i>
+            Scrie mesajul tău — echipa DentiPro îți va răspunde în cel mult 24 de ore.
+          </div>
 
           @if (!auth.isClinic) {
-            <input
-              type="email"
-              class="sw-email-input"
-              [(ngModel)]="guestEmail"
-              placeholder="Adresa ta de email (obligatoriu)"
-            />
+            <input type="email" class="sw-field" [(ngModel)]="guestEmail" placeholder="Emailul tău (obligatoriu)" />
           }
 
-          <textarea
-            class="sw-textarea"
-            [(ngModel)]="message"
-            placeholder="Scrie întrebarea ta aici..."
-            rows="4">
-          </textarea>
-          <button class="sw-send-btn" (click)="send()" [disabled]="!canSend || sending">
-            @if (sending) { <i class="fal fa-spinner fa-spin"></i> Se trimite... }
+          <textarea class="sw-field sw-field--area" [(ngModel)]="humanMessage"
+            placeholder="Descrie problema sau întrebarea ta..." rows="4"></textarea>
+
+          <button class="sw-send-human-btn" (click)="sendHumanMessage()" [disabled]="!canSendHuman || sendingHuman">
+            @if (sendingHuman) { <i class="fal fa-spinner fa-spin"></i> Se trimite... }
             @else { <i class="fal fa-paper-plane"></i> Trimite mesajul }
           </button>
         </div>
       }
 
-      <div class="sw-email-row">
-        <i class="fal fa-envelope"></i>
-        <a href="mailto:contact@dentipro.ro">contact&#64;dentipro.ro</a>
+      <!-- ══════════ HUMAN SENT ══════════ -->
+      @if (mode === 'human-sent') {
+        <div class="sw-sent-state">
+          <div class="sw-sent-icon">✅</div>
+          <h3>Mesaj trimis!</h3>
+          <p>Echipa DentiPro îți va răspunde în cel mult 24 de ore la adresa ta de email.</p>
+          <button class="sw-new-msg-btn" (click)="mode = 'bot'">
+            <i class="fal fa-robot"></i> Înapoi la asistent
+          </button>
+        </div>
+      }
+
+      <!-- ══════════ HISTORY (clinic) ══════════ -->
+      @if (mode === 'human') {
+        <div class="sw-history-view">
+          @if (loadingHistory) {
+            <div class="sw-loading"><i class="fal fa-spinner fa-spin"></i></div>
+          }
+          @for (m of history; track m.id) {
+            <div class="sw-thread" [class.sw-thread--closed]="m.status === 'closed'">
+              <div class="sw-thread-head" (click)="toggleThread(m.id)">
+                <span class="sw-thread-preview">{{ m.message.length > 55 ? (m.message.slice(0,55) + '…') : m.message }}</span>
+                <div class="sw-thread-badges">
+                  @if (hasUnseenAdminReply(m)) { <span class="sw-badge-new">Nou</span> }
+                  @if (m.status === 'closed') { <span class="sw-badge-closed">Închis</span> }
+                  <i class="fal" [class.fa-chevron-down]="activeThreadId !== m.id" [class.fa-chevron-up]="activeThreadId === m.id"></i>
+                </div>
+              </div>
+              @if (activeThreadId === m.id) {
+                <div class="sw-thread-body">
+                  <div class="sw-msg sw-msg--user"><div class="sw-msg-bubble"><div class="sw-msg-text">{{ m.message }}</div><div class="sw-msg-time">{{ formatDate(m.created_at) }}</div></div></div>
+                  @for (r of m.replies; track r.id) {
+                    @if (r.sender === 'clinic') {
+                      <div class="sw-msg sw-msg--user"><div class="sw-msg-bubble"><div class="sw-msg-text">{{ r.body }}</div><div class="sw-msg-time">{{ formatDate(r.created_at) }}</div></div></div>
+                    } @else {
+                      <div class="sw-msg sw-msg--bot"><div class="sw-msg-avatar"><i class="fal fa-headset"></i></div><div class="sw-msg-bubble"><div class="sw-msg-from">DentiPro</div><div class="sw-msg-text">{{ r.body }}</div><div class="sw-msg-time">{{ formatDate(r.created_at) }}</div></div></div>
+                    }
+                  }
+                  @if (!m.replies?.length) { <div class="sw-pending"><i class="fal fa-clock"></i> Răspuns în așteptare</div> }
+                  @if (m.status !== 'closed') {
+                    <div class="sw-followup">
+                      <textarea class="sw-field sw-field--sm" [(ngModel)]="followUp" placeholder="Mesaj următor..." rows="2"></textarea>
+                      <button class="sw-send-sm-btn" (click)="sendFollowUp(m)" [disabled]="!followUp.trim() || sendingFollowUp">
+                        @if (sendingFollowUp) { <i class="fal fa-spinner fa-spin"></i> } @else { <i class="fal fa-paper-plane"></i> }
+                      </button>
+                    </div>
+                  }
+                </div>
+              }
+            </div>
+          }
+          <button class="sw-new-thread-btn" (click)="mode = 'human-form'">
+            <i class="fal fa-plus"></i> Mesaj nou
+          </button>
+        </div>
+      }
+
+      <div class="sw-footer">
+        <i class="fal fa-lock"></i> Securizat · <a href="mailto:contact@dentipro.ro">contact&#64;dentipro.ro</a>
       </div>
 
     </div>
   }
-
 </div>

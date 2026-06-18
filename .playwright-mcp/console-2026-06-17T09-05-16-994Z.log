@@ -1,4 +1,0 @@
-[     523ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://www.smartbill.ro/autentificare:0
-[     950ms] Uncaught TypeError: Cannot read properties of undefined (reading 'TenantFeatures')
-    at <anonymous> (https://cdn.cookielaw.org/scripttemplates/202407.2.0/otBannerSdk.js:6:454663)
-    at <anonymous> (https://cdn.cookielaw.org/scripttemplates/202407.2.0/otBannerSdk.js:6:462307)

@@ -237,6 +237,16 @@ All UI text is in **Romanian** (`ro_RO`). Keep new UI strings in Romanian.
 - Pagini SEO per oraș — parțial implementat (București, Cluj-Napoca, Timișoara, Iași, Brașov via `CitySeoComponent`); alte orașe neadăugate
 - Comparare clinici side-by-side
 
+### Flux Deploy pe Render
+
+1. `git add -A && git commit -m "..."` — commit local
+2. `git push origin main` — push pe GitHub (repo: Alec2173/DentiProMain)
+3. Pe [render.com](https://render.com) → selectezi serviciul → **Manual Deploy → Deploy latest commit**
+   - Render preia automat ultimul commit de pe branch `main`
+   - Nu ai nevoie să specifici commit hash — "latest commit" = ce tocmai ai pushat
+
+Backend deploy: același flux din repo-ul `DentiPro-backend` (repo separat pe GitHub).
+
 ### Rollback Point
 
 Last known stable state with full Stripe + all features:

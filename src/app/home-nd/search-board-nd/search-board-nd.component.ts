@@ -36,7 +36,7 @@ export class SearchBoardNdComponent implements OnInit {
   ngOnInit() {
     this.services = this.serviciiService.getServices();
     this.cities = this.roCitiesService.getCities();
-    this.http.get<any>('https://www.dentipro.ro/api/stats/public').subscribe({
+    this.http.get<any>('/api/stats/public').subscribe({
       next: (s) => { this.stats = s; },
       error: () => {},
     });

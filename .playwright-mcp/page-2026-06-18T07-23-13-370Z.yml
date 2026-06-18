@@ -1,0 +1,4 @@
+- generic [ref=e4]:
+  - generic [ref=e5]: "NG5002: Parser Error: Missing expected ) at column 8 in [(model as any)[opt.key]] in /Users/alec/Desktop/DentiProMain/src/app/parteneriat/parteneriat.component.html@318:62"
+  - generic [ref=e6]: src/app/parteneriat/parteneriat.component.html:319:62
+  - generic [ref=e7]: Click outside, press Esc key, or fix the code to dismiss.

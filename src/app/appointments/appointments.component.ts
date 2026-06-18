@@ -4,7 +4,7 @@ import { AuthService } from '../auth.service';
 import { RouterLink, Router } from '@angular/router';
 import { getInitials } from '../utils/text.utils';
 
-const API = 'https://www.dentipro.ro/api';
+const API = '/api';
 
 @Component({
   selector: 'app-appointments',

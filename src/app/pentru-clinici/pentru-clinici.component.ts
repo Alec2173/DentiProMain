@@ -4,7 +4,7 @@ import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angula
 import { HttpClient } from '@angular/common/http';
 import { SeoService } from '../seo.service';
 
-const API = 'https://www.dentipro.ro/api';
+const API = '/api';
 
 @Component({
   selector: 'app-pentru-clinici',

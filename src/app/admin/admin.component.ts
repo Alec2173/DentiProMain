@@ -5,7 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { DecimalPipe, LowerCasePipe, DatePipe, UpperCasePipe } from '@angular/common';
 import { AuthService } from '../auth.service';
 
-const API = 'https://www.dentipro.ro/api';
+const API = '/api';
 
 interface AdminClinic {
   id: number;

@@ -5,7 +5,7 @@ import { DatePipe } from '@angular/common';
 import { AuthService } from '../auth.service';
 import { SeoService } from '../seo.service';
 
-const API = 'https://www.dentipro.ro/api';
+const API = '/api';
 
 const NOTIF_META: Record<string, { icon: string; color: string }> = {
   appointment_created    : { icon: 'fa-calendar-plus',   color: '#60a5fa' },

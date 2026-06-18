@@ -4,7 +4,7 @@ import { BehaviorSubject, Observable, of } from 'rxjs';
 import { tap, catchError, map } from 'rxjs/operators';
 import { AuthService } from './auth.service';
 
-const API = 'https://www.dentipro.ro/api';
+const API = '/api';
 
 export type SubscriptionPlan = 'starter' | 'growth' | 'pro';
 export type SubscriptionStatus = 'active' | 'inactive' | 'trialing' | 'trial' | 'past_due' | 'canceled';

@@ -8,7 +8,7 @@ import { AuthService } from '../auth.service';
 import { ClinicDataService } from '../clinic-data.service';
 import { getInitials } from '../utils/text.utils';
 
-const API = 'https://www.dentipro.ro/api';
+const API = '/api';
 
 @Component({
   selector: 'app-navbar',

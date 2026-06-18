@@ -5,7 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { DatePipe, LowerCasePipe } from '@angular/common';
 import { AuthService } from '../auth.service';
 
-const API = 'https://www.dentipro.ro/api';
+const API = '/api';
 
 @Component({
   selector: 'app-profile',

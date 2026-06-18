@@ -3,7 +3,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../auth.service';
 
-const API = 'https://www.dentipro.ro/api';
+const API = '/api';
 
 @Component({
   selector: 'app-support-widget',

@@ -1,0 +1,304 @@
+- generic [ref=e2]:
+  - navigation [ref=e4]:
+    - generic [ref=e5]:
+      - link "DentiPro" [ref=e6] [cursor=pointer]:
+        - /url: /
+        - img "DentiPro" [ref=e7]
+      - text:     
+    - generic [ref=e10]:
+      - generic [ref=e11]: 
+      - textbox "Caută clinici, orașe sau servicii..." [ref=e12]
+    - generic [ref=e13]:
+      - link " Ești o clinică? " [ref=e14] [cursor=pointer]:
+        - /url: /clinici
+        - generic [ref=e15]: 
+        - generic [ref=e16]: Ești o clinică?
+        - generic [ref=e17]: 
+      - button " Autentificare" [ref=e18] [cursor=pointer]:
+        - generic [ref=e19]: 
+        - generic [ref=e20]: Autentificare
+      - button " Cont nou" [ref=e21] [cursor=pointer]:
+        - generic [ref=e22]: 
+        - generic [ref=e23]: Cont nou
+      - button "" [ref=e24] [cursor=pointer]:
+        - generic [ref=e25]: 
+  - generic [ref=e27]:
+    - generic [ref=e29]:
+      - generic [ref=e30]:
+        - generic [ref=e31]: 
+        - text: Program Partener DentiPro
+      - heading "Devino Partener Oficial" [level=1] [ref=e32]:
+        - text: Devino
+        - text: Partener Oficial
+      - paragraph [ref=e33]:
+        - text: DentiPro selectează un număr limitat de clinici partenere care beneficiază
+        - strong [ref=e34]: gratuit
+        - text: de funcționalitățile premium ale platformei, în schimbul unor beneficii exclusive pentru pacienții noștri.
+      - generic [ref=e35]:
+        - generic [ref=e36]:
+          - generic [ref=e37]: 70+
+          - generic [ref=e38]: clinici verificate
+        - generic [ref=e39]:
+          - generic [ref=e40]: 500+
+          - generic [ref=e41]: pacienți activi
+        - generic [ref=e42]:
+          - generic [ref=e43]: 95%
+          - generic [ref=e44]: satisfacție
+        - generic [ref=e45]:
+          - generic [ref=e46]: 3+
+          - generic [ref=e47]: orașe majore
+      - button " Completează formularul — 3 minute " [ref=e48] [cursor=pointer]:
+        - generic [ref=e49]: 
+        - text: Completează formularul — 3 minute
+        - generic [ref=e50]: 
+    - generic [ref=e52]:
+      - generic [ref=e53]:
+        - generic [ref=e54]: 
+        - text: Ce primești ca partener
+      - heading "Acces complet la DentiPro Pro în mod GRATUIT" [level=2] [ref=e55]:
+        - text: Acces complet la DentiPro Pro
+        - text: în mod
+        - strong [ref=e56]: GRATUIT
+      - generic [ref=e57]:
+        - generic [ref=e58]:
+          - generic [ref=e59]:
+            - generic [ref=e61]: 
+            - generic [ref=e62]: DentiPro Pro GRATUIT pe durata parteneriatului
+          - generic [ref=e63]:
+            - generic [ref=e65]: 
+            - generic [ref=e66]: Badge „Partener Oficial DentiPro"
+          - generic [ref=e67]:
+            - generic [ref=e69]: 
+            - generic [ref=e70]: Promovare prioritară — Top 3 în căutări
+          - generic [ref=e71]:
+            - generic [ref=e73]: 
+            - generic [ref=e74]: Pin VIP auriu pe harta interactivă
+          - generic [ref=e75]:
+            - generic [ref=e77]: 
+            - generic [ref=e78]: Expunere în campaniile de marketing DentiPro
+          - generic [ref=e79]:
+            - generic [ref=e81]: 
+            - generic [ref=e82]: Acces la programul de recompense pentru pacienți
+          - generic [ref=e83]:
+            - generic [ref=e85]: 
+            - generic [ref=e86]: Dashboard analytics și statistici avansate
+        - generic [ref=e87]:
+          - generic [ref=e88]:
+            - generic [ref=e89]: Planul tău ca partener
+            - generic [ref=e91]:
+              - generic [ref=e92]:
+                - generic [ref=e93]:
+                  - generic [ref=e94]: ★
+                  - text: Pro
+                - generic [ref=e95]: Domești Top 3 în rezultatele din orașul tău
+              - generic [ref=e96]:
+                - generic [ref=e97]:
+                  - generic [ref=e98]: 149 RON
+                  - generic [ref=e99]: /lună
+                  - generic [ref=e100]: + TVA
+                - generic [ref=e101]: 180,29 RON/lună cu TVA inclus
+                - generic [ref=e102]: facturat lunar · fără contract
+              - link "Upgrade la Pro arrow_forward" [ref=e103] [cursor=pointer]:
+                - /url: /clinici/inscriere?plan=pro
+                - text: Upgrade la Pro
+                - generic [ref=e104]: arrow_forward
+              - list [ref=e106]:
+                - listitem [ref=e107]:
+                  - generic [ref=e108]: check_circle
+                  - generic [ref=e109]: Ocupi primele poziții în căutările din orașul tău
+                - listitem [ref=e110]:
+                  - generic [ref=e111]: check_circle
+                  - generic [ref=e112]: Badge „★ VIP" — design premium ce atrage privirile
+                - listitem [ref=e113]:
+                  - generic [ref=e114]: cancel
+                  - generic [ref=e115]: Notificări automate pacienți în raza 20 km
+                  - generic [ref=e116]: CURÂND
+                - listitem [ref=e117]:
+                  - generic [ref=e118]: check_circle
+                  - generic [ref=e119]: Promovare nelimitată oferte pacienți activi
+                - listitem [ref=e120]:
+                  - generic [ref=e121]: check_circle
+                  - generic [ref=e122]: Apariție prioritară pe homepage DentiPro
+                  - generic [ref=e123]: NOU
+                - listitem [ref=e124]:
+                  - generic [ref=e125]: check_circle
+                  - generic [ref=e126]: Analiză avansată & poziționare față de concurență
+                - listitem [ref=e127]:
+                  - generic [ref=e128]: check_circle
+                  - generic [ref=e129]: Modul gestionare stocuri + alerte automate
+                  - generic [ref=e130]: NOU
+                - listitem [ref=e131]:
+                  - generic [ref=e132]: check_circle
+                  - generic [ref=e133]: Raport lunar automat de performanță
+                - listitem [ref=e134]:
+                  - generic [ref=e135]: check_circle
+                  - generic [ref=e136]: Calendar programări online
+                - listitem [ref=e137]:
+                  - generic [ref=e138]: check_circle
+                  - generic [ref=e139]: Suport prioritar 24h
+                - listitem [ref=e140]:
+                  - generic [ref=e141]: cancel
+                  - generic [ref=e142]: Acces API
+                  - generic [ref=e143]: CURÂND
+            - generic [ref=e144]:
+              - generic [ref=e145]: 
+              - text: Gratuit pe durata parteneriatului
+          - generic [ref=e146]:
+            - generic [ref=e147]:
+              - generic [ref=e148]: 
+              - text: Cum apari în căutări
+            - generic [ref=e149]:
+              - generic [ref=e150]: ★ VIP
+              - generic [ref=e151]:
+                - generic [ref=e152]: 
+                - text: Partener Oficial
+              - generic [ref=e153]:
+                - generic [ref=e154]:
+                  - generic [ref=e156]: 
+                  - generic [ref=e157]: BUCUREȘTI
+                - generic [ref=e158]: Clinica Ta
+                - generic [ref=e159]:
+                  - generic [ref=e160]: 
+                  - generic [ref=e161]: "#1 în ciudad ta"
+                - generic [ref=e162]:
+                  - generic [ref=e163]: 
+                  - generic [ref=e164]: Implant dentar — de la 1.200 lei
+                  - generic [ref=e165]: "-10% DentiPro"
+          - generic [ref=e166]:
+            - generic [ref=e167]:
+              - generic [ref=e168]: 
+              - text: Pe harta interactivă
+            - generic [ref=e169]:
+              - generic [ref=e173]:
+                - generic [ref=e174]: 
+                - generic [ref=e175]: VIP
+              - generic [ref=e180]: Clinica Ta — Partener Oficial
+    - generic [ref=e182]:
+      - generic [ref=e183]:
+        - generic [ref=e184]: 
+        - text: Formular de participare
+      - heading "Suntem interesați? Completați mai jos" [level=2] [ref=e185]:
+        - text: Suntem interesați?
+        - text: Completați mai jos
+      - generic [ref=e186]:
+        - generic [ref=e187]:
+          - generic [ref=e188]: "1"
+          - generic [ref=e189]: Beneficii oferite
+        - generic [ref=e191]:
+          - generic [ref=e192]: "2"
+          - generic [ref=e193]: Servicii & model
+        - generic [ref=e195]:
+          - generic [ref=e196]: "3"
+          - generic [ref=e197]: Date clinică
+      - generic [ref=e198]:
+        - generic [ref=e199]:
+          - heading "Ce beneficii oferiți pacienților DentiPro?" [level=3] [ref=e200]
+          - paragraph [ref=e201]: Selectați una sau mai multe opțiuni. Acestea vor fi afișate pe profilul clinicii.
+          - generic [ref=e202]:
+            - generic [ref=e204] [cursor=pointer]:
+              - generic [ref=e205]: 
+              - generic [ref=e206]: Consultație gratuită
+            - generic [ref=e208] [cursor=pointer]:
+              - generic [ref=e209]: 
+              - generic [ref=e210]: Reducere procentuală
+            - generic [ref=e212] [cursor=pointer]:
+              - generic [ref=e213]: 
+              - generic [ref=e214]: Reducere fixă (50–100 lei)
+            - generic [ref=e216] [cursor=pointer]:
+              - generic [ref=e217]: 
+              - generic [ref=e218]: Detartraj promoțional
+            - generic [ref=e220] [cursor=pointer]:
+              - generic [ref=e221]: 
+              - generic [ref=e222]: Albire dentară promoțional
+            - generic [ref=e224] [cursor=pointer]:
+              - generic [ref=e225]: 
+              - generic [ref=e226]: Radiografie gratuită
+            - generic [ref=e228] [cursor=pointer]:
+              - generic [ref=e229]: 
+              - generic [ref=e230]: Plan tratament gratuit
+            - generic [ref=e232] [cursor=pointer]:
+              - generic [ref=e233]: 
+              - generic [ref=e234]: Voucher valoric
+            - generic [ref=e236] [cursor=pointer]:
+              - generic [ref=e237]: 
+              - generic [ref=e238]: Pachet pacienți noi
+            - generic [ref=e240] [cursor=pointer]:
+              - generic [ref=e241]: 
+              - generic [ref=e242]: Alt beneficiu
+          - heading "Ce reducere considerați realistă?" [level=3] [ref=e243]
+          - generic [ref=e244]:
+            - generic [ref=e246] [cursor=pointer]: 5%
+            - generic [ref=e248] [cursor=pointer]: 10%
+            - generic [ref=e250] [cursor=pointer]: 15%
+            - generic [ref=e252] [cursor=pointer]: 20%
+            - generic [ref=e254] [cursor=pointer]: Altă valoare
+        - button "Continuă " [ref=e256] [cursor=pointer]:
+          - text: Continuă
+          - generic [ref=e257]: 
+    - generic [ref=e258]:
+      - paragraph [ref=e259]:
+        - generic [ref=e260]: 
+        - text: Datele dumneavoastră sunt confidențiale și nu vor fi partajate cu terți. Răspundem la toate cererile în maxim 48 de ore.
+      - paragraph [ref=e261]:
+        - text: Întrebări?
+        - link "contact@dentipro.ro" [ref=e262] [cursor=pointer]:
+          - /url: mailto:contact@dentipro.ro
+  - contentinfo [ref=e263]:
+    - generic [ref=e264]:
+      - generic [ref=e265]:
+        - generic [ref=e266]:
+          - generic [ref=e267]: 
+          - generic [ref=e268]: DentiPro
+        - paragraph [ref=e269]: Platforma care conectează pacienții cu clinicile dentare din România.
+        - generic [ref=e270]:
+          - link "" [ref=e271] [cursor=pointer]:
+            - /url: https://www.facebook.com/dentipro.ro
+            - generic [ref=e272]: 
+          - link "" [ref=e273] [cursor=pointer]:
+            - /url: https://www.instagram.com/dentipro.ro
+            - generic [ref=e274]: 
+      - generic [ref=e275]:
+        - heading "Pacienți" [level=4] [ref=e276]
+        - link "Creează cont" [ref=e277] [cursor=pointer]:
+          - /url: /inregistrare
+        - link "Găsește o clinică" [ref=e278] [cursor=pointer]:
+          - /url: /finder
+        - link "Toți dentiștii" [ref=e279] [cursor=pointer]:
+          - /url: /dentisti
+        - link "Prețuri servicii" [ref=e280] [cursor=pointer]:
+          - /url: /preturi
+        - link "Cereri de tratament" [ref=e281] [cursor=pointer]:
+          - /url: /feed
+        - link "Hartă clinici" [ref=e282] [cursor=pointer]:
+          - /url: /harta
+        - link "Programările mele" [ref=e283] [cursor=pointer]:
+          - /url: /appointments
+        - link "Favorite" [ref=e284] [cursor=pointer]:
+          - /url: /favorites
+      - generic [ref=e285]:
+        - heading "Clinici" [level=4] [ref=e286]
+        - link "De ce DentiPro?" [ref=e287] [cursor=pointer]:
+          - /url: /clinici
+        - link "Înregistrează-ți clinica" [ref=e288] [cursor=pointer]:
+          - /url: /clinici/inscriere
+        - link "Portal clinici" [ref=e289] [cursor=pointer]:
+          - /url: /clinici/autentificare
+        - link "Prețuri și planuri" [ref=e290] [cursor=pointer]:
+          - /url: /preturi
+      - generic [ref=e291]:
+        - heading "Companie" [level=4] [ref=e292]
+        - link "Contact" [ref=e293] [cursor=pointer]:
+          - /url: /contact
+        - link "Politică de confidențialitate" [ref=e294] [cursor=pointer]:
+          - /url: /GDPR
+        - link "Politica de cookie-uri" [ref=e295] [cursor=pointer]:
+          - /url: /cookie-uri
+        - link "Termeni și condiții" [ref=e296] [cursor=pointer]:
+          - /url: /termeni
+        - link "Centrul legal" [ref=e297] [cursor=pointer]:
+          - /url: /legal
+    - generic [ref=e298]:
+      - generic [ref=e299]: © 2026 DentiPro. Toate drepturile rezervate.
+      - generic [ref=e300]: ·
+      - link "office.dentipro@gmail.com" [ref=e301] [cursor=pointer]:
+        - /url: mailto:contact@dentipro.ro

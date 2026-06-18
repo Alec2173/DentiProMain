@@ -6,7 +6,7 @@ import { DecimalPipe, DatePipe } from '@angular/common';
 import { Subject, takeUntil } from 'rxjs';
 import { AuthService } from '../auth.service';
 
-const API = 'https://www.dentipro.ro/api';
+const API = '/api';
 
 @Component({
   selector: 'app-clinic-dashboard',

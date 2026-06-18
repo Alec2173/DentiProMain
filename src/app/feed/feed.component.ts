@@ -9,7 +9,7 @@ import { SeoService } from '../seo.service';
 import { ServiciiService } from '../servicii.service';
 import { SubscriptionService } from '../subscription.service';
 
-const API = 'https://www.dentipro.ro/api';
+const API = '/api';
 
 export interface FeedPost {
   id: number;

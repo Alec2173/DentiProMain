@@ -1,0 +1,283 @@
+- generic [ref=e2]:
+  - navigation [ref=e4]:
+    - generic [ref=e5]:
+      - link "DentiPro Pro" [ref=e6] [cursor=pointer]:
+        - /url: /clinici
+        - img "DentiPro" [ref=e7]
+        - generic [ref=e8]: Pro
+      - generic [ref=e9]:
+        - link "Beneficii" [ref=e10] [cursor=pointer]:
+          - /url: /clinici
+        - link "Prețuri" [ref=e11] [cursor=pointer]:
+          - /url: /preturi
+        - link "Înregistrare" [ref=e12] [cursor=pointer]:
+          - /url: /clinici/inscriere
+        - link "Contact" [ref=e13] [cursor=pointer]:
+          - /url: /clinici/contact
+    - generic [ref=e14]:
+      - link " Autentificare" [ref=e15] [cursor=pointer]:
+        - /url: /clinici/autentificare
+        - generic [ref=e16]: 
+        - generic [ref=e17]: Autentificare
+      - link " Înregistrează clinica" [ref=e18] [cursor=pointer]:
+        - /url: /clinici/autentificare?tab=register
+        - generic [ref=e19]: 
+        - generic [ref=e20]: Înregistrează clinica
+      - text: 
+  - generic [ref=e22]:
+    - generic [ref=e23]:
+      - generic [ref=e24]:
+        - generic [ref=e25]: workspace_premium
+        - text: Prețuri transparente, fără surprize
+      - heading "Planul potrivit pentru fiecare clinică" [level=1] [ref=e26]:
+        - text: Planul potrivit pentru
+        - text: fiecare clinică
+      - paragraph [ref=e27]: Începe gratuit și upgradează pe măsură ce crești. Anulare oricând, fără penalități. 14 zile trial gratuit.
+      - generic [ref=e28]:
+        - generic [ref=e29]: Lunar
+        - button [ref=e30] [cursor=pointer]
+        - generic [ref=e32]:
+          - text: Anual
+          - generic [ref=e33]: "-2 luni gratuit"
+    - generic [ref=e34]:
+      - generic [ref=e37]:
+        - generic [ref=e38]:
+          - generic [ref=e39]: Starter
+          - generic [ref=e40]: Fii găsit de pacienți — fără costuri
+        - generic [ref=e41]:
+          - generic [ref=e42]: Gratuit
+          - generic [ref=e43]: pentru totdeauna
+        - link "Începe gratuit arrow_forward" [ref=e44] [cursor=pointer]:
+          - /url: /clinici/inscriere?plan=starter
+          - text: Începe gratuit
+          - generic [ref=e45]: arrow_forward
+        - list [ref=e47]:
+          - listitem [ref=e48]:
+            - generic [ref=e49]: check_circle
+            - generic [ref=e50]: Apari în căutările pacienților din zona ta
+          - listitem [ref=e51]:
+            - generic [ref=e52]: check_circle
+            - generic [ref=e53]: Profil public vizibil pe hartă
+          - listitem [ref=e54]:
+            - generic [ref=e55]: check_circle
+            - generic [ref=e56]: Listă servicii și prețuri
+          - listitem [ref=e57]:
+            - generic [ref=e58]: check_circle
+            - generic [ref=e59]: Până la 5 fotografii în galerie
+          - listitem [ref=e60]:
+            - generic [ref=e61]: check_circle
+            - generic [ref=e62]: Calendar programări online
+          - listitem [ref=e63]:
+            - generic [ref=e64]: cancel
+            - generic [ref=e65]: Apari înaintea clinicilor Starter
+          - listitem [ref=e66]:
+            - generic [ref=e67]: cancel
+            - generic [ref=e68]: Apariție pe homepage DentiPro
+          - listitem [ref=e69]:
+            - generic [ref=e70]: cancel
+            - generic [ref=e71]: Statistici vizualizări și interes pacienți
+          - listitem [ref=e72]:
+            - generic [ref=e73]: cancel
+            - generic [ref=e74]: Notificări pacienți în raza 20 km
+          - listitem [ref=e75]:
+            - generic [ref=e76]: cancel
+            - generic [ref=e77]: Promovare oferte către pacienți activi
+          - listitem [ref=e78]:
+            - generic [ref=e79]: cancel
+            - generic [ref=e80]: Suport prioritar
+      - paragraph [ref=e81]:
+        - generic [ref=e82]: info
+        - text: La plata anuală economisești echivalentul a 2 luni față de plata lunară. Prețurile afișate sunt fără TVA. Se adaugă TVA 21% la facturare. Facturile fiscale sunt emise automat prin SmartBill.
+    - generic [ref=e84]:
+      - generic [ref=e85]:
+        - generic [ref=e86]:
+          - generic [ref=e87]: workspace_premium
+          - text: Plan Pro
+        - heading "De ce Pro?" [level=2] [ref=e88]
+        - paragraph [ref=e89]: Clinicile Pro ies în evidență față de concurență în fiecare punct de contact cu pacienții.
+        - list [ref=e90]:
+          - listitem [ref=e91]:
+            - generic [ref=e92]: format_list_numbered
+            - generic [ref=e93]:
+              - strong [ref=e94]: Poziție Top 3 în search
+              - generic [ref=e95]: Apari primii când pacienții caută în orașul tău
+          - listitem [ref=e96]:
+            - generic [ref=e97]: map
+            - generic [ref=e98]:
+              - strong [ref=e99]: Pin auriu pe hartă
+              - generic [ref=e100]: Pop-up VIP premium vizibil imediat față de restul
+          - listitem [ref=e101]:
+            - generic [ref=e102]: style
+            - generic [ref=e103]:
+              - strong [ref=e104]: Card VIP în lista rezultatelor
+              - generic [ref=e105]: Design premium cu banderolă VIP care atrage privirile
+          - listitem [ref=e106]:
+            - generic [ref=e107]: notifications_active
+            - generic [ref=e108]:
+              - strong [ref=e109]: Notificări pacienți în raza 20 km
+              - generic [ref=e110]: Primești automat cereri noi din zona ta
+          - listitem [ref=e111]:
+            - generic [ref=e112]: analytics
+            - generic [ref=e113]:
+              - strong [ref=e114]: Analytics avansat
+              - generic [ref=e115]: "Statistici detaliate: vizualizări, conversii, ROI estimat"
+        - link "rocket_launch Încearcă Pro — 14 zile gratuit" [ref=e116] [cursor=pointer]:
+          - /url: /clinici/inscriere?plan=pro
+          - generic [ref=e117]: rocket_launch
+          - text: Încearcă Pro — 14 zile gratuit
+      - generic [ref=e118]:
+        - generic [ref=e119]:
+          - generic [ref=e120]:
+            - generic [ref=e121]: map
+            - text: Pe hartă
+          - generic [ref=e122]:
+            - generic:
+              - generic: workspace_premium
+              - text: Ieși în evidență față de concurență
+            - generic [ref=e123]:
+              - region "Map" [ref=e124]
+              - generic:
+                - generic [ref=e125]:
+                  - button "Zoom in" [ref=e126] [cursor=pointer]
+                  - button "Zoom out" [ref=e128] [cursor=pointer]
+                  - button "Reset bearing to north" [ref=e130]
+                - group [ref=e132]:
+                  - generic "Toggle attribution" [ref=e133] [cursor=pointer]
+                  - link "MapLibre" [ref=e135] [cursor=pointer]:
+                    - /url: https://maplibre.org/
+        - generic [ref=e136]:
+          - generic [ref=e137]:
+            - generic [ref=e138]: view_list
+            - text: În lista clinicilor
+          - link "★ VIP Exemplu — clinică dentară din București Logo Exemplu BUCUREȘTI Exemplu payments Implant dentar de la 1200 lei star 5.0 (24)" [ref=e140] [cursor=pointer]:
+            - /url: /finder
+            - generic: ★ VIP
+            - img "Exemplu — clinică dentară din București" [ref=e142]
+            - generic [ref=e143]:
+              - generic [ref=e144]:
+                - img "Logo Exemplu" [ref=e146]
+                - generic [ref=e147]: BUCUREȘTI
+              - heading "Exemplu" [level=3] [ref=e148]
+              - generic [ref=e149]:
+                - generic [ref=e150]: payments
+                - generic [ref=e151]: Implant dentar
+                - generic [ref=e152]: de la 1200 lei
+              - generic [ref=e153]:
+                - generic [ref=e154]: star
+                - text: "5.0"
+                - generic [ref=e155]: (24)
+    - generic [ref=e156]:
+      - heading "Compară planurile" [level=2] [ref=e157]
+      - generic [ref=e158]:
+        - generic [ref=e159]:
+          - generic [ref=e160]: Funcționalitate
+          - generic [ref=e161]: Starter
+          - generic [ref=e162]: Growth
+          - generic [ref=e163]: Pro
+        - generic [ref=e164]:
+          - generic [ref=e165]: Profil public
+          - generic [ref=e167]: check_circle
+          - generic [ref=e169]: check_circle
+          - generic [ref=e171]: check_circle
+        - generic [ref=e172]:
+          - generic [ref=e173]: Imagini galerie
+          - generic [ref=e175]: 5 max
+          - generic [ref=e177]: Nelimitat
+          - generic [ref=e179]: Nelimitat
+        - generic [ref=e180]:
+          - generic [ref=e181]: Poziție search
+          - generic [ref=e183]: Minimă
+          - generic [ref=e185]: Prioritară
+          - generic [ref=e187]: Top 3
+        - generic [ref=e188]:
+          - generic [ref=e189]: Homepage visibility
+          - generic [ref=e191]: remove
+          - generic [ref=e193]: check_circle
+          - generic [ref=e195]: check_circle
+        - generic [ref=e196]:
+          - generic [ref=e197]: Feed pacienți
+          - generic [ref=e199]: remove
+          - generic [ref=e201]: 10/lună
+          - generic [ref=e203]: Nelimitat
+        - generic [ref=e204]:
+          - generic [ref=e205]: Analytics
+          - generic [ref=e207]: remove
+          - generic [ref=e209]: Bază
+          - generic [ref=e211]: Avansat
+        - generic [ref=e212]:
+          - generic [ref=e213]: Notificări 20km
+          - generic [ref=e215]: remove
+          - generic [ref=e217]: remove
+          - generic [ref=e219]: Curând
+        - generic [ref=e220]:
+          - generic [ref=e221]: Modul stocuri
+          - generic [ref=e223]: remove
+          - generic [ref=e225]: remove
+          - generic [ref=e227]: check_circle
+        - generic [ref=e228]:
+          - generic [ref=e229]: Badge „Promovat” (albastru) în căutări
+          - generic [ref=e231]: remove
+          - generic [ref=e233]: check_circle
+          - generic [ref=e235]: remove
+        - generic [ref=e236]:
+          - generic [ref=e237]: Pin auriu pe hartă + Card „★ VIP”
+          - generic [ref=e239]: remove
+          - generic [ref=e241]: remove
+          - generic [ref=e243]: check_circle
+        - generic [ref=e244]:
+          - generic [ref=e245]: Suport
+          - generic [ref=e247]: Email
+          - generic [ref=e249]: Email
+          - generic [ref=e251]: Prioritar 24h
+        - generic [ref=e252]:
+          - generic [ref=e253]: Trial gratuit
+          - generic [ref=e255]: Permanent
+          - generic [ref=e257]: 14 zile
+          - generic [ref=e259]: 14 zile
+        - generic [ref=e260]:
+          - generic [ref=e261]: Plată cu card
+          - generic [ref=e263]: Gratuit
+          - generic [ref=e265]: Stripe
+          - generic [ref=e267]: Stripe
+    - generic [ref=e269]:
+      - generic [ref=e270]:
+        - generic [ref=e271]: lock
+        - generic [ref=e272]: Plăți securizate prin Stripe
+      - generic [ref=e273]:
+        - generic [ref=e274]: credit_card
+        - generic [ref=e275]: Visa, Mastercard, Amex
+      - generic [ref=e276]:
+        - generic [ref=e277]: cancel
+        - generic [ref=e278]: Anulare oricând, fără penalități
+      - generic [ref=e279]:
+        - generic [ref=e280]: receipt_long
+        - generic [ref=e281]: Factură automată lunară/anuală
+    - generic [ref=e282]:
+      - generic [ref=e283]:
+        - heading "Întrebări frecvente" [level=2] [ref=e284]
+        - paragraph [ref=e285]: Tot ce trebuie să știi înainte să începi.
+      - generic [ref=e286]:
+        - button "add Pot anula oricând?" [ref=e288] [cursor=pointer]:
+          - generic [ref=e289]: add
+          - generic [ref=e290]: Pot anula oricând?
+        - button "add Ce se întâmplă cu profilul dacă anulez?" [ref=e292] [cursor=pointer]:
+          - generic [ref=e293]: add
+          - generic [ref=e294]: Ce se întâmplă cu profilul dacă anulez?
+        - button "add Există perioadă de probă?" [ref=e296] [cursor=pointer]:
+          - generic [ref=e297]: add
+          - generic [ref=e298]: Există perioadă de probă?
+        - button "add Pot schimba planul oricând?" [ref=e300] [cursor=pointer]:
+          - generic [ref=e301]: add
+          - generic [ref=e302]: Pot schimba planul oricând?
+        - button "add Cum funcționează plata? Ce metode acceptați?" [ref=e304] [cursor=pointer]:
+          - generic [ref=e305]: add
+          - generic [ref=e306]: Cum funcționează plata? Ce metode acceptați?
+    - generic [ref=e308]:
+      - heading "Gata să aduci mai mulți pacienți?" [level=2] [ref=e309]
+      - paragraph [ref=e310]: Înregistrează-te gratuit și intră în cel mai mare marketplace dentar din România. Upgrade oricând fără bătăi de cap.
+      - link "rocket_launch Înregistrează clinica" [ref=e311] [cursor=pointer]:
+        - /url: /clinici/inscriere
+        - generic [ref=e312]: rocket_launch
+        - text: Înregistrează clinica
+  - button "Ajutor" [ref=e314] [cursor=pointer]:
+    - generic [ref=e315]: Ajutor

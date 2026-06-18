@@ -3,7 +3,7 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { SeoService } from '../seo.service';
 
-const API = 'https://www.dentipro.ro/api';
+const API = '/api';
 
 const CITY_META: Record<string, { desc: string; longDesc: string }> = {
   'bucuresti': {

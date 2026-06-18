@@ -6,7 +6,7 @@ import { SeoService } from '../seo.service';
 import { PlanCardComponent } from '../pricing/plan-card/plan-card.component';
 import { PLANS } from '../pricing/plan.model';
 
-const API = 'https://www.dentipro.ro/api';
+const API = '/api';
 
 @Component({
   selector: 'app-parteneriat',

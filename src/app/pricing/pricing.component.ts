@@ -17,7 +17,7 @@ import { PLANS, PAID_PLANS_ENABLED } from './plan.model';
 import { Map as MapGL, NavigationControl } from 'maplibre-gl';
 import * as maplibregl from 'maplibre-gl';
 
-const API = 'https://www.dentipro.ro/api';
+const API = '/api';
 
 @Component({
   selector: 'app-pricing',

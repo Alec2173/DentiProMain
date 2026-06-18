@@ -2,7 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 
-const API = 'https://www.dentipro.ro/api';
+const API = '/api';
 
 @Injectable({ providedIn: 'root' })
 export class ConfigService {

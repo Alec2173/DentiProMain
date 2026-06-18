@@ -49,7 +49,7 @@ export interface ClinicsPage {
   providedIn: 'root',
 })
 export class ClinicDataService {
-  private apiUrl = 'https://www.dentipro.ro/api/clinics';
+  private apiUrl = '/api/clinics';
 
   constructor(private http: HttpClient) {}
 

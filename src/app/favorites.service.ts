@@ -3,7 +3,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { AuthService } from './auth.service';
 
-const API = 'https://www.dentipro.ro/api';
+const API = '/api';
 
 @Injectable({ providedIn: 'root' })
 export class FavoritesService {

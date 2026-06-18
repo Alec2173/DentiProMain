@@ -25,7 +25,7 @@ export class ClinicProfileComponent implements OnInit, OnDestroy {
   @ViewChild('galleryInput') galleryInput!: ElementRef<HTMLInputElement>;
   @ViewChild('clinicMapContainer') clinicMapContainer!: ElementRef<HTMLDivElement>;
 
-  readonly API = 'https://www.dentipro.ro/api';
+  readonly API = '/api';
 
   clinic: Clinic | null = null;
   clinicImages: string[] = [];
@@ -143,7 +143,7 @@ export class ClinicProfileComponent implements OnInit, OnDestroy {
           this.loadSimilarClinics();
           this.loadBookingSlots(clinic.id);
           this.loadReviews(clinic.id);
-          this.http.post(`https://www.dentipro.ro/api/clinics/${clinic.id}/view`, {}).subscribe();
+          this.http.post(`/api/clinics/${clinic.id}/view`, {}).subscribe();
           this.analytics.clinicViewed(clinic.id, clinic.name, clinic.city || '');
         }
       },
@@ -728,7 +728,7 @@ export class ClinicProfileComponent implements OnInit, OnDestroy {
   private loadBeforeAfter() {
     if (!this.clinic) return;
     this.loadingBA = true;
-    const url = `https://www.dentipro.ro/api/clinics/${this.clinic.id}/before-after`;
+    const url = `/api/clinics/${this.clinic.id}/before-after`;
     this.http.get<any[]>(url).subscribe({
       next: (data) => { this.beforeAfterPairs = data; this.loadingBA = false; },
       error: () => { this.loadingBA = false; },
@@ -756,7 +756,7 @@ export class ClinicProfileComponent implements OnInit, OnDestroy {
     const body = { before_url: this.baBeforePreview, after_url: this.baAfterPreview, caption: this.baCaption.trim() };
     const token = this.authService.getToken() ?? '';
     const headers = { headers: { Authorization: `Bearer ${token}` } };
-    this.http.post<any>(`https://www.dentipro.ro/api/clinics/${this.clinic.id}/before-after`, body, headers).subscribe({
+    this.http.post<any>(`/api/clinics/${this.clinic.id}/before-after`, body, headers).subscribe({
       next: (entry) => {
         this.beforeAfterPairs.unshift(entry);
         this.baSaving = false;
@@ -770,7 +770,7 @@ export class ClinicProfileComponent implements OnInit, OnDestroy {
     if (!this.clinic) return;
     const token = this.authService.getToken() ?? '';
     const headers = { headers: { Authorization: `Bearer ${token}` } };
-    this.http.delete(`https://www.dentipro.ro/api/clinics/${this.clinic.id}/before-after/${id}`, headers).subscribe({
+    this.http.delete(`/api/clinics/${this.clinic.id}/before-after/${id}`, headers).subscribe({
       next: () => { this.beforeAfterPairs = this.beforeAfterPairs.filter(p => p.id !== id); },
     });
   }
@@ -817,7 +817,7 @@ export class ClinicProfileComponent implements OnInit, OnDestroy {
 
   private loadSimilarClinics() {
     if (!this.clinic || this.isOwner) return;
-    this.http.get<any[]>(`https://www.dentipro.ro/api/clinics/${this.clinic.id}/similar`).subscribe({
+    this.http.get<any[]>(`/api/clinics/${this.clinic.id}/similar`).subscribe({
       next: (data) => { this.similarClinics = data; },
       error: () => {},
     });
@@ -838,7 +838,7 @@ export class ClinicProfileComponent implements OnInit, OnDestroy {
   private loadPromotions() {
     if (!this.clinic) return;
     this.loadingPromos = true;
-    this.http.get<any[]>(`https://www.dentipro.ro/api/promotions/${this.clinic.id}`).subscribe({
+    this.http.get<any[]>(`/api/promotions/${this.clinic.id}`).subscribe({
       next: (data) => { this.promotions = data; this.loadingPromos = false; },
       error: () => { this.loadingPromos = false; },
     });
@@ -864,7 +864,7 @@ export class ClinicProfileComponent implements OnInit, OnDestroy {
       valid_until: this.promoValidUntil || null,
       services: [...this.promoServices],
     };
-    this.http.post<any>('https://www.dentipro.ro/api/promotions', body, { headers: { Authorization: `Bearer ${token}` } }).subscribe({
+    this.http.post<any>('/api/promotions', body, { headers: { Authorization: `Bearer ${token}` } }).subscribe({
       next: (promo) => { this.promotions.unshift(promo); this.promoSaving = false; this.closePromoForm(); },
       error: (err) => { this.promoError = err?.error?.error || 'Eroare la salvare.'; this.promoSaving = false; },
     });
@@ -872,7 +872,7 @@ export class ClinicProfileComponent implements OnInit, OnDestroy {
 
   deletePromo(id: number) {
     const token = this.authService.getToken() ?? '';
-    this.http.delete(`https://www.dentipro.ro/api/promotions/${id}`, { headers: { Authorization: `Bearer ${token}` } }).subscribe({
+    this.http.delete(`/api/promotions/${id}`, { headers: { Authorization: `Bearer ${token}` } }).subscribe({
       next: () => { this.promotions = this.promotions.filter(p => p.id !== id); },
       error: () => {},
     });

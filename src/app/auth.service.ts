@@ -12,7 +12,7 @@ export interface AuthUser {
   created_at?: string;
 }
 
-const API = 'https://www.dentipro.ro/api';
+const API = '/api';
 const STORAGE_KEY = 'denti_auth';
 const TOKEN_KEY = 'denti_token';
 

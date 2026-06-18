@@ -1,0 +1,224 @@
+- generic [ref=e2]:
+  - navigation [ref=e4]:
+    - generic [ref=e5]:
+      - link "DentiPro" [ref=e6] [cursor=pointer]:
+        - /url: /
+        - img "DentiPro" [ref=e7]
+      - text:     
+    - generic [ref=e10]:
+      - generic [ref=e11]: 
+      - textbox "Caută clinici, orașe sau servicii..." [ref=e12]
+    - generic [ref=e13]:
+      - link " Ești o clinică? " [ref=e14] [cursor=pointer]:
+        - /url: /clinici
+        - generic [ref=e15]: 
+        - generic [ref=e16]: Ești o clinică?
+        - generic [ref=e17]: 
+      - button " Autentificare" [ref=e18] [cursor=pointer]:
+        - generic [ref=e19]: 
+        - generic [ref=e20]: Autentificare
+      - button " Cont nou" [ref=e21] [cursor=pointer]:
+        - generic [ref=e22]: 
+        - generic [ref=e23]: Cont nou
+      - button "" [ref=e24] [cursor=pointer]:
+        - generic [ref=e25]: 
+  - generic [ref=e27]:
+    - navigation "breadcrumb" [ref=e28]:
+      - link "Acasă" [ref=e29] [cursor=pointer]:
+        - /url: /
+      - generic [ref=e30]: ›
+      - link "Dentisti" [ref=e31] [cursor=pointer]:
+        - /url: /dentisti
+    - generic [ref=e32]:
+      - heading "Toate clinicile în România" [level=1] [ref=e33]
+      - paragraph [ref=e34]: 0 clinici găsite
+    - generic [ref=e35]:
+      - generic [ref=e36]:
+        - generic: healing
+        - combobox [ref=e37] [cursor=pointer]:
+          - option "Toate serviciile" [selected]
+          - option "Obturatii"
+          - option "Albire dentară"
+          - option "Detartraj"
+          - option "Implanturi"
+          - option "Aparate dentare"
+          - option "Protetică"
+          - option "Chirurgie"
+          - option "Pedodonție"
+          - option "Ortodonție"
+          - option "Endodonție (tratament de canal)"
+          - option "Radiologie dentară"
+          - option "Profilaxie"
+          - option "Estetică dentară"
+          - option "Fațete dentare"
+          - option "Coroane dentare"
+          - option "Proteze dentare"
+          - option "Reconstrucție dentară completă"
+          - option "Tratament pentru bruxism"
+          - option "Stomatologie pediatrică"
+          - option "Tratamente cu sedare pentru pacienți anxioși"
+          - option "Grefe osoase"
+          - option "Sinus lift"
+          - option "Tratamente cu laser"
+          - option "Anestezie fără ac (analgezie)"
+          - option "Consult digital"
+          - option "Altele"
+        - generic: expand_more
+      - generic [ref=e38]:
+        - generic: location_on
+        - combobox [ref=e39] [cursor=pointer]:
+          - option "Toate orașele" [selected]
+          - option "București"
+          - option "Cluj-Napoca"
+          - option "Timișoara"
+          - option "Iași"
+          - option "Constanța"
+          - option "Craiova"
+          - option "Brașov"
+          - option "Galați"
+          - option "Ploiești"
+          - option "Oradea"
+          - option "Sibiu"
+          - option "Bacău"
+          - option "Arad"
+          - option "Pitești"
+          - option "Baia Mare"
+          - option "Buzău"
+          - option "Botoșani"
+          - option "Satu Mare"
+          - option "Râmnicu Vâlcea"
+          - option "Suceava"
+        - generic: expand_more
+      - generic [ref=e40]:
+        - generic: payments
+        - combobox [ref=e41] [cursor=pointer]:
+          - option "Orice preț" [selected]
+          - option "Sub 200 lei"
+          - option "Sub 500 lei"
+          - option "Sub 1.000 lei"
+          - option "Sub 2.500 lei"
+          - option "Sub 5.000 lei"
+        - generic: expand_more
+      - button "map Caută pe hartă" [ref=e42] [cursor=pointer]:
+        - generic [ref=e43]: map
+        - text: Caută pe hartă
+    - generic [ref=e44]:
+      - generic [ref=e45]: search_off
+      - paragraph [ref=e46]: Nu am găsit clinici pentru filtrele selectate.
+      - button "Resetează filtrele" [ref=e47] [cursor=pointer]
+    - generic [ref=e48]:
+      - paragraph [ref=e49]: Filtrează după serviciu
+      - generic [ref=e50]:
+        - link "Obturatii" [ref=e51] [cursor=pointer]:
+          - /url: /dentisti/obturatii
+        - link "Albire dentară" [ref=e52] [cursor=pointer]:
+          - /url: /dentisti/albire
+        - link "Detartraj" [ref=e53] [cursor=pointer]:
+          - /url: /dentisti/detartraj
+        - link "Implanturi" [ref=e54] [cursor=pointer]:
+          - /url: /dentisti/implanturi
+        - link "Aparate dentare" [ref=e55] [cursor=pointer]:
+          - /url: /dentisti/aparate
+        - link "Protetică" [ref=e56] [cursor=pointer]:
+          - /url: /dentisti/protetica
+        - link "Chirurgie" [ref=e57] [cursor=pointer]:
+          - /url: /dentisti/chirurgie
+        - link "Pedodonție" [ref=e58] [cursor=pointer]:
+          - /url: /dentisti/pedodontie
+        - link "Ortodonție" [ref=e59] [cursor=pointer]:
+          - /url: /dentisti/ortodontie
+        - link "Endodonție (tratament de canal)" [ref=e60] [cursor=pointer]:
+          - /url: /dentisti/endodontie
+        - link "Radiologie dentară" [ref=e61] [cursor=pointer]:
+          - /url: /dentisti/radiologie
+        - link "Profilaxie" [ref=e62] [cursor=pointer]:
+          - /url: /dentisti/profilaxie
+    - generic [ref=e63]:
+      - heading "— Ghid complet" [level=2] [ref=e64]
+      - paragraph [ref=e65]: DentiPro listează clinicile stomatologice din toată România care oferă servicii de . Compară prețuri, citește recenzii și programează-te online direct din platformă. Toate clinicile sunt verificate și au profiluri complete cu galerie foto, adresă exactă și număr de telefon.
+      - generic [ref=e66]:
+        - strong [ref=e67]: "Alte servicii:"
+        - generic [ref=e68]:
+          - link "Obturatii" [ref=e69] [cursor=pointer]:
+            - /url: /dentisti/obturatii
+          - link "Albire dentară" [ref=e70] [cursor=pointer]:
+            - /url: /dentisti/albire
+          - link "Detartraj" [ref=e71] [cursor=pointer]:
+            - /url: /dentisti/detartraj
+          - link "Implanturi" [ref=e72] [cursor=pointer]:
+            - /url: /dentisti/implanturi
+          - link "Aparate dentare" [ref=e73] [cursor=pointer]:
+            - /url: /dentisti/aparate
+          - link "Protetică" [ref=e74] [cursor=pointer]:
+            - /url: /dentisti/protetica
+          - link "Chirurgie" [ref=e75] [cursor=pointer]:
+            - /url: /dentisti/chirurgie
+          - link "Pedodonție" [ref=e76] [cursor=pointer]:
+            - /url: /dentisti/pedodontie
+          - link "Ortodonție" [ref=e77] [cursor=pointer]:
+            - /url: /dentisti/ortodontie
+          - link "Endodonție (tratament de canal)" [ref=e78] [cursor=pointer]:
+            - /url: /dentisti/endodontie
+          - link "Radiologie dentară" [ref=e79] [cursor=pointer]:
+            - /url: /dentisti/radiologie
+          - link "Profilaxie" [ref=e80] [cursor=pointer]:
+            - /url: /dentisti/profilaxie
+  - contentinfo [ref=e81]:
+    - generic [ref=e82]:
+      - generic [ref=e83]:
+        - generic [ref=e84]:
+          - generic [ref=e85]: 
+          - generic [ref=e86]: DentiPro
+        - paragraph [ref=e87]: Platforma care conectează pacienții cu clinicile dentare din România.
+        - generic [ref=e88]:
+          - link "" [ref=e89] [cursor=pointer]:
+            - /url: https://www.facebook.com/dentipro.ro
+            - generic [ref=e90]: 
+          - link "" [ref=e91] [cursor=pointer]:
+            - /url: https://www.instagram.com/dentipro.ro
+            - generic [ref=e92]: 
+      - generic [ref=e93]:
+        - heading "Pacienți" [level=4] [ref=e94]
+        - link "Creează cont" [ref=e95] [cursor=pointer]:
+          - /url: /inregistrare
+        - link "Găsește o clinică" [ref=e96] [cursor=pointer]:
+          - /url: /finder
+        - link "Toți dentiștii" [ref=e97] [cursor=pointer]:
+          - /url: /dentisti
+        - link "Prețuri servicii" [ref=e98] [cursor=pointer]:
+          - /url: /preturi
+        - link "Cereri de tratament" [ref=e99] [cursor=pointer]:
+          - /url: /feed
+        - link "Hartă clinici" [ref=e100] [cursor=pointer]:
+          - /url: /harta
+        - link "Programările mele" [ref=e101] [cursor=pointer]:
+          - /url: /appointments
+        - link "Favorite" [ref=e102] [cursor=pointer]:
+          - /url: /favorites
+      - generic [ref=e103]:
+        - heading "Clinici" [level=4] [ref=e104]
+        - link "De ce DentiPro?" [ref=e105] [cursor=pointer]:
+          - /url: /clinici
+        - link "Înregistrează-ți clinica" [ref=e106] [cursor=pointer]:
+          - /url: /clinici/inscriere
+        - link "Portal clinici" [ref=e107] [cursor=pointer]:
+          - /url: /clinici/autentificare
+        - link "Prețuri și planuri" [ref=e108] [cursor=pointer]:
+          - /url: /preturi
+      - generic [ref=e109]:
+        - heading "Companie" [level=4] [ref=e110]
+        - link "Contact" [ref=e111] [cursor=pointer]:
+          - /url: /contact
+        - link "Politică de confidențialitate" [ref=e112] [cursor=pointer]:
+          - /url: /GDPR
+        - link "Politica de cookie-uri" [ref=e113] [cursor=pointer]:
+          - /url: /cookie-uri
+        - link "Termeni și condiții" [ref=e114] [cursor=pointer]:
+          - /url: /termeni
+        - link "Centrul legal" [ref=e115] [cursor=pointer]:
+          - /url: /legal
+    - generic [ref=e116]:
+      - generic [ref=e117]: © 2026 DentiPro. Toate drepturile rezervate.
+      - generic [ref=e118]: ·
+      - link "office.dentipro@gmail.com" [ref=e119] [cursor=pointer]:
+        - /url: mailto:contact@dentipro.ro

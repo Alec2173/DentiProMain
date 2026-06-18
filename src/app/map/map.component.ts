@@ -306,7 +306,7 @@ export class MapComponent implements OnInit, OnDestroy {
     this.isFiltering.set(true);
 
     const bounds = this.currentBoundsFromMap(map);
-    let url = `https://www.dentipro.ro/api/clinics?mode=map&swLat=${bounds.swLat}&swLng=${bounds.swLng}&neLat=${bounds.neLat}&neLng=${bounds.neLng}`;
+    let url = `/api/clinics?mode=map&swLat=${bounds.swLat}&swLng=${bounds.swLng}&neLat=${bounds.neLat}&neLng=${bounds.neLng}`;
     if (service) url += `&service=${encodeURIComponent(service)}`;
     if (maxPrice) url += `&maxPrice=${maxPrice}`;
 

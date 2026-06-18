@@ -38,7 +38,7 @@ export const httpErrorInterceptor: HttpInterceptorFn = (req, next) => {
         return throwError(() => err);
       }
 
-      if (err.status === 403 && req.url.includes('dentipro.ro/api')) {
+      if (err.status === 403 && (req.url.includes('dentipro.ro/api') || req.url.startsWith('/api'))) {
         toast.show('Nu ai permisiunea pentru această acțiune.', 'error');
         return throwError(() => err);
       }

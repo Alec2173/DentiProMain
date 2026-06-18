@@ -1,0 +1,14 @@
+[     709ms] [LOG] Angular is running in development mode. @ http://localhost:4200/@fs/Users/alec/Desktop/DentiProMain/.angular/cache/19.2.11/Dental/vite/deps/chunk-6QNI6B3L.js?v=592a6949:15033
+[     928ms] [WARNING] NG0913: An image with src http://localhost:4200/logo-new.webp has intrinsic file dimensions much larger than its rendered size. This can negatively impact application loading performance. For more information about addressing or disabling this warning, see https://angular.dev/errors/NG0913. Find more at https://angular.dev/errors/NG0913 @ http://localhost:4200/@fs/Users/alec/Desktop/DentiProMain/.angular/cache/19.2.11/Dental/vite/deps/chunk-6QNI6B3L.js?v=592a6949:23015
+[     987ms] [ERROR] Failed to load resource: the server responded with a status of 403 () @ https://api.maptiler.com/maps/streets-v2/style.json?key=:0
+[    1009ms] [ERROR] pt: AJAXError:  (403): https://api.maptiler.com/maps/streets-v2/style.json?key=
+    at http://localhost:4200/@fs/Users/alec/Desktop/DentiProMain/.angular/cache/19.2.11/Dental/vite/deps/maplibre-gl.js?v=592a6949:471:25
+    at Generator.next (<anonymous>)
+    at a2 (http://localhost:4200/@fs/Users/alec/Desktop/DentiProMain/.angular/cache/19.2.11/Dental/vite/deps/maplibre-gl.js?v=592a6949:39:23)
+    at _ZoneDelegate.invoke (http://localhost:4200/polyfills.js:301:158)
+    at Object.onInvoke (http://localhost:4200/@fs/Users/alec/Desktop/DentiProMain/.angular/cache/19.2.11/Dental/vite/deps/chunk-6QNI6B3L.js?v=592a6949:5590:25)
+    at _ZoneDelegate.invoke (http://localhost:4200/polyfills.js:301:46)
+    at ZoneImpl.run (http://localhost:4200/polyfills.js:97:35)
+    at http://localhost:4200/polyfills.js:2005:30
+    at _ZoneDelegate.invokeTask (http://localhost:4200/polyfills.js:327:171)
+    at http://localhost:4200/@fs/Users/alec/Desktop/DentiProMain/.angular/cache/19.2.11/Dental/vite/deps/chunk-6QNI6B3L.js?v=592a6949:5370:49 @ https://eu-assets.i.posthog.com/static/posthog-recorder.js?v=1.364.6:0

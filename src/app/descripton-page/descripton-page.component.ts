@@ -11,7 +11,7 @@ import { SeoService } from '../seo.service';
 import { AnalyticsService } from '../analytics.service';
 import { ConfigService } from '../config.service';
 
-const API = 'https://www.dentipro.ro/api';
+const API = '/api';
 
 @Component({
   selector: 'app-descripton-page',

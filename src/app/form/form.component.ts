@@ -15,7 +15,7 @@ import { AnalyticsService } from '../analytics.service';
 import { ConfigService } from '../config.service';
 import { LegalModalComponent, LegalTab } from '../legal-modal/legal-modal.component';
 
-const API = 'https://www.dentipro.ro/api';
+const API = '/api';
 
 @Component({
   selector: 'app-form',

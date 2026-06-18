@@ -61,11 +61,10 @@
               <div class="cover-gradient"></div>
             }
             <!-- Plan badge -->
-            @if (clinic.plan && clinic.plan !== 'free') {
-              <span class="plan-badge plan-{{ clinic.plan }}">
-                @if (clinic.plan === 'premium') { <i class="fal fa-crown"></i> } Premium
-                @if (clinic.plan === 'basic') { Basic }
-              </span>
+            @if (clinic.plan === 'pro') {
+              <span class="plan-badge plan-pro"><i class="fal fa-crown"></i> VIP Pro</span>
+            } @else if (clinic.plan === 'growth') {
+              <span class="plan-badge plan-growth"><i class="fal fa-bolt"></i> Promovat</span>
             }
           </div>
 
@@ -93,7 +92,7 @@
             </div>
 
             <div class="card-actions">
-              <a [routerLink]="['/clinic-profile', clinic.id]" class="btn-view">
+              <a [routerLink]="['/descripton', clinic.id]" class="btn-view">
                 <i class="fal fa-eye"></i> Vezi profilul
               </a>
               <button class="btn-remove" (click)="remove(clinic.id)" title="Elimină din favorite">

@@ -8,10 +8,10 @@ import { FormsModule } from '@angular/forms';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import * as maplibregl from 'maplibre-gl';
 import { SeoService } from '../seo.service';
+import { AnalyticsService } from '../analytics.service';
+import { ConfigService } from '../config.service';
 
 const API = 'https://www.dentipro.ro/api';
-
-const MAPTILER_KEY = 'cwyGOMCDF8zwmBEDJrCr';
 
 @Component({
   selector: 'app-descripton-page',
@@ -22,7 +22,8 @@ const MAPTILER_KEY = 'cwyGOMCDF8zwmBEDJrCr';
 export class DescriptonPageComponent implements OnInit, OnDestroy {
   @ViewChild('mapContainer') mapContainer!: ElementRef<HTMLDivElement>;
 
-  private seo = inject(SeoService);
+  private seo    = inject(SeoService);
+  private config = inject(ConfigService);
 
   constructor(
     private clinicData: ClinicDataService,
@@ -31,6 +32,7 @@ export class DescriptonPageComponent implements OnInit, OnDestroy {
     public auth: AuthService,
     private http: HttpClient,
     private zone: NgZone,
+    private analytics: AnalyticsService,
   ) {}
 
   clinics: any = {};
@@ -99,7 +101,7 @@ export class DescriptonPageComponent implements OnInit, OnDestroy {
     this.zone.runOutsideAngular(() => {
       this.map = new maplibregl.Map({
         container: this.mapContainer.nativeElement,
-        style: `https://api.maptiler.com/maps/streets-v2/style.json?key=${MAPTILER_KEY}`,
+        style: `https://api.maptiler.com/maps/streets-v2/style.json?key=${this.config.getMaptilerKey()}`,
         center: [lng, lat],
         zoom: 15,
         interactive: true,
@@ -116,7 +118,7 @@ export class DescriptonPageComponent implements OnInit, OnDestroy {
   }
 
   private reverseGeocode(lat: number, lng: number) {
-    const url = `https://api.maptiler.com/geocoding/${lng},${lat}.json?key=${MAPTILER_KEY}&language=ro`;
+    const url = `https://api.maptiler.com/geocoding/${lng},${lat}.json?key=${this.config.getMaptilerKey()}&language=ro`;
     this.http.get<any>(url).subscribe({
       next: (res) => {
         const feature = res.features?.[0];
@@ -129,6 +131,24 @@ export class DescriptonPageComponent implements OnInit, OnDestroy {
         }
       },
     });
+  }
+
+  get shortTitle(): string {
+    if (!this.clinics?.name) return '';
+    return this.clinics.name.split(' - ')[0].trim();
+  }
+
+  get titleChips(): string[] {
+    if (!this.clinics?.name) return [];
+    const parts = this.clinics.name.split(' - ');
+    return parts.slice(1).map((p: string) => p.trim()).filter((p: string) => p);
+  }
+
+  get clinicInitials(): string {
+    if (!this.clinics?.name) return 'C';
+    const words = this.clinics.name.split(/\s+/).filter(Boolean);
+    if (words.length >= 2) return (words[0][0] + words[1][0]).toUpperCase();
+    return (words[0]?.[0] || 'C').toUpperCase();
   }
 
   get displayAddress(): string | null {
@@ -167,11 +187,11 @@ export class DescriptonPageComponent implements OnInit, OnDestroy {
     this.showMsgModal = true;
     this.msgSent = false;
     this.msgError = '';
-    // Pre-fill from auth if logged in
     if (this.auth.isLoggedIn && this.auth.currentUser) {
       this.msgName = this.auth.currentUser.name || '';
       this.msgEmail = this.auth.currentUser.email || '';
     }
+    this.analytics.messageModalOpened(this.clinics.id, this.clinics.name);
   }
 
   closeMsgModal() {
@@ -194,10 +214,15 @@ export class DescriptonPageComponent implements OnInit, OnDestroy {
       senderPhone: this.msgPhone.trim() || null,
       body: this.msgBody.trim(),
     }).subscribe({
-      next: () => { this.msgSending = false; this.msgSent = true; },
+      next: () => {
+        this.msgSending = false;
+        this.msgSent = true;
+        this.analytics.messageSent(this.clinics.id);
+      },
       error: (err) => {
         this.msgError = err.error?.error || 'A apărut o eroare. Încearcă din nou.';
         this.msgSending = false;
+        this.analytics.messageFailed(this.clinics.id, err.error?.error || 'unknown');
       },
     });
   }
@@ -247,6 +272,7 @@ export class DescriptonPageComponent implements OnInit, OnDestroy {
     this.bookingNotes = '';
     this.bookingError = '';
     this.bookingLoading = false;
+    this.analytics.appointmentModalOpened(this.clinics.id, this.clinics.name);
   }
 
   closeBooking() {
@@ -264,10 +290,15 @@ export class DescriptonPageComponent implements OnInit, OnDestroy {
       notes: this.bookingNotes || '',
       serviceId: this.bookingServiceId ? Number(this.bookingServiceId) : null,
     }, { headers: this.headers }).subscribe({
-      next: () => { this.bookingStep = 'success'; this.bookingLoading = false; },
+      next: () => {
+        this.bookingStep = 'success';
+        this.bookingLoading = false;
+        this.analytics.appointmentCreated(this.clinics.id, this.clinics.name, this.bookingServiceId || null);
+      },
       error: (err) => {
         this.bookingError = err.error?.error || 'A apărut o eroare. Încearcă din nou.';
         this.bookingLoading = false;
+        this.analytics.appointmentFailed(this.clinics.id, err.error?.error || 'unknown');
       }
     });
   }

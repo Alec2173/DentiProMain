@@ -24,6 +24,8 @@ ng test --include='**/auth.service.spec.ts'
 npm start   # runs: serve -s dist/dental
 ```
 
+Requires **Node ≥ 22** (`engines` in `package.json`).
+
 ## Architecture Overview
 
 **DentiPro** is an Angular 19 dental clinic directory/marketplace for Romania. It connects patients with dental clinics.
@@ -35,6 +37,8 @@ npm start   # runs: serve -s dist/dental
 - **Supabase** for auth/database (though most logic hits a custom REST API)
 - **Backend API**: `https://www.dentipro.ro/api` — hardcoded as `const API` in each component/service that needs it
 - **MapLibre GL** + **Google Maps** for interactive clinic maps
+- **PostHog** for product analytics (`AnalyticsService` — key must be set in `analytics.service.ts`)
+- **Stripe** for subscription payments (checkout, webhook, billing portal)
 - **vanilla-cookieconsent** for GDPR cookie banner (initialized in `AppComponent.ngAfterViewInit`)
 
 ### Two "Sides" of the App
@@ -44,7 +48,11 @@ The app serves two distinct user types, detected via URL:
 1. **Patient-facing site** — home, search/finder, clinic profiles, appointments, feed, favorites
 2. **Clinic portal** — routes under `/clinici/*` — registration, dashboard, service management
 
-`AppComponent` tracks `isClinicPortal` by subscribing to router events and checking `urlAfterRedirects.startsWith('/clinici')`. This switches the top navbar (`NavbarComponent` vs `ClinicNavbarComponent`) and hides the left sidebar.
+`AppComponent` tracks `isClinicPortal` by subscribing to router events and checking `urlAfterRedirects.startsWith('/clinici')`. This switches the top navbar (`NavbarComponent` vs `ClinicNavbarComponent`) and hides the left sidebar and footer.
+
+> **Naming note**: two separate directories serve the `/clinici` URL space:
+> - `src/app/clinici/` — `CliniciComponent`, the marketing landing page at exactly `/clinici`
+> - `src/app/clinic-portal/` — contains `clinic-auth/`, `clinic-landing/`, `clinic-navbar/`; used by all other `/clinici/*` routes (auth, dashboard, etc.)
 
 `SupportWidgetComponent` is a global floating chat widget rendered in `AppComponent` on every page. For logged-in clinics it shows message history; for guests it requires an email.
 
@@ -57,10 +65,11 @@ The app serves two distinct user types, detected via URL:
 - Session restored synchronously on startup from `localStorage`, then validated in background via `GET /auth/me`
 - Client-side JWT expiry check runs before restoring session (`isTokenExpired` decodes the payload)
 - Email verification flow: register → get code by email → `POST /auth/verify-email`
-
-Route guards in `src/app/guards/` — currently only `pricingGuard`, which redirects `/clinici/pricing` to home (pricing page is intentionally hidden until launch; see `HIDDEN_PRICING` comments in `app.routes.ts`).
+- Minimum password length: 6 characters (validated client-side in `validateRegister()`)
 
 Auth guards are not separate files — components redirect themselves in `ngOnInit` (e.g., `ClinicDashboardComponent` checks `auth.isClinic` and redirects to `/clinici` if false).
+
+One exception: `src/app/guards/pricing.guard.ts` — `pricingGuard` exists but is **not currently applied** to any route (pricing page is active). If you need to hide it again, add `canActivate: [pricingGuard]` to the `/clinici/pricing` route in `app.routes.ts`.
 
 ### Key Services
 
@@ -69,10 +78,18 @@ Auth guards are not separate files — components redirect themselves in `ngOnIn
 | `AuthService` | `auth.service.ts` | JWT auth, session management, all `/auth/*` endpoints |
 | `ClinicDataService` | `clinic-data.service.ts` | Clinic CRUD; `loadPage()` for paginated cards/finder, `loadClinicsAuto()` for map |
 | `SeoService` | `seo.service.ts` | Meta tags, Open Graph, JSON-LD structured data per page |
-| `SubscriptionService` | `subscription.service.ts` | Subscription tiers: `starter`, `growth`, `pro` |
-| `DataShareService` | `data-share.service.ts` | Minimal cross-component state sharing |
+| `SubscriptionService` | `subscription.service.ts` | Subscription tiers: `starter`, `growth`, `pro`; source of truth for plan/status — call this, don't hit `GET /stripe/subscription` directly |
+| `AnalyticsService` | `analytics.service.ts` | PostHog wrapper; UTM attribution, identity, funnel events |
+| `DataShareService` | `data-share.service.ts` | Cross-component state: `city$`, `service$`, `maxPrice$`, `filters$`, `bounds$` (map bounds for finder↔map sync) |
 | `FavoritesService` | `favorites.service.ts` | Patient favorites (persisted in localStorage or API) |
 | `RoCitiesService` | `ro-cities.service.ts` | Hardcoded list of Romanian cities for dropdowns |
+| `ServiciiService` | `servicii.service.ts` | Canonical list of 26 dental service types (id + Romanian label) — single source of truth, don't duplicate |
+| `ConfigService` | `config.service.ts` | Fetches MapTiler + Google Maps API keys at runtime from `GET /api/config/maps`; no Angular environment files exist |
+| `ToastService` | `toast.service.ts` | Global toast notifications (`src/app/toast/`); use `show(message, type)` |
+
+**Notifications** are not a separate service — `ClinicNavbarComponent` polls `GET /notifications/unread-count` every 30 s and fetches `GET /notifications` on bell open; `PATCH /notifications/read-all` on read. No `NotificationsService` exists.
+
+`HttpErrorInterceptor` (`src/app/http-error.interceptor.ts`) handles 401/403/5xx globally and shows toasts automatically — don't add `error: () => {}` handlers in components for these cases. Auth endpoints, `/feedback/`, `/feed/`, and `/support/message` are in `SILENT_PATTERNS` and bypass the global toast (those components handle errors inline). Add new endpoints to `SILENT_PATTERNS` if the component shows its own error UI.
 
 ### Routing
 
@@ -82,124 +99,43 @@ Key routes:
 - `/` — `HomeNdComponent` (patient landing)
 - `/finder` — paginated clinic search with city/service filters
 - `/clinic-profile/:id` — public clinic profile
+- `/descripton/:id` — `DescriptonPageComponent` (note: typo in route name is intentional/legacy)
 - `/harta` — full-screen MapLibre map
+- `/feed` — patient request feed (clinics respond with offers; Growth 10/month, Pro unlimited)
+- `/favorites`, `/appointments`, `/profile` — patient account pages
+- `/inregistrare` — patient registration with email verification
+- `/recenzie` — `ReviewPageComponent`
+- `/preturi` — dental price reference table (SEO page)
+- `/pentru-clinici` — clinic marketing/lead-capture landing
+- `/contact` — contact form (`POST /api/support/message`)
+- `/dentisti`, `/dentisti/:serviciu`, `/dentisti/:serviciu/:oras` — SEO listing pages
+- `/dentisti/bucuresti`, `/dentisti/cluj-napoca`, `/dentisti/timisoara`, `/dentisti/iasi`, `/dentisti/brasov` — city SEO pages (`CitySeoComponent`); declared before `/:serviciu` to take priority
+- `/services` — service types overview page
+- `/GDPR`, `/termeni` — legal pages
+- `/calendar` — calendar page
 - `/clinici` — clinic landing/marketing page
 - `/clinici/autentificare` — clinic login/register (`ClinicAuthComponent`)
-- `/clinici/inscriere` — multi-step clinic registration form
+- `/clinici/inscriere` — multi-step clinic registration form (7 steps, step 6 = plan selection)
 - `/clinici/dashboard` — clinic management dashboard (requires `isClinic` + `clinicId`)
+- `/clinici/profil` — clinic's own public profile preview
+- `/clinici/contact` — contact form (clinic portal variant)
+- `/clinici/pricing` — pricing page
 - `/administrator` — admin panel (requires `isAdmin`)
-- `/clinici/pricing` — **hidden** (redirected to `/` by `pricingGuard` since 2026-03-20)
+- `/viewer`, `/sidebar` — dev/debug routes (not linked in UI)
+- Legacy redirects: `/Inscriere` → `/clinici/inscriere`, `/pricing` → `/preturi`
+- `**` — `NotFoundComponent`
 
-### Clinic Dashboard
+### Clinic Registration & Stripe Flow
 
-`ClinicDashboardComponent` loads all data from `GET /api/clinic-dashboard` and handles:
-- Appointment status management (`PATCH /appointments/:id/status`)
-- Profile completion score (based on name, email, phone, city, address, logo, images, services)
-- Feedback popup: appears after 50s, tracks state in `localStorage` (`dp_feedback_<userId>`); also checks backend `GET /feedback/clinic/check` to avoid re-showing on new devices
+`FormComponent` (`/clinici/inscriere`) has 7 steps. Step 6 selects a plan using `PlanCardComponent` from `src/app/pricing/plan-card/`. Plan definitions live in `src/app/pricing/plan.model.ts` — single source of truth used by both `PricingComponent` and `FormComponent`.
 
-### Admin Panel
+- **Starter**: submit → `POST /api/clinics` → overlay success, status `pending`
+- **Growth/Pro**: submit → `POST /api/clinics` returns `checkoutUrl` → redirect to Stripe Checkout → webhook `checkout.session.completed` sets status `active`
+- Cancel URL: `/clinici/inscriere?checkout=canceled` — form detects param, shows amber banner, jumps to step 6
 
-`AdminComponent` at `/administrator` requires `isAdmin`. Capabilities:
-- List/filter/search clinics with pagination (25 per page)
-- Set clinic status (`active`/`pending`/`suspended`)
-- Add single clinic or batch test clinics
-- Onboard clinics (create accounts + send welcome emails)
-- Resend welcome emails, simulate clinic profiles
-- View submitted feedback and support messages, reply to support messages
+Existing clinics can upgrade via `PUT /api/clinics/:id` which also returns `checkoutUrl` if no active subscription.
 
-### Styling
-
-Global CSS variables define the design system in `src/styles.css`. Key theme values:
-- Dark deep-blue background: `--bg-deep: #020b18`
-- Primary gradient: blue-to-cyan (`--gradient-primary`)
-- Material theme: Azure Blue
-
-### Predefined Data
-
-26 dental service types are hardcoded in the codebase (implants, orthodontics, whitening, etc.). Clinic services reference these by ID/type.
-
-### Language
-
-All UI text is in **Romanian** (`ro_RO`). Keep new UI strings in Romanian.
-
----
-
-<!-- COMPLETED_TASKS: 2026-03-31 -->
-## Taskuri finalizate recent
-
-- [x] **Sistem notificări clinici** — clopot în navbar cu badge + dropdown; când un pacient postează în feed, toate clinicile din același oraș primesc notificare în site + email (`dp_notifications` table, `sendNewPostToClinic`)
-- [x] **Galerie Înainte/După** — upload (2 imagini → Cloudinary), preview live, captionă, delete; în clinic dashboard și profil public
-- [x] **Recenzii pacienți** — `dp_reviews` table, endpoints GET/POST/can-review; afișate pe profilul public și în clinic dashboard
-- [x] **Mesaje pacient → clinică** — modal "Trimite mesaj" pe profilul public, inbox cu reply în dashboard; email notificare la ambele capete
-- [x] **Ore funcționare clinică** — editabil în `/clinici/profil`, afișat pe profilul public cu evidențierea zilei curente (`working_hours` JSONB în `dp_clinics`)
-- [x] **Cereri recente din orașul tău** — secțiune în dashboard cu ultimele 5 cereri deschise din același oraș ca clinica (`GET /api/feed/clinic-city`)
-- [x] **Statistici reale pe landing page** — trust bar cu numere din DB: clinici active, orașe, programări, recenzii (`GET /api/stats/public`)
-- [x] **Email migrare nodemailer → Resend SDK** — `mailer.js` rescris complet; footer automat injectat în toate emailurile
-- [x] **Backend rate limiters** — `clinicAuthLimiter`, `offerLimiter`, `apptLimiter`, `loginLimiter`, `registerLimiter`, `adminLimiter`
-- [x] **`dp_reviews` migration** — `CREATE TABLE IF NOT EXISTS` în startup migrations, index pe `clinic_id`
-- [x] **`/auth/me` returnează `created_at`** — `memberSince()` în profil pacient afișează anul real din DB
-- [x] **Price filter în cards/map** — `maxPrice` în `DataShareService`, filtru aplicat în `CardsComponent` și `MapComponent`
-- [x] **Rating real pe carduri și hartă** — `avg_rating` și `review_count` din DB în loc de hardcodat "4.5"
-
-<!-- /COMPLETED_TASKS -->
-
-<!-- PENDING_TASKS: 2026-03-31 -->
-## Taskuri finalizate recent (continuare)
-
-- [x] **Email bun venit pacient** — `sendPatientWelcomeEmail` în mailer.js, apelat în `POST /auth/verify-email` când `role === 'patient'`
-- [x] **Filtre în feed după serviciu** — dropdown cu toate serviciile, param `service` adăugat în `GET /api/feed`
-- [x] **Clinici similare** pe profil public — `GET /api/clinics/:id/similar` (același oraș, sortate după rating), secțiune în `clinic-profile`
-- [x] **Statistici vizualizări profil** — `dp_clinic_profile_views` table, `POST /api/clinics/:id/view` (public), `GET /api/clinics/:id/views` (clinic auth), card nou "Vizualizări profil (30 zile)" în dashboard
-- [x] **Fix guard clinic-profile** — non-clinic users (pacienți, guests) pot acum accesa `/clinic-profile/:id`; redirect la auth doar pentru `/clinici/profil` fără ID
-- [x] **Sistem promoții clinici** — `dp_promotions` table; `GET/POST/DELETE /api/promotions`; secțiune în dashboard profil cu formular creare; vizibil pe profilul public; email automat la pacienții cu clinica la favorite (`sendPromotionToPatient`)
-
-## Taskuri finalizate recent (continuare 2)
-
-- [x] **Pagina înregistrare pacient** `/inregistrare` — pagină dedicată cu beneficii vizuale (layout split), form complet + verificare email; rută adăugată în `app.routes.ts`; link în footer
-- [x] **Email confirmare programare** — verificat și funcțional: `PATCH /appointments/:id/status` apelează `sendAppointmentStatusToPatient` la confirmare/anulare/finalizare
-- [x] **CTA recenzie în appointments** — buton "Recenzie" apare pe programările finalizate, duce la profilul clinicii la secțiunea recenzii
-- [x] **SEO pages dinamice** — `ClinicListComponent` generează H1, meta title/description, canonical, JSON-LD ItemList, breadcrumbs, seo footer text ✅ complet
-- [x] **Footer global** — adăugat în `AppComponent` (vizibil pe patient site, ascuns în portal clinici); coloane: pacienți, clinici, companie + social media + copyright
-- [x] **Contact form funcțional** — formular în `/contact` postează la `POST /api/support/message` (email, nume, mesaj); mesaj de succes/eroare
-
-## Taskuri finalizate recent (continuare 3)
-
-- [x] **Pagina `/preturi`** — completă: tabel prețuri orientative cu min/avg/max, categorii filtrate, bar chart vizual, SEO text, CTA spre finder
-- [x] **Pagina `/pentru-clinici`** — completă: hero, 6 beneficii, 3 planuri, formular lead capture (`POST /api/lead`), FAQ accordion, final CTA
-- [x] **Badge promoții active în dashboard** — card nou „Promoții active" în quick actions cu număr real din API, badge colorat
-- [x] **Link „Promoțiile mele"** în dropdown navbar clinică
-- [x] **Link „Prețuri" în navbar clinică** — deascuns (era hidden cu HIDDEN_PRICING comment), acum pointează la `/preturi`
-
-## ✅ PROIECT 100% COMPLET
-
-## Taskuri finalizate recent (continuare 4 — securitate + analytics)
-
-- [x] **Grafic vizualizări profil în dashboard** — card cu bar chart CSS pur, 30 zile zilnic din DB (`generate_series`), trend ±% față de săptămâna precedentă, tooltip nativ, afișat doar când există date
-- [x] **Security fix: parolă expusă în API** — `POST /api/admin/create-clinic-accounts` nu mai include câmpul `password` în răspunsul JSON
-- [x] **Security fix: rate limiting pe endpoint-uri publice** — `publicMsgLimiter` (10/oră) pe `/api/messages`, `/api/lead`, `/api/support/message`; `viewLimiter` (30/min) pe `/api/clinics/:id/view`
-- [x] **Security fix: multer file validation** — adăugat `limits: { fileSize: 8MB }` și whitelist MIME types (`jpeg/png/webp/gif`)
-- [x] **Security fix: erori server generice** — `500 err.message` din `create-clinic-accounts` înlocuit cu mesaj generic
-- [x] **Security fix: parolă minimă** — crescut de la 6 la 8 caractere
-
-## Taskuri finalizate recent (continuare 5 — pricing + Stripe)
-
-- [x] **Pricing deblocat** — `/clinici/pricing` activ (pricingGuard scos), link în navbar dropdown + mobile menu restaurat
-- [x] **`PlanCardComponent`** — componentă izolată per card (`src/app/pricing/plan-card/`), primește `@Input() plan`, `billingAnnual`, `selectable`, `selected`, emite `@Output() selectPlan`. Fiecare card poate fi modificat independent.
-- [x] **`plan.model.ts`** — sursă unică de adevăr pentru planuri (Starter/Growth/Pro). Folosit atât în `PricingComponent` cât și în `FormComponent` — nu mai există duplicare.
-- [x] **Prețuri în formularul de înregistrare** — step 6 nou "Plan" adăugat (formul are acum 7 pași). Folosește `PlanCardComponent` în mod selectable. Toggle lunar/anual. Pre-selectare din query param `?plan=growth`.
-- [x] **Stripe full integration (backend)** — `POST /api/stripe/create-checkout-session`, `POST /api/stripe/webhook` (raw body, semnătură verificată), `POST /api/stripe/portal`, `GET /api/stripe/subscription`. Webhook gestionează: `checkout.session.completed`, `customer.subscription.updated/deleted`, `invoice.payment_failed`.
-- [x] **Stripe DB migration** — `stripe_customer_id`, `stripe_subscription_id`, `stripe_subscription_status`, `current_period_end`, `trial_ends_at` adăugate în `dp_clinics`.
-- [x] **Stripe redirect după submit** — clinicile care aleg Growth/Pro sunt redirecționate la Stripe Checkout după submit; Starter → overlay success ca înainte.
-- [x] **Dashboard — card abonament** — arată planul curent, status (Activ/Trial/Restant), data reînnoire. Buton "Gestionează" → Stripe Billing Portal pentru planuri plătite; buton "Upgrade" → `/clinici/pricing` pentru Starter.
-- [x] **Dashboard — toast checkout success** — mesaj verde apare la întoarcerea din Stripe, reîncarcă datele.
-- [x] **Helmet security headers** — `app.use(helmet())` adăugat în backend.
-- [x] **CORS localhost exclus în producție** — `localhost:4200` exclus automat când `NODE_ENV=production`.
-- [x] **Flow plată imediat la alegere plan** — step 6 + "Continuă" pe plan plătit → submit imediat + redirect Stripe (nu mai așteaptă step 7). Starter rămâne cu step 7 + pending manual. Backend `POST /api/clinics` setează `status='pending_payment'` + returnează `checkoutUrl`. Webhook `checkout.session.completed` setează `status='active'` direct.
-- [x] **Cancel Stripe → revenire în formular** — `cancel_url` pointează la `/clinici/inscriere?checkout=canceled`; formul detectează param, arată banner amber și sare la step 6.
-- [x] **`PUT /api/clinics/:id` cu Stripe** — upgrade plan pe clinică existentă creează checkout session dacă nu are deja abonament activ; returnează `checkoutUrl` la fel ca POST.
-- [x] **Fix CSS budget angular.json** — `anyComponentStyle` crescut la 200kB warning / 300kB error (maplibre-gl.css depășea 100kB).
-
-### Variabile de mediu necesare pentru Stripe (în `.env` backend):
+Backend Stripe env vars required:
 ```
 STRIPE_SECRET_KEY=sk_live_...
 STRIPE_WEBHOOK_SECRET=whsec_...
@@ -209,26 +145,105 @@ STRIPE_PRICE_PRO_MONTHLY=price_xxx
 STRIPE_PRICE_PRO_ANNUAL=price_xxx
 ```
 
-## ⚠️ PUNCT DE REVENIRE — stare stabilă înainte de modificări majore
+### Clinic Dashboard
 
-Dacă ceva se strică sau vrem să revenim la forma funcțională cu Stripe + toate feature-urile de mai sus:
+`ClinicDashboardComponent` loads all data from `GET /api/clinic-dashboard` and handles:
+- Appointment status management (`PATCH /appointments/:id/status`)
+- Subscription card: current plan, status, renewal date; "Gestionează" → Stripe Billing Portal; "Upgrade" → `/clinici/pricing`
+- Profile completion score (based on name, email, phone, city, address, logo, images, services)
+- Profile view chart: bar chart (CSS-only), 30-day daily data from `dp_clinic_profile_views` via `generate_series`
+- Before/after gallery: upload to Cloudinary, preview, caption, delete
+- Stock/inventory management: CRUD for `dp_clinic_stock` items (name, qty, unit, minQty, expiresAt) via `GET/POST/PATCH/DELETE /api/clinics/:id/stock`
+- Promotions badge: active promotion count from API
+- Feedback popup: appears after 50s, state in `localStorage` (`dp_feedback_<userId>`); also checks `GET /feedback/clinic/check`
+- Toast on return from Stripe checkout (`?checkout=success` query param)
+
+### Admin Panel
+
+`AdminComponent` at `/administrator` requires `isAdmin`. Capabilities:
+- List/filter/search clinics with pagination (25 per page)
+- Set clinic status (`active`/`pending`/`suspended`)
+- Add single clinic or batch test clinics
+- Onboard clinics (create accounts + send welcome emails)
+- View/reply to submitted feedback and support messages
+
+### Styling
+
+Global CSS variables define the design system in `src/styles.css`. Key theme values:
+- Dark deep-blue background: `--bg-deep: #020b18`
+- Primary gradient: blue-to-cyan (`--gradient-primary`)
+- Material theme: Azure Blue
+- CSS budget in `angular.json`: `anyComponentStyle` 200kB warning / 300kB error (raised for maplibre-gl.css)
+
+### Language
+
+All UI text is in **Romanian** (`ro_RO`). Keep new UI strings in Romanian.
+
+### Key DB Tables (backend)
+
+| Table | Purpose |
+|---|---|
+| `dp_clinics` | Clinics; includes `working_hours` JSONB, Stripe fields (`stripe_customer_id`, `stripe_subscription_id`, `stripe_subscription_status`, `current_period_end`, `trial_ends_at`) |
+| `dp_reviews` | Patient reviews; indexed on `clinic_id` |
+| `dp_notifications` | Clinic in-site notifications (bell badge) |
+| `dp_promotions` | Clinic promotions; emailed to patients who favorited the clinic |
+| `dp_clinic_profile_views` | Per-day view counts for profile analytics |
+| `dp_clinic_stock` | Clinic stock/inventory items; CRUD via `GET/POST/PATCH/DELETE /api/clinics/:id/stock` |
+
+### Shared Layout Components
+
+- **`LeftSidebarComponent`** — patient-facing sidebar; hidden for clinic portal (`AppComponent` controls visibility). Collapses to icon-only on `window.innerWidth < 768`.
+- **`FilterNavComponent`** — city/service/price filter bar embedded in `FinderComponent`. Reads/writes state exclusively via `DataShareService` signals; do not add direct HTTP calls here.
+- **`SupportWidgetComponent`** — global floating chat; rendered in `AppComponent` on every page.
+
+### localStorage Keys Reference
+
+| Key | Owner | Purpose |
+|---|---|---|
+| `denti_auth` | `AuthService` | Serialized `AuthUser` object |
+| `denti_token` | `AuthService` | Raw JWT string |
+| `dp_offc_<clinicId>_<YYYY-MM>` | `SubscriptionService` | Monthly offer count (Growth cap) |
+| `dp_attribution` | `AnalyticsService` | UTM + referrer attribution (written once per session) |
+| `dp_feedback_<userId>` | `ClinicDashboardComponent` | Feedback popup state (`'submitted'` / `'done'` / `'skip1'`) |
+| `dp_comp_banner_<clinicId>` | `ClinicDashboardComponent` | Profile completion banner last-dismissed date |
+
+### Utilities
+
+`src/app/utils/text.utils.ts` — `getInitials(name: string): string` (extracts up to 2 initials from a full name). The only shared utility; import from here rather than re-implementing inline.
+
+### Architecture Rules
+
+- `SubscriptionService` is the source of truth for plan/status — don't make direct `GET /stripe/subscription` calls in components. `load()` caches per session; call `reset()` after a plan upgrade, then `load(true)` to refresh.
+- Growth monthly offer count is tracked **client-side** in localStorage (`dp_offc_<clinicId>_<YYYY-MM>`). Call `subscriptionService.incrementOfferCount()` after each offer is sent. Pro plan is not capped.
+- All HTTP errors go through `HttpErrorInterceptor` — don't add `error: () => {}` handlers in components for 401/403/5xx
+- `ServiciiService` is the source of truth for service types — don't duplicate the list
+- Plan badge/ranking logic: Growth → "Promovat" (blue badge), Pro → "★ VIP" (gold badge); results ranked Pro first then Growth client-side via `PLAN_RANK` in `ClinicDataService`
+- `ConfigService.load()` runs as an `APP_INITIALIZER` — it blocks Angular bootstrap until map API keys are fetched. Don't move map key fetching elsewhere.
+- Dead code — do not wire these to routes or refactor until explicitly requested: `src/app/description/`, `src/app/orase/`, `src/app/home/` (replaced by `home-nd/`), `src/app/search-board/` (replaced by `search-board-nd/` inside `home-nd/`), `src/app/map.service.ts` (body is entirely commented out), `src/app/disclaimer/`, `src/app/google-maps/`, `src/app/header/`, `src/app/map-test/` (none have active routes).
+
+---
+
+## Roadmap
+
+### 🔧 Următor (necesită feature nou sau resurse externe)
+- Video upload în galerie (promis în plan dar neimplementat)
+- Notificări pacienți 20km (promis Growth/Pro — necesită geolocation + push backend)
+- Acces API (Pro) — marcat `în curând` în `plan.model.ts`
+
+### ❌ Neînceput (impact mare)
+- Calendar disponibilitate clinici (sloturi libere)
+- Widget embeddable "Programează acum" pentru site-uri externe
+- Rapoarte lunare automate per clinică
+- Pagini SEO per oraș — parțial implementat (București, Cluj-Napoca, Timișoara, Iași, Brașov via `CitySeoComponent`); alte orașe neadăugate
+- Comparare clinici side-by-side
+
+### Rollback Point
+
+Last known stable state with full Stripe + all features:
 
 ```bash
-# Frontend (DentiProMain)
+# Frontend
 git checkout 14d9528
-
-# Backend (DentiPro-backend)
+# Backend (DentiPro-backend repo)
 git checkout 4404eea
 ```
-
-**Ce conține această stare:**
-- Stripe complet integrat (checkout, webhook, portal, subscription card în dashboard)
-- Formular înregistrare 7 pași cu selecție plan + redirect Stripe imediat
-- PlanCardComponent izolat, plan.model.ts sursă unică
-- Pricing page activă, toate paginile noi (/preturi, /pentru-clinici, /inregistrare, /contact)
-- Footer global, SEO, recenzii, before/after gallery, promoții, mesaje, notificări
-- Security: helmet, rate limiters, multer whitelist, parolă 8 caractere
-- Mailer migrat la Resend SDK
-- Build trece fără erori (ng build)
-
-<!-- /PENDING_TASKS -->

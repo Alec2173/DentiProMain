@@ -139,13 +139,15 @@
   align-items: center;
   justify-content: center;
   gap: 14px;
-  color: rgba(255,255,255,0.2);
+  color: rgba(255,255,255,0.22);
   font-size: 14px;
   border-radius: 14px;
-  border: 1px dashed rgba(255,255,255,0.08);
+  border: 1px dashed rgba(255,255,255,0.1);
+  background:
+    radial-gradient(ellipse 60% 50% at 50% 50%, rgba(37, 99, 235, 0.05), transparent 70%);
 }
 
-.dp-gallery__empty-icon { font-size: 40px; opacity: 0.4; }
+.dp-gallery__empty-icon { font-size: 48px; opacity: 0.3; color: #3b82f6; }
 
 /* ── INFO PANEL ── */
 .dp-info {
@@ -208,6 +210,33 @@
   letter-spacing: -0.02em;
 }
 
+/* ── Title chips ── */
+.dp-info__title-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 2px;
+}
+
+.dp-info__chip {
+  display: inline-block;
+  padding: 3px 10px;
+  background: rgba(37, 99, 235, 0.12);
+  border: 1px solid rgba(59, 130, 246, 0.25);
+  border-radius: 100px;
+  font-size: 11px;
+  color: #93c5fd;
+  font-weight: 500;
+  line-height: 1.5;
+  letter-spacing: 0.01em;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.dp-info__chip:hover {
+  background: rgba(37, 99, 235, 0.2);
+  border-color: rgba(59, 130, 246, 0.4);
+}
+
 .dp-info__city {
   font-size: 13px;
   color: #60a5fa;
@@ -237,9 +266,10 @@
   font-weight: 500;
 }
 
-.dp-badge--blue   { background: rgba(59,130,246,0.12); color: #60a5fa; border: 1px solid rgba(59,130,246,0.2); }
-.dp-badge--violet { background: rgba(124,58,237,0.12); color: #a78bfa; border: 1px solid rgba(124,58,237,0.2); }
-.dp-badge--green  { background: rgba(16,185,129,0.10); color: #34d399; border: 1px solid rgba(16,185,129,0.18); }
+.dp-badge--blue     { background: rgba(59,130,246,0.12);  color: #60a5fa; border: 1px solid rgba(59,130,246,0.2); }
+.dp-badge--violet   { background: rgba(124,58,237,0.12); color: #a78bfa; border: 1px solid rgba(124,58,237,0.2); }
+.dp-badge--green    { background: rgba(16,185,129,0.10);  color: #34d399; border: 1px solid rgba(16,185,129,0.18); }
+.dp-badge--promoted { background: rgba(217,119,6,0.12);   color: #fbbf24; border: 1px solid rgba(217,119,6,0.25); }
 
 .dp-info__divider {
   height: 1px;
@@ -715,6 +745,22 @@
   color: #f1f5f9;
   margin: 0 0 2px;
 }
+
+.booking-points-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(251,191,36,0.08);
+  border: 1px solid rgba(251,191,36,0.2);
+  border-radius: 8px;
+  padding: 9px 14px;
+  font-size: 13px;
+  color: rgba(255,255,255,0.65);
+  margin-bottom: 16px;
+}
+
+.booking-points-badge i { color: #fbbf24; font-size: 14px; }
+.booking-points-badge strong { color: #fbbf24; }
 
 .booking-header p {
   font-size: 12px;

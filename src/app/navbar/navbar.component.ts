@@ -1,9 +1,14 @@
-import { Component, HostListener, OnInit } from '@angular/core';
+import { Component, HostListener, OnInit, OnDestroy } from '@angular/core';
 import { RouterLink, RouterLinkActive, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { Subscription } from 'rxjs';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { AuthService } from '../auth.service';
 import { ClinicDataService } from '../clinic-data.service';
+import { getInitials } from '../utils/text.utils';
+
+const API = 'https://www.dentipro.ro/api';
 
 @Component({
   selector: 'app-navbar',
@@ -12,7 +17,7 @@ import { ClinicDataService } from '../clinic-data.service';
   templateUrl: './navbar.component.html',
   styleUrl: './navbar.component.css',
 })
-export class NavbarComponent implements OnInit {
+export class NavbarComponent implements OnInit, OnDestroy {
   mobileMenuOpen = false;
   userMenuOpen = false;
 
@@ -46,6 +51,7 @@ export class NavbarComponent implements OnInit {
   resendSuccess = false;
   resendCooldown = 0;
   private resendTimer: any;
+  private clinicsSub?: Subscription;
 
   // Resetare parolă
   forgotEmail = '';
@@ -55,16 +61,77 @@ export class NavbarComponent implements OnInit {
   resetShowPw = false;
   resetSuccess = false;
 
+  // ── NOTIFICĂRI PACIENT ────────────────────────────────────
+  notifOpen = false;
+  notifications: any[] = [];
+  unreadCount = 0;
+  notifLoading = false;
+  private notifPoll: any;
+
+  private get notifHeaders(): HttpHeaders {
+    return new HttpHeaders({ Authorization: `Bearer ${this.authService.getToken()}` });
+  }
+
   constructor(
     public authService: AuthService,
     private clinicData: ClinicDataService,
     private router: Router,
+    private http: HttpClient,
   ) {}
 
   ngOnInit() {
-    this.clinicData.loadClinicsAuto().subscribe({
+    this.clinicsSub = this.clinicData.loadClinicsAuto().subscribe({
       next: (data) => { this.allClinics = data; },
     });
+    // Start notification polling for patients
+    if (this.authService.isLoggedIn && this.authService.isPatient) {
+      this.fetchUnreadCount();
+      this.notifPoll = setInterval(() => this.fetchUnreadCount(), 60_000);
+    }
+  }
+
+  ngOnDestroy(): void {
+    this.clinicsSub?.unsubscribe();
+    clearInterval(this.resendTimer);
+    clearInterval(this.notifPoll);
+  }
+
+  fetchUnreadCount() {
+    if (!this.authService.isPatient) return;
+    this.http.get<{ count: number }>(`${API}/patient/notifications/unread-count`, { headers: this.notifHeaders })
+      .subscribe({ next: (r) => { this.unreadCount = r.count; }, error: () => {} });
+  }
+
+  toggleNotif() {
+    this.notifOpen = !this.notifOpen;
+    if (this.notifOpen && this.notifications.length === 0) this.loadNotifications();
+  }
+
+  loadNotifications() {
+    this.notifLoading = true;
+    this.http.get<any[]>(`${API}/patient/notifications?limit=15`, { headers: this.notifHeaders }).subscribe({
+      next: (data) => {
+        this.notifications = data;
+        this.notifLoading = false;
+        // mark all read
+        this.http.patch(`${API}/patient/notifications/read-all`, {}, { headers: this.notifHeaders }).subscribe();
+        this.unreadCount = 0;
+      },
+      error: () => { this.notifLoading = false; },
+    });
+  }
+
+  goNotif(n: any) {
+    this.notifOpen = false;
+    if (n.link) this.router.navigate([n.link]);
+  }
+
+  notifTimeAgo(iso: string): string {
+    const diff = Math.floor((Date.now() - new Date(iso).getTime()) / 1000);
+    if (diff < 60) return 'acum';
+    if (diff < 3600) return `${Math.floor(diff / 60)}min`;
+    if (diff < 86400) return `${Math.floor(diff / 3600)}h`;
+    return `${Math.floor(diff / 86400)}z`;
   }
 
   onSearchInput() {
@@ -118,8 +185,7 @@ export class NavbarComponent implements OnInit {
   }
 
   getInitials(): string {
-    return (this.authService.currentUser?.name ?? '')
-      .split(' ').slice(0, 2).map((w) => w[0]).join('').toUpperCase();
+    return getInitials(this.authService.currentUser?.name ?? '');
   }
 
   // ── MODAL ─────────────────────────────────────────────────
@@ -230,6 +296,7 @@ export class NavbarComponent implements OnInit {
     this.resendLoading = false;
     this.resendSuccess = true;
     this.resendCooldown = 60;
+    clearInterval(this.resendTimer);
     this.resendTimer = setInterval(() => {
       this.resendCooldown--;
       if (this.resendCooldown <= 0) clearInterval(this.resendTimer);

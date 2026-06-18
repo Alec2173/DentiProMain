@@ -1,0 +1,513 @@
+<div class="partner-page">
+
+  <!-- ═══════════════════════════════════════════════════════
+       HERO
+  ════════════════════════════════════════════════════════ -->
+  <section class="hero-section">
+    <div class="hero-glow"></div>
+    <div class="hero-inner">
+      <div class="hero-badge">
+        <i class="fal fa-handshake"></i> Program Partener DentiPro
+      </div>
+      <h1 class="hero-title">
+        Devino<br>
+        <span class="hero-gradient">Partener Oficial</span>
+      </h1>
+      <p class="hero-sub">
+        DentiPro selectează un număr limitat de clinici partenere care beneficiază <strong>gratuit</strong> de
+        funcționalitățile premium ale platformei, în schimbul unor beneficii exclusive pentru pacienții noștri.
+      </p>
+      <div class="hero-stats">
+        @for (s of stats; track s.label) {
+          <div class="hero-stat">
+            <span class="hs-val">{{ s.val }}</span>
+            <span class="hs-label">{{ s.label }}</span>
+          </div>
+        }
+      </div>
+      <button class="hero-cta" (click)="scrollToForm()">
+        <i class="fal fa-file-signature"></i>
+        Completează formularul — 3 minute
+        <i class="fal fa-arrow-down"></i>
+      </button>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════
+       CE PRIMEȘTI — Plan Pro Real + Card VIP
+  ════════════════════════════════════════════════════════ -->
+  <section class="benefits-section">
+    <div class="section-inner">
+
+      <div class="section-label">
+        <i class="fal fa-crown"></i> Ce primești ca partener
+      </div>
+      <h2 class="section-title">
+        Acces complet la <span class="gradient-text">DentiPro Pro</span><br>
+        în mod <strong>GRATUIT</strong>
+      </h2>
+
+      <div class="benefits-grid">
+
+        <!-- Coloana stângă: lista beneficii -->
+        <div class="benefits-list">
+          @for (b of benefits; track b.text) {
+            <div class="benefit-item">
+              <div class="benefit-icon">
+                <i class="fal {{ b.icon }}"></i>
+              </div>
+              <span>{{ b.text }}</span>
+            </div>
+          }
+        </div>
+
+        <!-- Coloana dreaptă: cardul Pro real -->
+        <div class="benefits-visuals">
+
+          <!-- Plan card Pro real cu partnerMode -->
+          <div class="plan-card-wrap">
+            <div class="plan-card-label">Planul tău ca partener</div>
+            <app-plan-card [plan]="proPlan" [billingAnnual]="false" [partnerMode]="true" />
+          </div>
+
+          <!-- Card VIP real (același ca în finder/pricing) -->
+          <div class="demo-card-section">
+            <div class="demo-label"><span class="material-symbols-outlined">view_list</span> Cum apari în căutări</div>
+            <div class="pd-card-wrap">
+              <a class="pd-card pd-card--pro">
+                <div class="pd-vip-pill">★ VIP</div>
+                <div class="pd-partner-badge-overlay">
+                  <i class="fal fa-certificate"></i> Partener Oficial
+                </div>
+                <div class="pd-card-image">
+                  <img src="no-img.webp" alt="Clinica ta" loading="lazy" />
+                </div>
+                <div class="pd-card-info">
+                  <div class="pd-card-header">
+                    <div class="pd-logo">
+                      <img src="no-img.webp" alt="Logo" loading="lazy" />
+                    </div>
+                    <span class="pd-city">ORAȘUL TĂU</span>
+                  </div>
+                  <h3 class="pd-clinic-name">Clinica Ta</h3>
+                  <div class="pd-service-price">
+                    <span class="material-symbols-outlined">payments</span>
+                    <span class="pd-service-label">Implant dentar</span>
+                    <span class="pd-service-amount">de la 1.200 lei</span>
+                  </div>
+                  <div class="pd-rating">
+                    <span class="material-symbols-outlined">star</span>
+                    5.0
+                    <span class="pd-rating-count">(24 recenzii)</span>
+                  </div>
+                  <div class="pd-discount-row">
+                    <span class="pd-discount-tag">-10% pentru pacienți DentiPro</span>
+                  </div>
+                </div>
+              </a>
+            </div>
+          </div>
+
+          <!-- Pin VIP pe hartă — container static cu pinul real -->
+          <div class="demo-map-section">
+            <div class="demo-label"><span class="material-symbols-outlined">map</span> Pe harta interactivă</div>
+            <div class="static-map-wrap">
+              <div class="static-map-title">
+                <span class="material-symbols-outlined" style="font-size:15px;color:#d4a52a;font-variation-settings:'FILL' 1">workspace_premium</span>
+                Ieși în evidență față de concurență
+              </div>
+
+              <!-- Pinuri regulate (concurență) -->
+              <div class="static-pin" style="top:28%;left:18%">
+                <div class="map-marker-wrap">
+                  <div class="map-pin">
+                    <div class="map-pin__body"><i class="fal fa-tooth map-pin__icon"></i></div>
+                    <div class="map-pin__spike"></div>
+                    <div class="map-pin__pulse"></div>
+                  </div>
+                </div>
+              </div>
+              <div class="static-pin" style="top:55%;left:72%">
+                <div class="map-marker-wrap">
+                  <div class="map-pin">
+                    <div class="map-pin__body"><i class="fal fa-tooth map-pin__icon"></i></div>
+                    <div class="map-pin__spike"></div>
+                    <div class="map-pin__pulse"></div>
+                  </div>
+                </div>
+              </div>
+              <div class="static-pin" style="top:68%;left:30%">
+                <div class="map-marker-wrap">
+                  <div class="map-pin">
+                    <div class="map-pin__body"><i class="fal fa-tooth map-pin__icon"></i></div>
+                    <div class="map-pin__spike"></div>
+                    <div class="map-pin__pulse"></div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Pinul VIP (tu) — fără popup -->
+              <div class="static-pin static-pin--pro" style="top:58%;left:48%">
+                <div class="vip-pin-label">★ VIP</div>
+                <div class="map-marker-wrap map-marker-wrap--pro">
+                  <div class="map-pin map-pin--pro">
+                    <div class="map-pin__body"><i class="fal fa-tooth map-pin__icon map-pin__icon--pro"></i></div>
+                    <div class="map-pin__spike map-pin__spike--pro"></div>
+                    <div class="map-pin__pulse map-pin__pulse--pro"></div>
+                  </div>
+                </div>
+              </div>
+
+            </div><!-- /static-map-wrap -->
+          </div>
+
+        </div><!-- /benefits-visuals -->
+      </div><!-- /benefits-grid -->
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════
+       FORMULAR
+  ════════════════════════════════════════════════════════ -->
+  <section class="form-section" id="formular">
+    <div class="section-inner">
+
+      <div class="section-label">
+        <i class="fal fa-file-signature"></i> Formular de participare
+      </div>
+      <h2 class="section-title">
+        Suntem interesați?<br>
+        <span class="gradient-text">Completați mai jos</span>
+      </h2>
+
+      @if (submitted) {
+
+        <!-- SUCCESS — mulțumim -->
+        <div class="form-success form-success--animate">
+          <div class="success-icon">🎉</div>
+          <h3>Mulțumim pentru răspuns!</h3>
+          <p>
+            Am primit cererea clinicii <strong>{{ clinica.nume }}</strong>.<br>
+            Un reprezentant DentiPro vă va contacta în maxim <strong>48 de ore</strong> pentru a discuta detaliile parteneriatului.
+          </p>
+          <a routerLink="/" class="success-btn">
+            <i class="fal fa-home"></i> Înapoi la DentiPro
+          </a>
+        </div>
+
+      } @else if (declined) {
+
+        <!-- DECLINED — mulțumim oricum -->
+        <div class="form-success form-success--animate form-success--declined">
+          <div class="success-icon">🙏</div>
+          <h3>Mulțumim pentru răspuns!</h3>
+          <p>
+            Înțelegem că momentan nu este potrivit.<br>
+            Dacă vă răzgândiți, pagina rămâne disponibilă oricând la
+            <strong>dentipro.ro/parteneriat</strong>.
+          </p>
+          <a routerLink="/" class="success-btn">
+            <i class="fal fa-home"></i> Înapoi la DentiPro
+          </a>
+        </div>
+
+      } @else {
+
+        <!-- PROGRESS BAR -->
+        <div class="form-progress">
+          @for (s of [1,2,3]; track s) {
+            <div class="fp-step" [class.active]="step >= s" [class.current]="step === s">
+              <div class="fp-num">{{ s }}</div>
+              <div class="fp-label">
+                @if (s === 1) { Beneficii oferite }
+                @if (s === 2) { Servicii & model }
+                @if (s === 3) { Date clinică }
+              </div>
+            </div>
+            @if (s < 3) { <div class="fp-line" [class.active]="step > s"></div> }
+          }
+        </div>
+
+        <div class="form-card">
+
+          <!-- ── STEP 1: Beneficii pentru pacienți ──────────── -->
+          @if (step === 1) {
+            <div class="step-content">
+              <h3 class="step-title">Ce beneficii sunteți dispuși să oferiți pacienților DentiPro?</h3>
+              <p class="step-sub">Selectați una sau mai multe opțiuni. Acestea vor fi afișate pe profilul clinicii.</p>
+
+              <div class="checkbox-grid">
+                <label class="cb-item">
+                  <input type="checkbox" [(ngModel)]="beneficii.consultatie_gratuita" />
+                  <div class="cb-box">
+                    <i class="fal fa-stethoscope"></i>
+                    <span>Consultație gratuită</span>
+                  </div>
+                </label>
+                <label class="cb-item">
+                  <input type="checkbox" [(ngModel)]="beneficii.reducere_procentuala" />
+                  <div class="cb-box">
+                    <i class="fal fa-percent"></i>
+                    <span>Reducere procentuală</span>
+                  </div>
+                </label>
+                <label class="cb-item">
+                  <input type="checkbox" [(ngModel)]="beneficii.reducere_fixa" />
+                  <div class="cb-box">
+                    <i class="fal fa-tag"></i>
+                    <span>Reducere fixă (50–100 lei)</span>
+                  </div>
+                </label>
+                <label class="cb-item">
+                  <input type="checkbox" [(ngModel)]="beneficii.detartraj_promo" />
+                  <div class="cb-box">
+                    <i class="fal fa-tooth"></i>
+                    <span>Detartraj promoțional</span>
+                  </div>
+                </label>
+                <label class="cb-item">
+                  <input type="checkbox" [(ngModel)]="beneficii.albire_promo" />
+                  <div class="cb-box">
+                    <i class="fal fa-star"></i>
+                    <span>Albire dentară promoțional</span>
+                  </div>
+                </label>
+                <label class="cb-item">
+                  <input type="checkbox" [(ngModel)]="beneficii.radiografie_gratuita" />
+                  <div class="cb-box">
+                    <i class="fal fa-x-ray"></i>
+                    <span>Radiografie gratuită</span>
+                  </div>
+                </label>
+                <label class="cb-item">
+                  <input type="checkbox" [(ngModel)]="beneficii.plan_tratament_gratuit" />
+                  <div class="cb-box">
+                    <i class="fal fa-clipboard-list"></i>
+                    <span>Plan tratament gratuit</span>
+                  </div>
+                </label>
+                <label class="cb-item">
+                  <input type="checkbox" [(ngModel)]="beneficii.voucher_valoric" />
+                  <div class="cb-box">
+                    <i class="fal fa-gift"></i>
+                    <span>Voucher valoric</span>
+                  </div>
+                </label>
+                <label class="cb-item">
+                  <input type="checkbox" [(ngModel)]="beneficii.pachet_pacienti_noi" />
+                  <div class="cb-box">
+                    <i class="fal fa-user-plus"></i>
+                    <span>Pachet pacienți noi</span>
+                  </div>
+                </label>
+                <label class="cb-item cb-item--alt">
+                  <input type="checkbox" [(ngModel)]="beneficii.alt_beneficiu" />
+                  <div class="cb-box">
+                    <i class="fal fa-edit"></i>
+                    <span>Alt beneficiu</span>
+                  </div>
+                </label>
+              </div>
+
+              @if (beneficii.alt_beneficiu) {
+                <input class="form-input mt-12" type="text" [(ngModel)]="altBeneficiu"
+                  placeholder="Descrieți beneficiul oferit..." />
+              }
+
+              <!-- Reducere -->
+              <h3 class="step-title mt-28">Ce reducere considerați realistă?</h3>
+              <div class="radio-row">
+                <label class="radio-pill"><input type="checkbox" [(ngModel)]="reducere.p5" /><span>5%</span></label>
+                <label class="radio-pill"><input type="checkbox" [(ngModel)]="reducere.p10" /><span>10%</span></label>
+                <label class="radio-pill"><input type="checkbox" [(ngModel)]="reducere.p15" /><span>15%</span></label>
+                <label class="radio-pill"><input type="checkbox" [(ngModel)]="reducere.p20" /><span>20%</span></label>
+                <label class="radio-pill"><input type="checkbox" [(ngModel)]="reducere.alta" /><span>Altă valoare</span></label>
+              </div>
+              @if (reducere.alta) {
+                <input class="form-input mt-12" type="text" [(ngModel)]="altaReducere"
+                  placeholder="Ex: 25% sau 200 lei..." />
+              }
+            </div>
+          }
+
+          <!-- ── STEP 2: Servicii & Model business ──────────── -->
+          @if (step === 2) {
+            <div class="step-content">
+              <h3 class="step-title">Pentru ce servicii participați?</h3>
+              <p class="step-sub">Selectați domeniile în care doriți să oferiți beneficii pacienților DentiPro.</p>
+
+              <div class="services-grid">
+                @for (srv of [
+                  {key:'consultatii',   label:'Consultații',       icon:'fa-stethoscope'},
+                  {key:'implantologie', label:'Implantologie',     icon:'fa-teeth-open'},
+                  {key:'ortodontie',    label:'Ortodonție',        icon:'fa-teeth'},
+                  {key:'estetica',      label:'Estetică dentară',  icon:'fa-smile-beam'},
+                  {key:'albire',        label:'Albire dentară',    icon:'fa-star'},
+                  {key:'fatete',        label:'Fațete',            icon:'fa-gem'},
+                  {key:'endodontie',    label:'Endodonție',        icon:'fa-syringe'},
+                  {key:'chirurgie',     label:'Chirurgie',         icon:'fa-scalpel'},
+                  {key:'pedodontie',    label:'Pedodonție',        icon:'fa-child'},
+                ]; track srv.key) {
+                  <label class="service-card" [class.selected]="getServiciu(srv.key)">
+                    <input type="checkbox" [ngModel]="getServiciu(srv.key)" (ngModelChange)="setServiciu(srv.key, $event)" />
+                    <i class="fal {{ srv.icon }}"></i>
+                    <span>{{ srv.label }}</span>
+                  </label>
+                }
+                <label class="service-card service-card--all" [class.selected]="servicii.toate" (click)="toggleServiciiAll()">
+                  <i class="fal fa-check-double"></i>
+                  <span>Toate serviciile</span>
+                </label>
+              </div>
+
+              <!-- Model business -->
+              <h3 class="step-title mt-28">Model preferat pe viitor</h3>
+              <p class="step-sub">Dacă DentiPro vă aduce pacienți noi, ce model vi s-ar părea cel mai atractiv?</p>
+              <div class="model-list">
+                @for (opt of [
+                  {key:'abonament_lunar',    label:'Abonament lunar fix',                    icon:'fa-calendar-alt'},
+                  {key:'comision_pacient',   label:'Comision per pacient nou',               icon:'fa-user-plus'},
+                  {key:'comision_finalizat', label:'Comision doar pt. programări finalizate',icon:'fa-check-circle'},
+                  {key:'mixt',              label:'Model mixt',                              icon:'fa-layer-group'},
+                  {key:'neinteresat',       label:'Nu sunt interesat momentan',              icon:'fa-pause-circle'},
+                ]; track opt.key) {
+                  <label class="model-item" [class.selected]="getModel(opt.key)">
+                    <input type="checkbox" [ngModel]="getModel(opt.key)" (ngModelChange)="setModel(opt.key, $event)" />
+                    <i class="fal {{ opt.icon }}"></i>
+                    <span>{{ opt.label }}</span>
+                  </label>
+                }
+              </div>
+            </div>
+          }
+
+          <!-- ── STEP 3: Date clinică (pre-fill din link) ──────── -->
+          @if (step === 3) {
+            <div class="step-content">
+              <h3 class="step-title">Date clinică</h3>
+              <p class="step-sub">Vom lua legătura în maxim 48 de ore pentru a discuta detaliile parteneriatului.</p>
+
+              <!-- Clinică pre-completată din link personalizat -->
+              @if (isPreFilled) {
+                <div class="prefill-card">
+                  <div class="prefill-header">
+                    <div class="prefill-clinic-name">{{ clinica.nume }}</div>
+                    <div class="prefill-meta">
+                      @if (clinica.oras) { <span><i class="fal fa-map-marker-alt"></i> {{ clinica.oras }}</span> }
+                      @if (clinica.email) { <span><i class="fal fa-envelope"></i> {{ clinica.email }}</span> }
+                    </div>
+                  </div>
+                  <button class="prefill-wrong-btn" (click)="resetClinic()">
+                    <i class="fal fa-exchange-alt"></i> Nu asta e clinica ta?
+                  </button>
+                </div>
+              } @else {
+                <!-- Dropdown toate clinicile -->
+                <div class="form-field form-field--full" style="margin-bottom:16px;">
+                  <label class="form-label">Selectează clinica ta <span class="req">*</span></label>
+                  <select class="form-input form-select" [(ngModel)]="selectedClinicId" (change)="onClinicSelect()">
+                    <option [ngValue]="null">— Alege clinica din listă —</option>
+                    @for (c of allClinics; track c.id) {
+                      <option [ngValue]="c.id">{{ c.name }} — {{ c.city }}</option>
+                    }
+                  </select>
+                </div>
+              }
+
+              <!-- Câmpuri editabile -->
+              <div class="form-grid">
+                @if (!isPreFilled) {
+                  <div class="form-field">
+                    <label class="form-label">Nume clinică <span class="req">*</span></label>
+                    <input class="form-input" type="text" [(ngModel)]="clinica.nume" placeholder="Clinica Dr. Popescu" />
+                  </div>
+                  <div class="form-field">
+                    <label class="form-label">Oraș</label>
+                    <input class="form-input" type="text" [(ngModel)]="clinica.oras" placeholder="București" />
+                  </div>
+                }
+                <div class="form-field">
+                  <label class="form-label">Persoană de contact</label>
+                  <input class="form-input" type="text" [(ngModel)]="clinica.contact" placeholder="Dr. Ion Popescu" />
+                </div>
+                <div class="form-field">
+                  <label class="form-label">Telefon</label>
+                  <input class="form-input" type="tel" [(ngModel)]="clinica.telefon" [placeholder]="clinica.telefon || '07xx xxx xxx'" />
+                </div>
+                <div class="form-field form-field--full">
+                  <label class="form-label">Email <span class="req">*</span></label>
+                  <input class="form-input" type="email" [(ngModel)]="clinica.email" placeholder="contact@clinica.ro" />
+                </div>
+                <div class="form-field form-field--full">
+                  <label class="form-label">Comentarii / sugestii</label>
+                  <textarea class="form-input form-textarea" [(ngModel)]="clinica.comentarii"
+                    placeholder="Orice altceva doriți să ne transmiteți..."></textarea>
+                </div>
+              </div>
+
+              @if (error) {
+                <div class="form-error">
+                  <i class="fal fa-exclamation-circle"></i> {{ error }}
+                </div>
+              }
+
+              <div class="summary-box">
+                <div class="summary-title"><i class="fal fa-check-double"></i> Rezumatul selecțiilor tale</div>
+                <div class="summary-row">
+                  <span class="summary-label">Beneficii selectate:</span>
+                  <span class="summary-val">{{ beneficiiSelected() }} opțiuni</span>
+                </div>
+              </div>
+            </div>
+          }
+
+          <!-- Navigare -->
+          <div class="form-nav">
+            <div class="form-nav-left">
+              @if (step > 1) {
+                <button class="btn-back" (click)="prevStep()">
+                  <i class="fal fa-arrow-left"></i> Înapoi
+                </button>
+              }
+              <button class="btn-decline" (click)="decline()">
+                Nu sunt interesat
+              </button>
+            </div>
+
+            <div class="form-nav-right">
+            @if (step < totalSteps) {
+              <button class="btn-next" (click)="nextStep()" [disabled]="!canProceed()">
+                Continuă <i class="fal fa-arrow-right"></i>
+              </button>
+            } @else {
+              <button class="btn-submit" (click)="submit()" [disabled]="submitting">
+                @if (submitting) {
+                  <i class="fal fa-spinner fa-spin"></i> Se trimite...
+                } @else {
+                  <i class="fal fa-paper-plane"></i> Trimite cererea
+                }
+              </button>
+            }
+            </div><!-- /form-nav-right -->
+          </div>
+
+        </div><!-- /form-card -->
+
+      }<!-- /!submitted -->
+
+    </div>
+  </section>
+
+  <!-- FOOTER NOTE -->
+  <div class="partner-footer">
+    <p>
+      <i class="fal fa-lock"></i>
+      Datele dumneavoastră sunt confidențiale și nu vor fi partajate cu terți.
+      Răspundem la toate cererile în maxim 48 de ore.
+    </p>
+    <p>
+      Întrebări? <a href="mailto:contact@dentipro.ro">contact&#64;dentipro.ro</a>
+    </p>
+  </div>
+
+</div>

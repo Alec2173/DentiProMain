@@ -21,10 +21,31 @@
   border: 1px solid rgba(255,255,255,0.09);
   border-radius: 24px;
   padding: 36px;
-  box-shadow: 0 30px 80px rgba(0,0,0,0.5);
+  box-shadow:
+    0 30px 80px rgba(0,0,0,0.5),
+    0 0 0 1px rgba(37, 99, 235, 0.08) inset;
   display: flex;
   flex-direction: column;
   gap: 20px;
+  overflow: hidden;
+}
+
+.ca-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, #2563eb, #06b6d4, #2563eb);
+  background-size: 200% 100%;
+  animation: card-accent-shimmer 4s linear infinite;
+  border-radius: 24px 24px 0 0;
+}
+
+@keyframes card-accent-shimmer {
+  0%   { background-position: 0% 50%; }
+  100% { background-position: 200% 50%; }
 }
 
 /* ── BRAND ── */

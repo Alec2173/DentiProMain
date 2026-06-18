@@ -97,7 +97,7 @@
           <div class="post-card" (click)="openPost(post)">
             <div class="post-header">
               <div class="post-avatar">
-                {{ post.patient_name.charAt(0) }}
+                {{ (post.patient_name || '?').charAt(0) }}
               </div>
               <div class="post-meta">
                 <span class="post-author">{{ post.patient_name }}</span>
@@ -345,7 +345,7 @@
 
           <!-- POST INFO -->
           <div class="view-post-header">
-            <div class="post-avatar lg">{{ activePost.patient_name.charAt(0) }}</div>
+            <div class="post-avatar lg">{{ (activePost.patient_name || '?').charAt(0) }}</div>
             <div class="view-meta">
               <span class="post-author">{{ activePost.patient_name }}</span>
               <div class="view-meta-row">
@@ -396,7 +396,16 @@
 
           <!-- ── ZONA CLINICĂ: TRIMITE OFERTĂ ── -->
           @if (auth.isClinic && activePost.status === 'open') {
-            @if (alreadyOffered && existingOffer) {
+            @if (offerLimitReached) {
+              <div class="offer-limit-block">
+                <i class="fal fa-lock"></i>
+                <div>
+                  <strong>Limită lunară atinsă</strong>
+                  <p>Planul Growth permite 10 oferte/lună. Ai folosit toate cele 10 oferte luna aceasta.</p>
+                  <a routerLink="/clinici/pricing" class="offer-upgrade-link" (click)="closePost()">Upgrade la Pro pentru oferte nelimitate →</a>
+                </div>
+              </div>
+            } @else if (alreadyOffered && existingOffer) {
               <div class="offer-sent-state">
                 <div class="offer-sent-icon"><i class="fal fa-check-circle"></i></div>
                 <div>
@@ -409,7 +418,12 @@
               </div>
             } @else {
               <div class="offer-form">
-                <h3 class="offer-form-title"><i class="fal fa-comment-medical"></i> Trimite ofertă pacientului</h3>
+                <h3 class="offer-form-title">
+                  <i class="fal fa-comment-medical"></i> Trimite ofertă pacientului
+                  @if (clinicPlan === 'growth') {
+                    <span class="offer-remaining-badge">{{ offersRemaining }}/10 rămase luna aceasta</span>
+                  }
+                </h3>
 
                 <div class="field-group">
                   <label class="field-label">Mesajul tău <span class="req">*</span></label>
@@ -468,7 +482,7 @@
                         @if (offer.logo_url) {
                           <img [src]="offer.logo_url" [alt]="offer.clinic_name" />
                         } @else {
-                          <span class="offer-clinic-initials">{{ offer.clinic_name.charAt(0) }}</span>
+                          <span class="offer-clinic-initials">{{ (offer.clinic_name || '?').charAt(0) }}</span>
                         }
                       </div>
                       <div class="offer-clinic-info">

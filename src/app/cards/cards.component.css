@@ -108,7 +108,8 @@ a.card:active {
   height: 100%;
   object-fit: cover;
   display: block;
-  transition: transform 0.45s ease;
+  transition: transform 0.45s ease, opacity 0.35s ease;
+  background: rgba(255, 255, 255, 0.04);
 }
 
 a.card:hover .card-image img {
@@ -122,6 +123,48 @@ a.card:hover .card-image img {
   inset: 0;
   background: linear-gradient(90deg, transparent 55%, rgba(9, 22, 44, 0.85) 100%);
   pointer-events: none;
+}
+
+/* ─── IMAGE PLACEHOLDER ─── */
+
+.card-image__placeholder {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #1e293b, #0f172a);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+
+.card-image__placeholder-tooth {
+  width: 20px;
+  height: 20px;
+  opacity: 0.5;
+}
+
+.card-image__placeholder-initials {
+  font-size: 17px;
+  font-weight: 800;
+  color: #60a5fa;
+  letter-spacing: 0.04em;
+  line-height: 1;
+}
+
+/* ─── LOGO INITIALS ─── */
+
+.logo--initials {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #1e3a5f, #0f2744);
+  font-size: 11px;
+  font-weight: 800;
+  color: #60a5fa;
+  line-height: 1;
 }
 
 /* ─── INFO ─── */
@@ -181,8 +224,8 @@ a.card:hover .card-image img {
 .fav-btn {
   all: unset;
   margin-left: auto;
-  width: 26px;
-  height: 26px;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -292,8 +335,7 @@ a.card:hover .clinic-name {
   position: absolute;
   top: 0;
   left: 0;
-  background: linear-gradient(135deg, #2563eb, #06b6d4);
-  color: white;
+  color: #fff;
   font-size: 9px;
   font-weight: 800;
   letter-spacing: 0.07em;
@@ -301,6 +343,14 @@ a.card:hover .clinic-name {
   border-radius: 0 0 8px 0;
   pointer-events: none;
   z-index: 5;
+}
+
+.promo-badge--pro {
+  background: linear-gradient(135deg, #92400e, #d97706);
+}
+
+.promo-badge--growth {
+  background: linear-gradient(135deg, #1d4ed8, #3b82f6);
 }
 
 /* ════════════════════════════════════════
@@ -352,10 +402,33 @@ a.card:hover .clinic-name {
 @keyframes spin { to { transform: rotate(360deg); } }
 
 .cards-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   text-align: center;
-  padding: 48px 16px;
-  color: #475569;
-  font-size: 14px;
+  padding: 56px 24px;
+  gap: 8px;
+}
+
+.cards-empty-icon {
+  font-size: 40px;
+  color: rgba(255,255,255,0.12);
+  font-variation-settings: 'FILL' 1;
+  margin-bottom: 4px;
+}
+
+.cards-empty-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.4);
+  margin: 0;
+}
+
+.cards-empty-sub {
+  font-size: 13px;
+  color: rgba(255,255,255,0.22);
+  margin: 0;
 }
 
 /* ════════════════════════════════════════
@@ -389,3 +462,71 @@ a.card:hover .clinic-name {
 
 .skeleton-line.small { width: 50%; }
 .skeleton-line.tiny  { width: 30%; }
+
+/* ════════════════════════════════════════
+   VIP CARD — modern premium
+════════════════════════════════════════ */
+
+a.card--pro {
+  background: linear-gradient(135deg, rgba(14, 30, 62, 0.97), rgba(9, 20, 44, 0.99));
+  border: 1px solid rgba(196, 152, 40, 0.45);
+  box-shadow:
+    0 4px 24px rgba(0, 0, 0, 0.45),
+    inset 0 1px 0 rgba(220, 170, 50, 0.18);
+}
+
+a.card--pro::before { display: none !important; }
+
+/* Fine gold top border via pseudo-element */
+a.card--pro::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg,
+    transparent 0%,
+    rgba(212, 165, 48, 0.7) 30%,
+    rgba(245, 198, 80, 0.9) 50%,
+    rgba(212, 165, 48, 0.7) 70%,
+    transparent 100%
+  );
+  pointer-events: none;
+  z-index: 3;
+}
+
+a.card--pro:hover {
+  border-color: rgba(220, 172, 52, 0.65);
+  background: linear-gradient(135deg, rgba(16, 34, 70, 0.98), rgba(11, 24, 52, 0.99));
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.55),
+    0 0 18px rgba(180, 138, 28, 0.12),
+    inset 0 1px 0 rgba(230, 180, 60, 0.22);
+  transform: translateY(-2px);
+}
+
+a.card--pro .clinic-name       { color: rgba(255, 255, 255, 0.95); }
+a.card--pro:hover .clinic-name { color: #fff; }
+a.card--pro .city              { color: rgba(210, 165, 55, 0.75); }
+a.card--pro .logo              { border-color: rgba(200, 155, 40, 0.3); }
+a.card--pro .rating            { color: rgba(255, 255, 255, 0.45); }
+
+/* ── VIP PILL ── */
+.vip-pill {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  padding: 3px 10px;
+  border-radius: 4px;
+  border: 1px solid rgba(200, 155, 40, 0.55);
+  color: #d4a52a;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  background: rgba(8, 18, 40, 0.75);
+  backdrop-filter: blur(8px);
+  pointer-events: none;
+  z-index: 6;
+}
+
+/* GROWTH */
+a.card--growth { box-shadow: 0 2px 10px rgba(37, 99, 235, 0.2); }

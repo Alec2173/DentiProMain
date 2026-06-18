@@ -1,3 +1,6 @@
+<!-- Global navigation loading bar -->
+<div class="nav-progress-bar" [class.nav-progress-bar--active]="isNavigating()"></div>
+
 @if (!isClinicPortal) {
   <app-navbar></app-navbar>
 }
@@ -6,6 +9,8 @@
 }
 
 <router-outlet />
+
+<app-toast></app-toast>
 
 @if (!isClinicPortal) {
   <footer class="site-footer">
@@ -31,6 +36,8 @@
         <h4 class="footer-col-title">Pacienți</h4>
         <a routerLink="/inregistrare" class="footer-link">Creează cont</a>
         <a routerLink="/finder" class="footer-link">Găsește o clinică</a>
+        <a routerLink="/dentisti" class="footer-link">Toți dentiștii</a>
+        <a routerLink="/preturi" class="footer-link">Prețuri servicii</a>
         <a routerLink="/feed" class="footer-link">Cereri de tratament</a>
         <a routerLink="/harta" class="footer-link">Hartă clinici</a>
         <a routerLink="/appointments" class="footer-link">Programările mele</a>
@@ -49,7 +56,9 @@
         <h4 class="footer-col-title">Companie</h4>
         <a routerLink="/contact" class="footer-link">Contact</a>
         <a routerLink="/GDPR" class="footer-link">Politică de confidențialitate</a>
+        <a routerLink="/cookie-uri" class="footer-link">Politica de cookie-uri</a>
         <a routerLink="/termeni" class="footer-link">Termeni și condiții</a>
+        <a routerLink="/legal" class="footer-link">Centrul legal</a>
       </div>
 
     </div>
@@ -57,7 +66,7 @@
     <div class="footer-bottom">
       <span>© {{ currentYear }} DentiPro. Toate drepturile rezervate.</span>
       <span class="footer-bottom-sep">·</span>
-      <a href="mailto:office.dentipro@gmail.com" class="footer-bottom-link">office.dentipro&#64;gmail.com</a>
+      <a href="mailto:contact@dentipro.ro" class="footer-bottom-link">office.dentipro&#64;gmail.com</a>
     </div>
   </footer>
 }

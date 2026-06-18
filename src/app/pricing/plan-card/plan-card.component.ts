@@ -13,6 +13,9 @@ export class PlanCardComponent {
   /** The plan definition to render */
   @Input() plan!: PlanDef;
 
+  /** Partner mode: show strikethrough price + "GRATUIT pentru clinicile partenere" */
+  @Input() partnerMode = false;
+
   /** Toggle between monthly and annual pricing */
   @Input() billingAnnual = false;
 
@@ -32,10 +35,17 @@ export class PlanCardComponent {
   @Input() ctaRoute: string | null = null;
   @Input() ctaQueryParams: Record<string, string> = {};
 
+  @Input() competitorLine = '';
+
   @Output() selectPlan = new EventEmitter<string>();
 
   get displayPrice(): number {
     return this.billingAnnual ? this.plan.annualMonthlyPrice : this.plan.monthlyPrice;
+  }
+
+  get displayPriceWithVat(): string {
+    const total = this.displayPrice * 1.21;
+    return total.toFixed(2).replace('.', ',');
   }
 
   get defaultCtaRoute(): string {

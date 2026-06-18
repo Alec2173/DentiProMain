@@ -1,6 +1,10 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 
+export interface MapBounds {
+  swLat: number; swLng: number; neLat: number; neLng: number;
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -20,4 +24,8 @@ export class DataShareService {
   private filtersSubject = new BehaviorSubject<any>(null);
   filters$ = this.filtersSubject.asObservable();
   setFilters(filters: any) { this.filtersSubject.next(filters); }
+
+  private boundsSubject = new BehaviorSubject<MapBounds | null>(null);
+  bounds$ = this.boundsSubject.asObservable();
+  setBounds(b: MapBounds | null) { this.boundsSubject.next(b); }
 }

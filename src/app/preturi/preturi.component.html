@@ -1,78 +1,163 @@
-<!-- ── PREȚURI PAGE ──────────────────────────────────────────────── -->
 <div class="pr-page">
 
-  <!-- Hero -->
+  <!-- ── HERO ──────────────────────────────────────────────────── -->
   <div class="pr-hero">
-    <div class="pr-hero-badge"><i class="fal fa-tag"></i> Actualizat 2025</div>
-    <h1 class="pr-h1">Prețuri stomatologie în România</h1>
+    <div class="pr-hero-badge">
+      <span class="material-symbols-outlined">verified</span>
+      Actualizat 2026 · Date reale din platformă
+    </div>
+    <h1 class="pr-h1">Cât costă stomatologia<br /><span class="pr-h1-gradient">în România?</span></h1>
     <p class="pr-subtitle">
-      Compară costurile reale ale tratamentelor dentare. Prețurile sunt orientative,
-      bazate pe clinicile înregistrate pe DentiPro.
+      Compară prețurile reale ale tratamentelor dentare din clinicile înregistrate pe DentiPro.
+      Filtrează după serviciu, oraș și buget.
     </p>
   </div>
 
-  <!-- Category tabs -->
+  <!-- ── FILTER BAR ─────────────────────────────────────────────── -->
+  <div class="pr-filters">
+
+    <!-- Search -->
+    <div class="pr-filter-field pr-filter-search">
+      <span class="material-symbols-outlined pr-field-icon">search</span>
+      <input
+        class="pr-input"
+        type="text"
+        placeholder="Caută serviciu... (ex: implant, albire)"
+        [(ngModel)]="searchQuery"
+      />
+      @if (searchQuery) {
+        <button class="pr-clear-input" (click)="searchQuery = ''">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      }
+    </div>
+
+    <!-- City -->
+    <div class="pr-filter-field">
+      <span class="material-symbols-outlined pr-field-icon">location_on</span>
+      <select class="pr-select" [(ngModel)]="selectedCity">
+        <option value="">Toate orașele</option>
+        @for (city of cities; track city) {
+          <option [value]="city">{{ city }}</option>
+        }
+      </select>
+      <span class="material-symbols-outlined pr-select-arrow">expand_more</span>
+    </div>
+
+    <!-- Price range -->
+    <div class="pr-filter-field">
+      <span class="material-symbols-outlined pr-field-icon">payments</span>
+      <select class="pr-select" [(ngModel)]="selectedMaxPrice">
+        @for (range of priceRanges; track range.label) {
+          <option [ngValue]="range.value">{{ range.label }}</option>
+        }
+      </select>
+      <span class="material-symbols-outlined pr-select-arrow">expand_more</span>
+    </div>
+
+    @if (activeFiltersCount > 0) {
+      <button class="pr-clear-btn" (click)="clearFilters()">
+        <span class="material-symbols-outlined">filter_alt_off</span>
+        Resetează
+      </button>
+    }
+  </div>
+
+  <!-- ── CATEGORY TABS ──────────────────────────────────────────── -->
   <div class="pr-tabs">
     @for (cat of categories; track cat.id) {
       <button class="pr-tab" [class.pr-tab--active]="activeCategory === cat.id"
               (click)="setCategory(cat.id)">
+        <span class="material-symbols-outlined">{{ cat.icon }}</span>
         {{ cat.label }}
       </button>
     }
   </div>
 
-  <!-- Price table -->
-  <div class="pr-table-wrap">
-    <table class="pr-table">
-      <thead>
-        <tr>
-          <th class="pr-th pr-th--service">Serviciu</th>
-          <th class="pr-th pr-th--price">Min</th>
-          <th class="pr-th pr-th--price pr-th--avg">Mediu</th>
-          <th class="pr-th pr-th--price">Max</th>
-          <th class="pr-th pr-th--unit">Unitate</th>
-          <th class="pr-th pr-th--action"></th>
-        </tr>
-      </thead>
-      <tbody>
-        @for (p of filteredPrices; track p.id) {
-          <tr class="pr-row">
-            <td class="pr-td pr-td--service">
-              <a [routerLink]="['/dentisti', p.id]" class="pr-service-link">
-                {{ p.label }}
-              </a>
-            </td>
-            <td class="pr-td pr-td--min">{{ p.min === 0 ? 'Gratuit' : p.min + ' RON' }}</td>
-            <td class="pr-td pr-td--avg">
-              <span class="pr-avg-badge">{{ p.avg }} RON</span>
-              <!-- Mini bar graph -->
-              <div class="pr-bar-wrap">
-                <div class="pr-bar" [style.width]="((p.avg - p.min) / (p.max - p.min + 1) * 100) + '%'"></div>
-              </div>
-            </td>
-            <td class="pr-td pr-td--max">{{ p.max | number }}+ RON</td>
-            <td class="pr-td pr-td--unit">/ {{ p.unit }}</td>
-            <td class="pr-td pr-td--action">
-              <a [routerLink]="['/dentisti', p.id]" class="pr-find-btn">
-                <i class="fal fa-search"></i> Clinici
-              </a>
-            </td>
-          </tr>
-        }
-      </tbody>
-    </table>
+  <!-- ── CITY CONTEXT BANNER ────────────────────────────────────── -->
+  @if (selectedCity) {
+    <div class="pr-city-banner">
+      <span class="material-symbols-outlined">location_on</span>
+      Afișând prețuri orientative · Buton <strong>Clinici</strong> duce direct la clinicile din
+      <strong>{{ selectedCity }}</strong>
+    </div>
+  }
+
+  <!-- ── RESULTS COUNT ──────────────────────────────────────────── -->
+  <div class="pr-results-meta">
+    <span class="pr-results-count">{{ filteredPrices.length }} servicii</span>
+    @if (activeFiltersCount > 0) {
+      <span class="pr-active-filters">{{ activeFiltersCount }} filtru activ</span>
+    }
   </div>
 
-  <!-- Disclaimer -->
+  <!-- ── PRICE TABLE ────────────────────────────────────────────── -->
+  @if (filteredPrices.length > 0) {
+    <div class="pr-table-wrap">
+      <table class="pr-table">
+        <thead>
+          <tr>
+            <th class="pr-th pr-th--service">Serviciu</th>
+            <th class="pr-th pr-th--price">Min</th>
+            <th class="pr-th pr-th--price pr-th--avg">Preț mediu</th>
+            <th class="pr-th pr-th--price">Max</th>
+            <th class="pr-th pr-th--unit">Unitate</th>
+            <th class="pr-th pr-th--action">
+              @if (selectedCity) { {{ selectedCity }} } @else { Clinici }
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (p of filteredPrices; track p.id) {
+            <tr class="pr-row">
+              <td class="pr-td pr-td--service">
+                <a [routerLink]="clinicsRoute(p.id)" class="pr-service-link">
+                  {{ p.label }}
+                </a>
+              </td>
+              <td class="pr-td pr-td--min">
+                {{ p.min === 0 ? 'Gratuit' : (p.min | number) + ' lei' }}
+              </td>
+              <td class="pr-td pr-td--avg">
+                <span class="pr-avg-badge">{{ p.avg | number }} lei</span>
+                <div class="pr-bar-wrap">
+                  <div class="pr-bar" [style.width]="barWidth(p)"></div>
+                </div>
+              </td>
+              <td class="pr-td pr-td--max">{{ p.max | number }}+ lei</td>
+              <td class="pr-td pr-td--unit">/ {{ p.unit }}</td>
+              <td class="pr-td pr-td--action">
+                <a [routerLink]="clinicsRoute(p.id)" class="pr-find-btn">
+                  <span class="material-symbols-outlined">search</span>
+                  Clinici
+                </a>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  } @else {
+    <div class="pr-empty">
+      <span class="material-symbols-outlined pr-empty-icon">search_off</span>
+      <p>Niciun serviciu găsit pentru filtrele selectate.</p>
+      <button class="pr-clear-btn" (click)="clearFilters()">Resetează filtrele</button>
+    </div>
+  }
+
+  <!-- ── DISCLAIMER ─────────────────────────────────────────────── -->
   <div class="pr-disclaimer">
-    <i class="fal fa-info-circle"></i>
+    <span class="material-symbols-outlined">info</span>
     Prețurile sunt orientative și pot varia în funcție de clinică, complexitatea cazului și materialele folosite.
     Consultați clinica pentru un deviz personalizat.
   </div>
 
-  <!-- CTA -->
+  <!-- ── CTA ───────────────────────────────────────────────────── -->
   <div class="pr-cta">
     <div class="pr-cta-card">
+      <div class="pr-cta-icon">
+        <span class="material-symbols-outlined">savings</span>
+      </div>
       <h2 class="pr-cta-title">Găsește clinica potrivită pentru bugetul tău</h2>
       <p class="pr-cta-text">
         DentiPro îți arată prețurile reale ale clinicilor din orașul tău.
@@ -80,18 +165,20 @@
       </p>
       <div class="pr-cta-btns">
         <a routerLink="/finder" class="pr-cta-btn pr-cta-btn--primary">
-          <i class="fal fa-search"></i> Caută clinici
+          <span class="material-symbols-outlined">search</span>
+          Caută clinici
         </a>
         <a routerLink="/harta" class="pr-cta-btn pr-cta-btn--secondary">
-          <i class="fal fa-map-marked-alt"></i> Hartă clinici
+          <span class="material-symbols-outlined">map</span>
+          Hartă clinici
         </a>
       </div>
     </div>
   </div>
 
-  <!-- SEO text -->
+  <!-- ── SEO TEXT ───────────────────────────────────────────────── -->
   <div class="pr-seo-text">
-    <h2>Cât costă stomatologia în România în 2025?</h2>
+    <h2>Cât costă stomatologia în România în 2026?</h2>
     <p>
       Prețurile serviciilor stomatologice în România variază semnificativ în funcție de zona geografică,
       experiența medicului, echipamentele folosite și calitatea materialelor dentare.
@@ -99,8 +186,8 @@
     </p>
     <p>
       Cele mai solicitate servicii rămân detartrajul și albirea dentară, urmate de implanturi și aparate dentare.
-      Un implant dentar complet (implant + coroană) costă între 1.200 și 5.000 RON, în timp ce un aparat
-      dentar transparent (alinere) poate ajunge la 10.000 RON pentru cazuri complexe.
+      Un implant dentar complet (implant + coroană) costă între 1.200 și 5.000 lei, în timp ce un aparat
+      dentar transparent (alinere) poate ajunge la 10.000 lei pentru cazuri complexe.
     </p>
     <p>
       DentiPro centralizează prețurile reale afișate de clinicile partenere, oferindu-ți transparență deplină

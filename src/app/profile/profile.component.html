@@ -210,4 +210,147 @@
     </a>
   </div>
 
+  <!-- ── PREFERINȚE NOTIFICĂRI ─────────────────────────── -->
+  @if (prefs) {
+    <div class="prefs-section">
+      <div class="prefs-header">
+        <i class="fal fa-bell-slash"></i>
+        <div>
+          <h2>Preferințe notificări</h2>
+          <p>Controlează ce comunicări primești de la DentiPro</p>
+        </div>
+      </div>
+
+      <div class="prefs-list">
+        <label class="pref-row">
+          <div class="pref-info">
+            <span class="pref-label">Emailuri programări</span>
+            <span class="pref-sub">Confirmare, anulare, finalizare</span>
+          </div>
+          <input type="checkbox" class="pref-toggle" [(ngModel)]="prefs.email_appts" (change)="savePrefs()" />
+        </label>
+        <label class="pref-row">
+          <div class="pref-info">
+            <span class="pref-label">Remindere automate</span>
+            <span class="pref-sub">Cu 24h și 2h înainte de programare</span>
+          </div>
+          <input type="checkbox" class="pref-toggle" [(ngModel)]="prefs.notif_reminders" (change)="savePrefs()" />
+        </label>
+        <label class="pref-row">
+          <div class="pref-info">
+            <span class="pref-label">Notificări în aplicație</span>
+            <span class="pref-sub">Bell din navbar, pagina notificări</span>
+          </div>
+          <input type="checkbox" class="pref-toggle" [(ngModel)]="prefs.notif_inapp" (change)="savePrefs()" />
+        </label>
+        <label class="pref-row">
+          <div class="pref-info">
+            <span class="pref-label">Emailuri promoționale</span>
+            <span class="pref-sub">Oferte clinici, promoții speciale</span>
+          </div>
+          <input type="checkbox" class="pref-toggle" [(ngModel)]="prefs.email_promo" (change)="savePrefs()" />
+        </label>
+      </div>
+    </div>
+  }
+
+  <!-- ── RECOMPENSELE MELE ───────────────────────────────── -->
+  <div class="rewards-section">
+
+    <div class="rewards-header">
+      <i class="fal fa-gift"></i>
+      <div>
+        <h2>Recompensele mele</h2>
+        <p>Câștigă puncte pentru fiecare programare și activitate pe DentiPro</p>
+      </div>
+    </div>
+
+    @if (pointsLoading) {
+      <div class="rewards-loading">
+        <i class="fal fa-spinner fa-spin"></i> Se încarcă...
+      </div>
+    } @else if (points) {
+
+      <!-- Sold + Nivel -->
+      <div class="rewards-top">
+        <div class="rewards-balance">
+          <div class="rewards-pts-big">{{ points.current }}</div>
+          <div class="rewards-pts-label">puncte disponibile</div>
+          <div class="rewards-lifetime">{{ points.lifetime }} acumulate pe viață</div>
+        </div>
+
+        <div class="rewards-level-card rewards-level-{{ points.level.name | lowercase }}">
+          <div class="rewards-level-icon">
+            @if (points.level.name === 'Gold')   { 🥇 }
+            @if (points.level.name === 'Silver') { 🥈 }
+            @if (points.level.name === 'Bronze') { 🥉 }
+          </div>
+          <div class="rewards-level-name">{{ points.level.name }}</div>
+          @if (points.level.next) {
+            <div class="rewards-level-next">→ {{ points.level.next }} la {{ points.level.nextAt }} pts</div>
+            <div class="rewards-progress-bar">
+              <div class="rewards-progress-fill" [style.width.%]="levelProgress"></div>
+            </div>
+          } @else {
+            <div class="rewards-level-next">Nivel maxim atins!</div>
+          }
+        </div>
+      </div>
+
+      <!-- Cum câștigi puncte -->
+      <div class="rewards-earn">
+        <div class="rewards-earn-title">Cum câștigi puncte</div>
+        <div class="rewards-earn-list">
+          <div class="rewards-earn-item">
+            <span class="rewards-earn-pts">+10</span>
+            <i class="fal fa-calendar-check"></i>
+            <span>Programare finalizată de clinică</span>
+          </div>
+          <div class="rewards-earn-item">
+            <span class="rewards-earn-pts">+5</span>
+            <i class="fal fa-star"></i>
+            <span>Recenzie publicată</span>
+          </div>
+          <div class="rewards-earn-item">
+            <span class="rewards-earn-pts">+10</span>
+            <i class="fal fa-user-check"></i>
+            <span>Profil complet</span>
+          </div>
+          <div class="rewards-earn-item rewards-earn-item--soon">
+            <span class="rewards-earn-pts">+20</span>
+            <i class="fal fa-user-plus"></i>
+            <span>Invită un prieten <span class="soon-tag">Curând</span></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Istoric -->
+      @if (points.history.length > 0) {
+        <div class="rewards-history">
+          <div class="rewards-history-title">Activitate recentă</div>
+          @for (item of points.history; track item.created_at) {
+            <div class="rewards-history-item">
+              <div class="rh-icon">
+                <i class="fal {{ pointsIcon(item.reason) }}"></i>
+              </div>
+              <div class="rh-text">
+                <span class="rh-desc">{{ item.description }}</span>
+                <span class="rh-date">{{ item.created_at | date:'dd MMM yyyy' }}</span>
+              </div>
+              <div class="rh-pts" [class.rh-pts--neg]="item.points < 0">
+                {{ item.points > 0 ? '+' : '' }}{{ item.points }} pts
+              </div>
+            </div>
+          }
+        </div>
+      } @else {
+        <div class="rewards-empty">
+          <i class="fal fa-star"></i>
+          <p>Nicio activitate încă. Fă prima programare prin DentiPro și câștigă 10 puncte!</p>
+        </div>
+      }
+
+    }
+  </div>
+
 </div>

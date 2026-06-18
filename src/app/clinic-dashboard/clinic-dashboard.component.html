@@ -11,6 +11,17 @@
     </div>
   }
 
+  <!-- ── STRIPE PORTAL ERROR TOAST ───────────────────────────── -->
+  @if (stripePortalError) {
+    <div class="checkout-toast checkout-toast--error">
+      <i class="fal fa-exclamation-circle"></i>
+      <div>
+        <strong>Eroare la deschiderea portalului.</strong>
+        Contactează suportul la <a href="mailto:contact@dentipro.ro">contact&#64;dentipro.ro</a>.
+      </div>
+    </div>
+  }
+
   <!-- ── SKELETON LOADING ──────────────────────────────────── -->
   @if (isLoading) {
     <div class="skeleton-wrap">
@@ -37,6 +48,37 @@
 
   @if (!isLoading && data) {
 
+    <!-- ── PROFILE SCORE CALLOUT ──────────────────────────────── -->
+    @if (showProfileScoreCallout) {
+      <div class="profile-score-callout">
+        <div class="psc-header">
+          <div class="psc-score-ring">
+            <span class="psc-score-number">{{ profileCompletion }}%</span>
+          </div>
+          <div class="psc-header-text">
+            <strong>Profilul tău este incomplet</strong>
+            <span>Completează profilul pentru a apărea în mai multe căutări și a atrage mai mulți pacienți.</span>
+          </div>
+        </div>
+        <div class="psc-bar-wrap">
+          <div class="psc-bar" [style.width.%]="profileCompletion"></div>
+        </div>
+        @if (profileMissingItems.length > 0) {
+          <div class="psc-missing">
+            <span class="psc-missing-label">Lipsă:</span>
+            @for (item of profileMissingItems; track item.label) {
+              <a routerLink="/clinici/profil" [fragment]="item.fragment" class="psc-missing-chip">
+                <i class="fal fa-plus-circle"></i> {{ item.label }}
+              </a>
+            }
+          </div>
+        }
+        <a routerLink="/clinici/profil" class="psc-cta">
+          <i class="fal fa-edit"></i> Completează profilul acum
+        </a>
+      </div>
+    }
+
     <!-- ── WELCOME HEADER ──────────────────────────────────────── -->
     <div class="welcome-header">
       <div class="clinic-avatar">
@@ -60,9 +102,41 @@
             </span>
           }
         </div>
-        <p class="welcome-sub">Gestionează profilul tău și urmărește activitatea clinicii</p>
+        <p class="welcome-sub">
+          @if (data && performanceTier === 'high') {
+            Performanță excelentă — continuă să răspunzi la cereri și să confirmi programările.
+          } @else if (data && performanceTier === 'medium') {
+            Ești pe drumul cel bun — câteva acțiuni simple pot dubla rezultatele.
+          } @else {
+            Gestionează profilul tău și urmărește activitatea clinicii.
+          }
+        </p>
       </div>
     </div>
+
+    <!-- ── COMPETITOR BANNER (Starter only) ─────────────────── -->
+    @if (showCompetitorBanner) {
+      <div class="competitor-banner">
+        <div class="competitor-banner__icon">
+          <i class="fal fa-chart-line"></i>
+        </div>
+        <div class="competitor-banner__body">
+          <p class="competitor-banner__title">
+            <strong>{{ cityCompetitors.total }}</strong>
+            {{ cityCompetitors.total === 1 ? 'clinică te depășește' : 'clinici te depășesc' }} în {{ data.clinic?.city }}
+          </p>
+          <p class="competitor-banner__text">{{ competitorBannerText }}</p>
+        </div>
+        <div class="competitor-banner__actions">
+          <a routerLink="/clinici/pricing" class="competitor-banner__cta">
+            <i class="fal fa-rocket"></i> Fă upgrade acum
+          </a>
+          <button class="competitor-banner__dismiss" (click)="dismissCompetitorBanner()" title="Închide">
+            <i class="fal fa-times"></i>
+          </button>
+        </div>
+      </div>
+    }
 
     <!-- ── STATS GRID ─────────────────────────────────────────── -->
     <div class="stats-grid">
@@ -120,10 +194,180 @@
         </div>
       </div>
 
+      <div class="stat-card stat-total-appts">
+        <div class="stat-icon">
+          <i class="fal fa-calendar-alt"></i>
+        </div>
+        <div class="stat-body">
+          <span class="stat-value">{{ data.stats?.totalAppointments ?? 0 }}</span>
+          <span class="stat-label">Programări totale</span>
+          @if ((data.stats?.completedAppointments ?? 0) > 0) {
+            <span class="stat-sub">{{ data.stats.completedAppointments }} finalizate</span>
+          }
+        </div>
+      </div>
+
+      <div class="stat-card stat-requests">
+        <div class="stat-icon">
+          <i class="fal fa-inbox"></i>
+        </div>
+        <div class="stat-body">
+          <span class="stat-value">{{ data.stats?.requestsAnswered ?? 0 }}</span>
+          <span class="stat-label">Cereri la care ai răspuns</span>
+        </div>
+      </div>
+
+      <div class="stat-card stat-value-gen">
+        <div class="stat-icon">
+          <i class="fal fa-coins"></i>
+        </div>
+        <div class="stat-body">
+          @if ((data.stats?.completedAppointments ?? 0) > 0) {
+            <span class="stat-value stat-value--range">{{ estimatedMin | number }}–{{ estimatedMax | number }} <small>RON</small></span>
+            <span class="stat-label">Venit estimat din consultații</span>
+            <span class="stat-sub">{{ data.stats.completedAppointments }} consultații × ~{{ avgServicePrice | number }} RON medie</span>
+          } @else {
+            <span class="stat-value">0</span>
+            <span class="stat-label">Venit estimat din consultații</span>
+            <span class="stat-sub">0 consultații finalizate încă</span>
+          }
+        </div>
+      </div>
+
     </div>
 
+    <!-- ── ROI CARD ─────────────────────────────────────────────── -->
+    @if ((data.stats?.completedAppointments ?? 0) > 0 || (data.stats?.requestsAnswered ?? 0) > 0) {
+      <div class="roi-card">
+
+        <div class="roi-card-header">
+          <div class="roi-card-title">
+            <i class="fal fa-chart-line"></i>
+            Ce a generat DentiPro pentru tine
+          </div>
+          @if (performanceTier === 'high') {
+            <span class="perf-badge perf-high"><i class="fal fa-fire"></i> Excelent</span>
+          } @else if (performanceTier === 'medium') {
+            <span class="perf-badge perf-medium"><i class="fal fa-thumbs-up"></i> Bun</span>
+          } @else {
+            <span class="perf-badge perf-low"><i class="fal fa-seedling"></i> În creștere</span>
+          }
+        </div>
+
+        <!-- COMPARAȚIE COST vs VALOARE (planuri plătite) -->
+        @if (planMonthlyCost > 0 && (data.stats?.estimatedValue ?? 0) > 0) {
+          <div class="roi-vs-row">
+            <div class="roi-vs-box roi-vs-cost">
+              <span class="roi-vs-label">Abonament lunar</span>
+              <span class="roi-vs-num">{{ planMonthlyCost }} RON</span>
+              <span class="roi-vs-sub">ai plătit pentru DentiPro</span>
+            </div>
+            <div class="roi-vs-arrow">
+              <i class="fal fa-exchange-alt"></i>
+            </div>
+            <div class="roi-vs-box roi-vs-value">
+              <span class="roi-vs-label">Venit din consultații</span>
+              <span class="roi-vs-num">{{ estimatedMin | number }}–{{ estimatedMax | number }} RON</span>
+              <span class="roi-vs-sub">{{ data.stats.completedAppointments }} consultații finalizate</span>
+            </div>
+          </div>
+          @if (roiRatio > 1) {
+            <div class="roi-ratio-pill">
+              <i class="fal fa-arrow-trend-up"></i>
+              1 RON plătit a generat ~<strong>{{ roiRatio }} RON</strong> în consultații — DentiPro s-a plătit singur de {{ roiRatio }}×
+            </div>
+          }
+          <p class="roi-formula">
+            <i class="fal fa-calculator"></i>
+            Calcul: {{ data.stats.completedAppointments }} consultații finalizate × ~{{ avgServicePrice | number }} RON prețul mediu al serviciilor tale. Intervalul reflectă variația reală a prețurilor.
+          </p>
+
+        <!-- STARTER — fără cost, afișăm valoarea brută + mesaj -->
+        } @else if (planMonthlyCost === 0) {
+          <div class="roi-free-row">
+            <div class="roi-free-kpi">
+              <span class="roi-free-num">{{ data.stats?.totalAppointments ?? 0 }}</span>
+              <span class="roi-free-label">programări primite</span>
+            </div>
+            <div class="roi-free-sep"></div>
+            <div class="roi-free-kpi">
+              <span class="roi-free-num">{{ data.stats?.requestsAnswered ?? 0 }}</span>
+              <span class="roi-free-label">cereri la care ai răspuns</span>
+            </div>
+            <div class="roi-free-sep"></div>
+            <div class="roi-free-kpi roi-free-kpi--green">
+              <span class="roi-free-num">{{ estimatedMin | number }}–{{ estimatedMax | number }}</span>
+              <span class="roi-free-label">RON venit estimat</span>
+            </div>
+          </div>
+          <p class="roi-formula roi-formula--free">
+            <i class="fal fa-gift"></i>
+            Ai generat venit real <strong>fără să plătești nimic</strong>.
+            Calcul: {{ data.stats?.completedAppointments ?? 0 }} consultații × ~{{ avgServicePrice | number }} RON prețul mediu al serviciilor tale.
+          </p>
+        }
+
+      </div>
+    }
+
+    <!-- ── SMART ACTIONS ──────────────────────────────────────── -->
+    @if (smartActions.length > 0) {
+      <div class="smart-actions-card">
+        <div class="smart-actions-header">
+          <i class="fal fa-bolt"></i>
+          Ce poți face acum pentru rezultate mai bune
+        </div>
+        <div class="smart-actions-list">
+          @for (action of smartActions; track action.label) {
+            <a [routerLink]="action.route" class="smart-action-item">
+              <div class="smart-action-icon">
+                <i class="fal {{ action.icon }}"></i>
+              </div>
+              <div class="smart-action-body">
+                <span class="smart-action-label">{{ action.label }}</span>
+                <span class="smart-action-sub">{{ action.sub }}</span>
+              </div>
+              <i class="fal fa-arrow-right smart-action-arrow"></i>
+            </a>
+          }
+        </div>
+      </div>
+    }
+
+    <!-- ── UPGRADE NUDGE (Starter cu performanță bună) ─────────── -->
+    @if (shouldShowUpgradeNudge) {
+      <a routerLink="/clinici/pricing" class="upgrade-nudge">
+        <div class="upgrade-nudge-left">
+          <span class="upgrade-nudge-badge">
+            <i class="fal fa-rocket"></i> Ești gata pentru mai mult
+          </span>
+          <p class="upgrade-nudge-text">
+            Ai deja rezultate concrete pe planul Gratuit.
+            @if (performanceTier === 'high') {
+              Cu <strong>Growth</strong> sau <strong>Pro</strong>, vizibilitatea ta crește de 3× și apari primul în căutări.
+            } @else {
+              Treci la <strong>Growth</strong> și apari mai sus în căutări — mai mulți pacienți, automat.
+            }
+          </p>
+        </div>
+        <div class="upgrade-nudge-cta">
+          <span>Vezi planurile</span>
+          <i class="fal fa-arrow-right"></i>
+        </div>
+      </a>
+    }
+
     <!-- ── ANALYTICS VIZUALIZĂRI PROFIL ─────────────────────────── -->
-    @if (viewsChart.length > 0) {
+    @if (currentPlan === 'starter') {
+      <div class="analytics-locked-card">
+        <div class="analytics-locked-icon"><i class="fal fa-chart-bar"></i></div>
+        <div class="analytics-locked-body">
+          <strong>Statistici & Analiză</strong>
+          <p>Vizualizează câți pacienți îți accesează profilul zilnic, tendințe și performanță. Disponibil din planul Growth.</p>
+          <a routerLink="/clinici/pricing" class="analytics-locked-cta">Activează Growth <i class="fal fa-arrow-right"></i></a>
+        </div>
+      </div>
+    } @else if (viewsChart.length > 0) {
       <div class="analytics-card">
         <div class="analytics-header">
           <div class="analytics-title">
@@ -312,6 +556,49 @@
             </a>
           }
         </div>
+      </div>
+    }
+
+    <!-- ── FACTURI ────────────────────────────────────────── -->
+    @if (invoices.length > 0 || invoicesLoading) {
+      <div class="section-title">
+        <i class="fal fa-file-invoice"></i> Facturi fiscale
+      </div>
+      <div class="invoices-card">
+        @if (invoicesLoading) {
+          <div class="inv-loading"><i class="fal fa-spinner fa-spin"></i> Se încarcă facturile...</div>
+        } @else {
+          <table class="inv-table">
+            <thead>
+              <tr>
+                <th>Nr. factură</th>
+                <th>Plan</th>
+                <th>Net</th>
+                <th>TVA 21%</th>
+                <th>Total cu TVA</th>
+                <th>Data</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (inv of invoices; track inv.id) {
+                <tr>
+                  <td class="inv-number">{{ inv.smartbill_series }}{{ inv.smartbill_number }}</td>
+                  <td>{{ planBillingLabel(inv.plan, inv.billing_cycle) }}</td>
+                  <td>{{ inv.amount_net | number:'1.2-2' }} RON</td>
+                  <td>{{ inv.amount_vat | number:'1.2-2' }} RON</td>
+                  <td class="inv-total">{{ inv.amount_total | number:'1.2-2' }} RON</td>
+                  <td class="inv-date">{{ inv.issued_at | date:'dd.MM.yyyy' }}</td>
+                  <td>
+                    <button class="inv-dl-btn" (click)="downloadInvoice(inv.smartbill_series, inv.smartbill_number)" title="Descarcă PDF">
+                      <i class="fal fa-file-pdf"></i>
+                    </button>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        }
       </div>
     }
 
@@ -758,6 +1045,257 @@
       </div>
     }
 
+  }
+
+  <!-- ── MODUL STOCURI ──────────────────────────────────────── -->
+  @if (!isLoading && data) {
+    <div class="stock-section">
+      <div class="section-header-row">
+        <div class="section-title-wrap">
+          <i class="fal fa-boxes"></i>
+          <span>Gestionare stocuri</span>
+          @if (currentPlan === 'pro' && stockAlerts > 0) {
+            <span class="stock-alert-badge">{{ stockAlerts }} alertă{{ stockAlerts > 1 ? 'te' : '' }}</span>
+          }
+        </div>
+      </div>
+
+      @if (currentPlan !== 'pro') {
+        <!-- LOCKED pentru Starter și Growth -->
+        <div class="stock-locked">
+          <div class="stock-locked-icon"><i class="fal fa-boxes"></i></div>
+          <div class="stock-locked-body">
+            <strong>Modul stocuri & alerte automate</strong>
+            <p>Gestionează materialele și medicamentele din clinică. Primești alerte când stocul scade sub un prag sau când produsele sunt aproape de expirare.</p>
+            <a routerLink="/clinici/pricing" class="stock-locked-cta">
+              <i class="fal fa-crown"></i> Disponibil în planul Pro
+            </a>
+          </div>
+        </div>
+      } @else {
+        <!-- PRO: interfața completă -->
+
+        @if (stockItems.length > 0) {
+          <div class="stock-table">
+            @for (item of stockItems; track item.id) {
+              <div class="stock-row" [class.stock-row--low]="isStockLow(item)" [class.stock-row--expired]="isStockExpired(item)" [class.stock-row--expiring]="isStockExpiringSoon(item) && !isStockExpired(item)">
+                <div class="stock-row__name">
+                  {{ item.name }}
+                  @if (isStockExpired(item)) {
+                    <span class="stock-tag stock-tag--expired">Expirat</span>
+                  } @else if (isStockExpiringSoon(item)) {
+                    <span class="stock-tag stock-tag--expiring">Expiră în curând</span>
+                  } @else if (item.qty === 0) {
+                    <span class="stock-tag stock-tag--out">Epuizat</span>
+                  } @else if (isStockLow(item)) {
+                    <span class="stock-tag stock-tag--low">Stoc redus</span>
+                  }
+                </div>
+                <div class="stock-row__qty">
+                  <button class="stock-qty-btn" (click)="updateStockQty(item, -1)"><i class="fal fa-minus"></i></button>
+                  <span class="stock-qty-val">{{ item.qty }} {{ item.unit }}</span>
+                  <button class="stock-qty-btn" (click)="updateStockQty(item, 1)"><i class="fal fa-plus"></i></button>
+                </div>
+                @if (item.expiresAt) {
+                  <span class="stock-row__exp">
+                    <i class="fal fa-calendar-times"></i> {{ item.expiresAt }}
+                  </span>
+                }
+                <button class="stock-delete-btn" (click)="deleteStockItem(item.id)" title="Șterge">
+                  <i class="fal fa-trash"></i>
+                </button>
+              </div>
+            }
+          </div>
+        } @else if (!showAddStock) {
+          <div class="stock-empty">
+            <i class="fal fa-boxes"></i>
+            <p>Nu ai adăugat niciun produs în stoc.</p>
+          </div>
+        }
+
+        @if (showAddStock) {
+          <div class="stock-add-form">
+            <div class="stock-add-row">
+              <input class="stock-input stock-input--name" type="text" [(ngModel)]="stockName" placeholder="Nume produs (ex: Anestezic, Mănuși...)" />
+              <input class="stock-input stock-input--num" type="number" [(ngModel)]="stockQty" min="0" placeholder="Cantitate" />
+              <select class="stock-input stock-input--unit" [(ngModel)]="stockUnit">
+                <option value="buc">buc</option>
+                <option value="ml">ml</option>
+                <option value="g">g</option>
+                <option value="flacoane">flacoane</option>
+                <option value="cutii">cutii</option>
+              </select>
+              <input class="stock-input stock-input--num" type="number" [(ngModel)]="stockMinQty" min="0" placeholder="Alertă la" title="Alertă când scade sub această cantitate" />
+              <input class="stock-input" type="date" [(ngModel)]="stockExpiresAt" title="Dată expirare (opțional)" />
+            </div>
+            @if (stockError) {
+              <p class="stock-error"><i class="fal fa-exclamation-circle"></i> {{ stockError }}</p>
+            }
+            <div class="stock-add-actions">
+              <button class="stock-btn-cancel" (click)="showAddStock = false">Renunță</button>
+              <button class="stock-btn-save" (click)="addStockItem()"><i class="fal fa-check"></i> Salvează</button>
+            </div>
+          </div>
+        }
+
+        <button class="stock-add-trigger" (click)="showAddStock = !showAddStock">
+          <i class="fal fa-plus"></i> Adaugă produs în stoc
+        </button>
+      }
+    </div>
+  }
+
+  <!-- ── CALENDAR DISPONIBILITATE ─────────────────────────── -->
+  @if (!isLoading && data) {
+    <div class="cal-section">
+      <div class="cal-section-header">
+        <div class="cal-section-title">
+          <i class="fal fa-calendar-alt"></i>
+          Calendar disponibilitate
+          @if (pendingBookingsCount > 0) {
+            <span class="cal-pending-badge">{{ pendingBookingsCount }}</span>
+          }
+        </div>
+        <div class="cal-tabs">
+          <button class="cal-tab" [class.cal-tab--active]="calTab === 'slots'" (click)="calTab = 'slots'">
+            Sloturi
+          </button>
+          <button class="cal-tab" [class.cal-tab--active]="calTab === 'bookings'" (click)="calTab = 'bookings'">
+            Programări
+            @if (pendingBookingsCount > 0) { ({{ pendingBookingsCount }}) }
+          </button>
+        </div>
+      </div>
+
+      @if (calTab === 'slots') {
+        <div class="cal-slots-layout">
+          <!-- Mini calendar -->
+          <div class="cal-mini">
+            <div class="cal-mini-weekdays">
+              @for (d of calendarWeekdays; track d) {
+                <span>{{ d }}</span>
+              }
+            </div>
+            <div class="cal-mini-grid">
+              @for (day of _calendarDays; track day.date) {
+                <button class="cal-day"
+                        [class.cal-day--today]="day.isToday"
+                        [class.cal-day--selected]="day.date === calSelectedDate"
+                        [class.cal-day--available]="day.hasAvailable"
+                        [class.cal-day--booked]="day.hasBooked"
+                        [class.cal-day--past]="day.isPast"
+                        (click)="calSelectedDate = day.date">
+                  {{ day.day }}
+                </button>
+              }
+            </div>
+            <div class="cal-legend">
+              <span class="cal-legend-dot cal-legend-dot--available"></span> Liber
+              <span class="cal-legend-dot cal-legend-dot--booked"></span> Rezervat
+            </div>
+          </div>
+
+          <!-- Slots for selected date -->
+          <div class="cal-slots-panel">
+            <div class="cal-slots-date-title">
+              <i class="fal fa-calendar-day"></i>
+              {{ calSelectedDate | date:'EEEE, d MMMM yyyy':'':'ro' }}
+            </div>
+
+            <!-- Existing slots -->
+            @if (calSlotsForDate.length > 0) {
+              <div class="cal-slot-list">
+                @for (slot of calSlotsForDate; track slot.id) {
+                  <div class="cal-slot-item" [class.cal-slot-item--booked]="slot.is_booked">
+                    <i class="fal" [class.fa-clock]="!slot.is_booked" [class.fa-check-circle]="slot.is_booked"></i>
+                    <span class="cal-slot-time">{{ formatSlotTime(slot.start_time) }}</span>
+                    <span class="cal-slot-duration">{{ slot.duration_minutes }} min</span>
+                    @if (slot.is_booked) {
+                      <span class="cal-slot-booked-badge">Rezervat</span>
+                    } @else {
+                      <button class="cal-slot-del" (click)="deleteCalSlot(slot.id)" title="Șterge slot">
+                        <i class="fal fa-trash"></i>
+                      </button>
+                    }
+                  </div>
+                }
+              </div>
+            } @else {
+              <p class="cal-empty-msg">Niciun slot pentru această zi.</p>
+            }
+
+            <!-- Add new slot -->
+            <div class="cal-add-slot">
+              <div class="cal-add-row">
+                <input type="time" class="cal-input" [(ngModel)]="calNewTime" step="900" />
+                <select class="cal-select" [(ngModel)]="calNewDuration">
+                  <option [value]="15">15 min</option>
+                  <option [value]="30">30 min</option>
+                  <option [value]="45">45 min</option>
+                  <option [value]="60">60 min</option>
+                  <option [value]="90">90 min</option>
+                </select>
+                <button class="cal-add-btn" (click)="addCalSlot()" [disabled]="calAddLoading">
+                  <i class="fal fa-plus"></i>
+                  {{ calAddLoading ? 'Se adaugă...' : 'Adaugă slot' }}
+                </button>
+              </div>
+              @if (calAddError) {
+                <p class="cal-error">{{ calAddError }}</p>
+              }
+            </div>
+          </div>
+        </div>
+      }
+
+      @if (calTab === 'bookings') {
+        <div class="cal-bookings-panel">
+          @if (calBookings.length === 0) {
+            <div class="cal-empty-state">
+              <i class="fal fa-calendar-times"></i>
+              <p>Nicio programare primită încă.</p>
+              <span>Adaugă sloturi disponibile ca pacienții să se poată programa.</span>
+            </div>
+          } @else {
+            <div class="cal-bookings-list">
+              @for (b of calBookings; track b.id) {
+                <div class="cal-booking-card" [class.cal-booking-card--confirmed]="b.status === 'confirmed'" [class.cal-booking-card--cancelled]="b.status === 'cancelled'">
+                  <div class="cal-booking-info">
+                    <div class="cal-booking-patient">
+                      <i class="fal fa-user"></i>
+                      <strong>{{ b.patient_name }}</strong>
+                      <span class="cal-booking-status cal-booking-status--{{ b.status }}">{{ bookingStatusLabel(b.status) }}</span>
+                    </div>
+                    <div class="cal-booking-meta">
+                      <span><i class="fal fa-calendar"></i> {{ formatBookingDate(b.slot_date) }}</span>
+                      <span><i class="fal fa-clock"></i> {{ formatSlotTime(b.start_time) }}</span>
+                      @if (b.patient_phone) {
+                        <span><i class="fal fa-phone"></i> {{ b.patient_phone }}</span>
+                      }
+                      <span><i class="fal fa-envelope"></i> {{ b.patient_email }}</span>
+                    </div>
+                    @if (b.notes) {
+                      <p class="cal-booking-notes"><i class="fal fa-sticky-note"></i> {{ b.notes }}</p>
+                    }
+                  </div>
+                  @if (b.status === 'pending') {
+                    <div class="cal-booking-actions">
+                      <button class="cal-btn-confirm" (click)="updateBookingStatus(b.id, 'confirmed')" [disabled]="calUpdatingId === b.id">
+                        <i class="fal fa-check"></i> Confirmă
+                      </button>
+                      <button class="cal-btn-cancel" (click)="updateBookingStatus(b.id, 'cancelled')" [disabled]="calUpdatingId === b.id">
+                        <i class="fal fa-times"></i> Anulează
+                      </button>
+                    </div>
+                  }
+                </div>
+              }
+            </div>
+          }
+        </div>
+      }
+    </div>
   }
 
   <!-- ── NO DATA / ERROR ────────────────────────────────────── -->

@@ -1334,6 +1334,19 @@ input::placeholder, textarea::placeholder { color: rgba(255, 255, 255, 0.2); }
 
 .terms-link:hover { text-decoration: underline; }
 
+.link-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  color: #60a5fa;
+  font-size: inherit;
+  cursor: pointer;
+  text-decoration: none;
+  font-family: inherit;
+}
+
+.link-btn:hover { text-decoration: underline; }
+
 /* ════════════════════════════════════════
    ERROR BANNER
 ════════════════════════════════════════ */
@@ -1808,3 +1821,47 @@ input::placeholder, textarea::placeholder { color: rgba(255, 255, 255, 0.2); }
 
 @keyframes spin { to { transform: rotate(360deg); } }
 .spinning { animation: spin 1s linear infinite; }
+
+/* ── ONBOARDING HINT ────────────────────── */
+.onboarding-hint {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 14px 18px;
+  background: rgba(37,99,235,0.08);
+  border: 1px solid rgba(37,99,235,0.2);
+  border-radius: 10px;
+  margin-top: 20px;
+  color: #93c5fd;
+  font-size: 13px;
+  line-height: 1.6;
+}
+.onboarding-hint .material-symbols-outlined {
+  font-size: 18px;
+  color: #60a5fa;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+/* ── SUMMARY SIMPLE (step 3) ────────────── */
+.summary-simple {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 12px;
+  padding: 20px 24px;
+  margin-bottom: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.summary-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 14px;
+  color: #cbd5e1;
+}
+.summary-row .material-symbols-outlined {
+  font-size: 18px;
+  color: #60a5fa;
+}

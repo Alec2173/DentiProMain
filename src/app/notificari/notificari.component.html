@@ -1,0 +1,66 @@
+<div class="notif-page">
+
+  <div class="notif-header">
+    <div class="notif-header-left">
+      <i class="fal fa-bell"></i>
+      <div>
+        <h1>Notificările mele</h1>
+        <p>{{ unreadCount > 0 ? unreadCount + ' necitite' : 'Toate citite' }}</p>
+      </div>
+    </div>
+    @if (unreadCount > 0) {
+      <button class="notif-mark-all-btn" (click)="markAllRead()" [disabled]="markingAll">
+        <i class="fal fa-check-double"></i>
+        {{ markingAll ? 'Se procesează...' : 'Marchează toate ca citite' }}
+      </button>
+    }
+  </div>
+
+  <!-- Filtre -->
+  <div class="notif-filters">
+    <button class="nf-btn" [class.active]="filter === 'all'" (click)="filter = 'all'">Toate</button>
+    <button class="nf-btn" [class.active]="filter === 'unread'" (click)="filter = 'unread'">
+      Necitite @if (unreadCount > 0) { <span class="nf-count">{{ unreadCount }}</span> }
+    </button>
+    <button class="nf-btn" [class.active]="filter === 'appointments'" (click)="filter = 'appointments'">Programări</button>
+    <button class="nf-btn" [class.active]="filter === 'rewards'" (click)="filter = 'rewards'">Recompense</button>
+  </div>
+
+  <!-- Lista notificări -->
+  @if (loading) {
+    <div class="notif-loading">
+      <i class="fal fa-spinner fa-spin"></i> Se încarcă notificările...
+    </div>
+  } @else if (filtered.length === 0) {
+    <div class="notif-empty">
+      <i class="fal fa-bell-slash"></i>
+      <p>Nicio notificare{{ filter !== 'all' ? ' în această categorie' : '' }}.</p>
+    </div>
+  } @else {
+    <div class="notif-list">
+      @for (n of filtered; track n.id) {
+        <div class="notif-item" [class.unread]="!n.read_at" (click)="markRead(n)">
+          <div class="notif-icon" [style.color]="meta(n.type).color" [style.background]="meta(n.type).color + '18'">
+            <i class="fal {{ meta(n.type).icon }}"></i>
+          </div>
+          <div class="notif-body">
+            <div class="notif-title">{{ n.title }}</div>
+            @if (n.body) {
+              <div class="notif-desc">{{ n.body }}</div>
+            }
+            <div class="notif-time">{{ n.created_at | date:'dd MMM yyyy, HH:mm' }}</div>
+          </div>
+          <div class="notif-right">
+            @if (!n.read_at) {
+              <div class="notif-dot"></div>
+            }
+            @if (n.link) {
+              <i class="fal fa-chevron-right notif-arrow"></i>
+            }
+          </div>
+        </div>
+      }
+    </div>
+  }
+
+</div>

@@ -2,6 +2,7 @@ import {
   Component,
   AfterViewInit,
   OnInit,
+  OnDestroy,
   signal,
   HostListener,
 } from '@angular/core';
@@ -9,38 +10,64 @@ import { RouterOutlet, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { NavbarComponent } from './navbar/navbar.component';
 import { ClinicNavbarComponent } from './clinic-portal/clinic-navbar/clinic-navbar.component';
-import { LeftSidebarComponent } from './left-sidebar/left-sidebar.component';
 import { SupportWidgetComponent } from './support-widget/support-widget.component';
+import { ToastComponent } from './toast/toast.component';
 import { Router, Event as RouterEvent, NavigationStart, NavigationEnd, NavigationCancel, NavigationError } from '@angular/router';
+import { Subject, takeUntil } from 'rxjs';
 import { AuthService } from './auth.service';
+import { AnalyticsService } from './analytics.service';
 import * as CookieConsent from 'vanilla-cookieconsent';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, RouterLink, CommonModule, NavbarComponent, ClinicNavbarComponent, LeftSidebarComponent, SupportWidgetComponent],
+  imports: [RouterOutlet, RouterLink, CommonModule, NavbarComponent, ClinicNavbarComponent, SupportWidgetComponent, ToastComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css',
 })
-export class AppComponent implements OnInit, AfterViewInit {
+export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   isClinicPortal = false;
+  isNavigating = signal<boolean>(false);
   readonly currentYear = new Date().getFullYear();
 
   isLeftSidebarCollapsed = signal<boolean>(false);
   screenWidth = signal<number>(window.innerWidth);
 
-  constructor(private router: Router, private auth: AuthService) {
-    this.router.events.subscribe((event: RouterEvent) => {
-      if (
-        event instanceof NavigationStart ||
-        event instanceof NavigationEnd ||
-        event instanceof NavigationCancel ||
-        event instanceof NavigationError
-      ) {
-        window.scrollTo(0, 0);
+  private destroy$ = new Subject<void>();
+
+  constructor(private router: Router, private auth: AuthService, private analytics: AnalyticsService) {
+    this.analytics.init();
+
+    this.router.events.pipe(takeUntil(this.destroy$)).subscribe((event: RouterEvent) => {
+      if (event instanceof NavigationStart) {
+        this.isNavigating.set(true);
+      }
+      if (event instanceof NavigationEnd || event instanceof NavigationCancel || event instanceof NavigationError) {
+        this.isNavigating.set(false);
       }
       if (event instanceof NavigationEnd) {
-        this.isClinicPortal = event.urlAfterRedirects.startsWith('/clinici');
+        // Scroll to top after new page content renders
+        window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+        document.documentElement.scrollTop = 0;
+        document.body.scrollTop = 0;
+        const url = event.urlAfterRedirects;
+        const clinicRoutes = ['/clinici', '/preturi', '/pentru-clinici'];
+        this.isClinicPortal = clinicRoutes.some(r => url.startsWith(r));
+        this.analytics.page(url);
+      }
+    });
+
+    // Identifică userul la fiecare schimbare de auth state
+    this.auth.user$.pipe(takeUntil(this.destroy$)).subscribe(user => {
+      if (user) {
+        this.analytics.identify(String(user.id), {
+          role: user.role,
+          name: user.name,
+          email: user.email,
+          created_at: user.created_at,
+        });
+      } else {
+        this.analytics.reset();
       }
     });
   }
@@ -105,6 +132,11 @@ export class AppComponent implements OnInit, AfterViewInit {
     this.isLeftSidebarCollapsed.set(this.screenWidth() < 768);
     // Validează sesiunea salvată cu serverul (în background, fără a bloca UI-ul)
     this.auth.verifySession();
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   changeIsLeftSidebarCollapsed(val: boolean): void {

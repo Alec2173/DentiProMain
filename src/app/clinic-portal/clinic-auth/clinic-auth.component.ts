@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { RouterLink, ActivatedRoute, Router } from '@angular/router';
@@ -13,7 +13,7 @@ import { Meta } from '@angular/platform-browser';
   templateUrl: './clinic-auth.component.html',
   styleUrl: './clinic-auth.component.css',
 })
-export class ClinicAuthComponent implements OnInit {
+export class ClinicAuthComponent implements OnInit, OnDestroy {
   tab: 'login' | 'register' = 'login';
   step: 'auth' | 'verify' | 'forgot' | 'reset' = 'auth';
   loading = false;
@@ -151,10 +151,15 @@ export class ClinicAuthComponent implements OnInit {
     this.resendLoading = false;
     this.resendSuccess = true;
     this.resendCooldown = 60;
+    clearInterval(this.resendTimer);
     this.resendTimer = setInterval(() => {
       this.resendCooldown--;
       if (this.resendCooldown <= 0) clearInterval(this.resendTimer);
     }, 1000);
+  }
+
+  ngOnDestroy(): void {
+    clearInterval(this.resendTimer);
   }
 
   backToAuth() {

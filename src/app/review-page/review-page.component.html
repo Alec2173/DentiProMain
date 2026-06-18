@@ -1,0 +1,73 @@
+<div class="review-page">
+  @if (loading) {
+    <div class="rp-loading">
+      <div class="rp-spinner"></div>
+      <p>Se încarcă...</p>
+    </div>
+  } @else if (error) {
+    <div class="rp-card rp-error-card">
+      <div class="rp-icon rp-icon--error"><i class="fal fa-exclamation-circle"></i></div>
+      <h1 class="rp-title">Link invalid</h1>
+      <p class="rp-sub">{{ error }}</p>
+      <a routerLink="/" class="rp-btn">Înapoi la DentiPro</a>
+    </div>
+  } @else if (submitted) {
+    <div class="rp-card rp-success-card">
+      <div class="rp-icon rp-icon--success"><i class="fal fa-check-circle"></i></div>
+      <h1 class="rp-title">Mulțumim pentru recenzie!</h1>
+      <p class="rp-sub">Recenzia ta pentru <strong>{{ clinicName }}</strong> a fost înregistrată și va fi vizibilă în profilul clinicii.</p>
+      <a [routerLink]="['/descripton', clinicId]" class="rp-btn">Vezi profilul clinicii</a>
+    </div>
+  } @else {
+    <div class="rp-card">
+      <div class="rp-header">
+        <div class="rp-icon rp-icon--star"><i class="fal fa-star"></i></div>
+        <h1 class="rp-title">Lasă o recenzie</h1>
+        <p class="rp-sub">
+          Ai vizitat <strong>{{ clinicName }}</strong>
+          @if (slotDate) { pe <strong>{{ formatDate(slotDate) }}</strong> }
+          @if (slotTime) { la <strong>{{ slotTime.slice(0,5) }}</strong> }
+        </p>
+      </div>
+
+      <!-- Star selector -->
+      <div class="rp-stars-wrap">
+        @for (s of [1,2,3,4,5]; track s) {
+          <button
+            class="rp-star-btn"
+            [class.active]="s <= displayRating"
+            (click)="setRating(s)"
+            (mouseenter)="setHover(s)"
+            (mouseleave)="clearHover()"
+            [attr.aria-label]="s + ' stele'">
+            <i class="fas fa-star"></i>
+          </button>
+        }
+        @if (ratingLabel) {
+          <span class="rp-star-label">{{ ratingLabel }}</span>
+        }
+      </div>
+
+      <!-- Text -->
+      <div class="rp-field">
+        <label class="rp-label">Experiența ta *</label>
+        <textarea
+          class="rp-textarea"
+          [(ngModel)]="reviewText"
+          placeholder="Descrie experiența ta: atmosfera clinicii, profesionalismul medicilor, rezultatele tratamentului..."
+          rows="5"
+          maxlength="1000"
+        ></textarea>
+        <div class="rp-char-count">{{ reviewText.length }}/1000</div>
+      </div>
+
+      @if (submitError) {
+        <div class="rp-error-msg">{{ submitError }}</div>
+      }
+
+      <button class="rp-submit" (click)="submit()" [disabled]="submitting">
+        @if (submitting) { Se trimite... } @else { Trimite recenzia }
+      </button>
+    </div>
+  }
+</div>

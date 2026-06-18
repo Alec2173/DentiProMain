@@ -102,6 +102,34 @@ export class ClinicLandingComponent implements OnInit {
     },
   ];
 
+  readonly cycleSteps = [
+    {
+      icon: 'payments',
+      title: 'Te abonezi',
+      desc: 'Abonamentul tău Growth sau Pro nu e o taxă — e combustibilul platformei.',
+    },
+    {
+      icon: 'campaign',
+      title: 'Reinvestim în promovare',
+      desc: 'Banii din abonamente se duc direct în reclame și marketing pentru DentiPro.',
+    },
+    {
+      icon: 'visibility',
+      title: 'Mai mulți pacienți descoperă platforma',
+      desc: 'Mai multă promovare înseamnă mai mulți pacienți care caută clinici pe DentiPro.',
+    },
+    {
+      icon: 'storefront',
+      title: 'Mai mulți ochi pe clinica ta',
+      desc: 'Mai mulți pacienți pe platformă = mai multă expunere pentru profilul tău.',
+    },
+  ];
+
+  readonly quotes = [
+    'De ce să investești într-un abonament DentiPro?',
+    'Pentru că cu cât crește platforma, cu atât crește și clinica ta.',
+  ];
+
   readonly faqs = [
     { q: 'Este obligatoriu să plătesc pentru a fi pe platformă?', a: 'Nu. Planul Starter este permanent gratuit și include profil public, marker pe hartă și apariție în rezultatele de search.' },
     { q: 'Cât durează până apare clinica mea pe platformă?', a: 'Profilul este verificat și publicat în maxim 24-48 ore de la completarea formularului de înregistrare.' },

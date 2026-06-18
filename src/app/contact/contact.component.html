@@ -9,13 +9,13 @@
   <div class="contact-grid">
 
     <!-- Email -->
-    <a href="mailto:office.dentipro&#64;gmail.com" class="contact-card contact-card--email">
+    <a href="mailto:contact@dentipro.ro" class="contact-card contact-card--email">
       <div class="contact-card-icon">
         <i class="fal fa-envelope"></i>
       </div>
       <div class="contact-card-body">
         <span class="contact-card-title">Email</span>
-        <span class="contact-card-value">office.dentipro&#64;gmail.com</span>
+        <span class="contact-card-value">contact&#64;dentipro.ro</span>
         <span class="contact-card-desc">Răspundem în maxim 24 de ore în zilele lucrătoare</span>
       </div>
       <i class="fal fa-arrow-right contact-card-arrow"></i>
@@ -76,39 +76,61 @@
   <div class="contact-faq">
     <h2><i class="fal fa-question-circle"></i> Întrebări frecvente</h2>
 
-    <div class="faq-list">
-
-      <details class="faq-item">
-        <summary>Cum îmi adaug fotografiile clinicii?</summary>
-        <p>Mergi la <strong>Editează profilul</strong> (butonul din dashboard) → secțiunea „Fotografii" → apasă „Adaugă fotografie" și selectează imaginile de pe calculator. Poți adăuga până la 20 de fotografii.</p>
-      </details>
-
-      <details class="faq-item">
-        <summary>Cum adaug serviciile oferite de clinica mea?</summary>
-        <p>Din dashboard, apasă „Editează profilul" → secțiunea „Servicii" → apasă „+ Adaugă serviciu". Alege tipul de serviciu și poți adăuga un preț orientativ.</p>
-      </details>
-
-      <details class="faq-item">
-        <summary>Nu văd profilul meu pe site. Ce fac?</summary>
-        <p>Profilul tău este vizibil publicului după ce este aprobat de echipa DentiPro. Dacă ai trimis înscrierea și nu ai primit confirmare în 24 de ore, trimite-ne un email la office.dentipro&#64;gmail.com.</p>
-      </details>
-
-      <details class="faq-item">
-        <summary>Am uitat parola. Cum o resetez?</summary>
-        <p>Mergi la pagina de autentificare a clinicii și apasă „Am uitat parola". Vei primi un email cu instrucțiuni pentru resetarea parolei.</p>
-      </details>
-
-      <details class="faq-item">
-        <summary>Cum văd programările pacienților?</summary>
-        <p>Din dashboard-ul clinicii, secțiunea „Programări" afișează toate cererile de programare. Poți confirma sau anula fiecare programare direct de acolo.</p>
-      </details>
-
-      <details class="faq-item">
-        <summary>Cum modific numărul de telefon sau adresa clinicii?</summary>
-        <p>Mergi la „Editează profilul" din dashboard. Acolo poți modifica toate informațiile: telefon, adresă, descriere, program de lucru.</p>
-      </details>
-
-    </div>
+    @if (auth.isClinic) {
+      <div class="faq-list">
+        <details class="faq-item">
+          <summary>Cum îmi adaug fotografiile clinicii?</summary>
+          <p>Mergi la <strong>Editează profilul</strong> (butonul din dashboard) → secțiunea „Fotografii" → apasă „Adaugă fotografie" și selectează imaginile de pe calculator.</p>
+        </details>
+        <details class="faq-item">
+          <summary>Cum adaug serviciile oferite de clinica mea?</summary>
+          <p>Din dashboard, apasă „Editează profilul" → secțiunea „Servicii" → apasă „+ Adaugă serviciu". Alege tipul de serviciu și poți adăuga un preț orientativ.</p>
+        </details>
+        <details class="faq-item">
+          <summary>Nu văd profilul meu pe site. Ce fac?</summary>
+          <p>Profilul tău este vizibil publicului după ce este aprobat de echipa DentiPro. Dacă ai trimis înscrierea și nu ai primit confirmare în 24 de ore, trimite-ne un email la contact&#64;dentipro.ro.</p>
+        </details>
+        <details class="faq-item">
+          <summary>Am uitat parola. Cum o resetez?</summary>
+          <p>Mergi la pagina de autentificare a clinicii și apasă „Am uitat parola". Vei primi un email cu un cod de resetare.</p>
+        </details>
+        <details class="faq-item">
+          <summary>Cum văd programările pacienților?</summary>
+          <p>Din dashboard-ul clinicii, secțiunea „Programări" afișează toate cererile. Poți confirma sau anula fiecare programare direct de acolo.</p>
+        </details>
+        <details class="faq-item">
+          <summary>Cum modific numărul de telefon sau adresa clinicii?</summary>
+          <p>Mergi la „Editează profilul" din dashboard. Acolo poți modifica toate informațiile: telefon, adresă, descriere, program de lucru.</p>
+        </details>
+      </div>
+    } @else {
+      <div class="faq-list">
+        <details class="faq-item">
+          <summary>Cum fac o programare la o clinică?</summary>
+          <p>Caută o clinică din <a routerLink="/finder">pagina de căutare</a>, intră pe profilul ei și apasă „Fă o programare". Completează serviciul dorit, data și ora preferată.</p>
+        </details>
+        <details class="faq-item">
+          <summary>Cum îmi creez un cont de pacient?</summary>
+          <p>Apasă „Cont nou" din bara de navigație sau mergi la <a routerLink="/inregistrare">pagina de înregistrare</a>. Completează datele și verifică-ți adresa de email.</p>
+        </details>
+        <details class="faq-item">
+          <summary>Cum postez o cerere de tratament?</summary>
+          <p>Mergi la secțiunea <a routerLink="/feed">Cereri</a>, apasă „Postează cerere", descrie tratamentul de care ai nevoie și stabilește un buget orientativ. Clinicile din orașul tău îți vor trimite oferte.</p>
+        </details>
+        <details class="faq-item">
+          <summary>Am uitat parola. Cum o resetez?</summary>
+          <p>Apasă „Autentificare" din navbar, apoi „Ai uitat parola?". Introdu emailul și vei primi un cod de resetare.</p>
+        </details>
+        <details class="faq-item">
+          <summary>Cum văd programările mele?</summary>
+          <p>Dacă ești autentificat, mergi la <a routerLink="/appointments">Programările mele</a> din meniu pentru a vedea istoricul și statusul fiecărei programări.</p>
+        </details>
+        <details class="faq-item">
+          <summary>Ești o clinică și vrei să te înscrii?</summary>
+          <p>Mergi la <a routerLink="/clinici">pagina pentru clinici</a> și urmează pașii de înregistrare. Procesul durează aproximativ 10 minute.</p>
+        </details>
+      </div>
+    }
   </div>
 
   <!-- Contact Form -->

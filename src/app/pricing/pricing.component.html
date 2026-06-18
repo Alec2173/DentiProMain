@@ -1,5 +1,4 @@
 <div class="main">
-
   <!-- ══════════════════════════════════════
        HERO
   ══════════════════════════════════════ -->
@@ -9,12 +8,12 @@
       Prețuri transparente, fără surprize
     </div>
     <h1 class="hero-title">
-      Planul potrivit pentru<br>
+      Planul potrivit pentru<br />
       <span class="title-gradient">fiecare clinică</span>
     </h1>
     <p class="hero-sub">
-      Începe gratuit și upgradează pe măsură ce crești.
-      Anulare oricând, fără penalități. 14 zile trial gratuit.
+      Începe gratuit și upgradează pe măsură ce crești. Anulare oricând, fără
+      penalități. 14 zile trial gratuit.
     </p>
 
     <!-- BILLING TOGGLE -->
@@ -25,7 +24,7 @@
       </button>
       <span class="billing-opt" [class.active]="billingAnnual">
         Anual
-        <span class="save-badge">Economisești 2 luni</span>
+        <span class="save-badge">-2 luni gratuit</span>
       </span>
     </div>
   </section>
@@ -42,6 +41,7 @@
           [billingAnnual]="billingAnnual"
           [ctaRoute]="'/clinici/inscriere'"
           [ctaQueryParams]="{ plan: plan.id }"
+          [competitorLine]="plan.id === 'starter' ? competitorLine : ''"
         />
       }
     </div>
@@ -49,8 +49,128 @@
     <p class="annual-note">
       <span class="material-symbols-outlined">info</span>
       La plata anuală economisești echivalentul a 2 luni față de plata lunară.
-      Toate prețurile sunt fără TVA.
+      Prețurile afișate sunt fără TVA. Se adaugă TVA 21% la facturare. Facturile fiscale sunt emise automat prin SmartBill.
     </p>
+  </section>
+
+  <!-- ══════════════════════════════════════
+       DE CE PRO?
+  ══════════════════════════════════════ -->
+  <section class="why-pro-section">
+    <div class="why-pro-inner">
+
+      <!-- ─── LEFT: beneficii ─── -->
+      <div class="why-pro-left">
+        <div class="why-pro-badge">
+          <span class="material-symbols-outlined">workspace_premium</span>
+          Plan Pro
+        </div>
+        <h2 class="why-pro-title">De ce <span class="why-pro-gradient">Pro</span>?</h2>
+        <p class="why-pro-sub">
+          Clinicile Pro ies în evidență față de concurență în fiecare punct de contact cu pacienții.
+        </p>
+
+        <ul class="why-pro-list">
+          <li>
+            <span class="wpl-icon material-symbols-outlined">format_list_numbered</span>
+            <div>
+              <strong>Poziție Top 3 în search</strong>
+              <span>Apari primii când pacienții caută în orașul tău</span>
+            </div>
+          </li>
+          <li>
+            <span class="wpl-icon material-symbols-outlined">map</span>
+            <div>
+              <strong>Pin auriu pe hartă</strong>
+              <span>Pop-up VIP premium vizibil imediat față de restul</span>
+            </div>
+          </li>
+          <li>
+            <span class="wpl-icon material-symbols-outlined">style</span>
+            <div>
+              <strong>Card VIP în lista rezultatelor</strong>
+              <span>Design premium cu banderolă VIP care atrage privirile</span>
+            </div>
+          </li>
+          <li>
+            <span class="wpl-icon material-symbols-outlined">notifications_active</span>
+            <div>
+              <strong>Notificări pacienți în raza 20 km</strong>
+              <span>Primești automat cereri noi din zona ta</span>
+            </div>
+          </li>
+          <li>
+            <span class="wpl-icon material-symbols-outlined">analytics</span>
+            <div>
+              <strong>Analytics avansat</strong>
+              <span>Statistici detaliate: vizualizări, conversii, ROI estimat</span>
+            </div>
+          </li>
+        </ul>
+
+        <a routerLink="/clinici/inscriere" [queryParams]="{plan:'pro'}" class="why-pro-cta">
+          <span class="material-symbols-outlined">rocket_launch</span>
+          Încearcă Pro — 14 zile gratuit
+        </a>
+      </div>
+
+      <!-- ─── RIGHT: demo vizual ─── -->
+      <div class="why-pro-right">
+
+        <!-- MAP REAL -->
+        <div class="demo-block">
+          <span class="demo-label">
+            <span class="material-symbols-outlined">map</span>
+            Pe hartă
+          </span>
+          <div class="demo-map-wrapper">
+            <div class="demo-map-title">
+              <span class="material-symbols-outlined demo-map-title-icon">workspace_premium</span>
+              Ieși în evidență față de concurență
+            </div>
+            <div class="demo-map-container" #demoMapEl></div>
+          </div>
+        </div>
+
+        <!-- CARD REAL — același HTML ca în finder -->
+        <div class="demo-block">
+          <span class="demo-label">
+            <span class="material-symbols-outlined">view_list</span>
+            În lista clinicilor
+          </span>
+          <div class="pd-card-wrap">
+            <a class="pd-card pd-card--pro" routerLink="/finder">
+              <div class="pd-vip-pill">★ VIP</div>
+
+              <div class="pd-card-image">
+                <img src="no-img.webp" alt="Exemplu — clinică dentară din București" loading="lazy" />
+              </div>
+
+              <div class="pd-card-info">
+                <div class="pd-card-header">
+                  <div class="pd-logo">
+                    <img src="no-img.webp" alt="Logo Exemplu" loading="lazy" />
+                  </div>
+                  <span class="pd-city">BUCUREȘTI</span>
+                </div>
+                <h3 class="pd-clinic-name">Exemplu</h3>
+                <div class="pd-service-price">
+                  <span class="material-symbols-outlined">payments</span>
+                  <span class="pd-service-label">Implant dentar</span>
+                  <span class="pd-service-amount">de la 1200 lei</span>
+                </div>
+                <div class="pd-rating">
+                  <span class="material-symbols-outlined">star</span>
+                  5.0
+                  <span class="pd-rating-count">(24)</span>
+                </div>
+              </div>
+            </a>
+          </div>
+        </div>
+
+      </div><!-- /why-pro-right -->
+    </div>
   </section>
 
   <!-- ══════════════════════════════════════
@@ -67,28 +187,34 @@
         <div class="ct-plan-col">Pro</div>
       </div>
 
-      @for (row of [
-        ['Profil public',          'check',     'check',     'check'],
-        ['Imagini galerie',        '5 max',     'Nelimitat', 'Nelimitat'],
-        ['Poziție search',         'Minimă',    'Prioritară','Top 3'],
-        ['Homepage visibility',    'remove',    'check',     'check'],
-        ['Feed pacienți',          'remove',    '10/lună',   'Nelimitat'],
-        ['Analytics',              'remove',    'Bază',      'Avansat'],
-        ['Notificări 20km',        'remove',    'remove',    'check'],
-        ['Modul stocuri',          'remove',    'remove',    'check'],
-        ['Banderolă Promovat',     'remove',    'remove',    'check'],
-        ['Suport',                 'Email',     'Email',     'Prioritar 24h'],
-        ['Trial gratuit',          'Permanent', '14 zile',   '14 zile'],
-        ['Plată cu card',          'Gratuit',   'Stripe',    'Stripe']
-      ]; track $index) {
+      @for (
+        row of [
+          ["Profil public", "check", "check", "check"],
+          ["Imagini galerie", "5 max", "Nelimitat", "Nelimitat"],
+          ["Poziție search", "Minimă", "Prioritară", "Top 3"],
+          ["Homepage visibility", "remove", "check", "check"],
+          ["Feed pacienți", "remove", "10/lună", "Nelimitat"],
+          ["Analytics", "remove", "Bază", "Avansat"],
+          ["Notificări 20km", "remove", "remove", "soon"],
+          ["Modul stocuri", "remove", "remove", "check"],
+          ["Badge „Promovat” (albastru) în căutări", "remove", "check", "remove"],
+          ["Pin auriu pe hartă + Card „★ VIP”", "remove", "remove", "check"],
+          ["Suport", "Email", "Email", "Prioritar 24h"],
+          ["Trial gratuit", "Permanent", "14 zile", "14 zile"],
+          ["Plată cu card", "Gratuit", "Stripe", "Stripe"],
+        ];
+        track $index
+      ) {
         <div class="ct-row">
           <div class="ct-feature-col">{{ row[0] }}</div>
           @for (val of [row[1], row[2], row[3]]; track $index) {
             <div class="ct-plan-col" [class.featured-col]="$index === 1">
-              @if (val === 'check') {
+              @if (val === "check") {
                 <span class="material-symbols-outlined ct-check">check_circle</span>
-              } @else if (val === 'remove') {
+              } @else if (val === "remove") {
                 <span class="material-symbols-outlined ct-minus">remove</span>
+              } @else if (val === "soon") {
+                <span class="ct-soon">Curând</span>
               } @else {
                 <span class="ct-text">{{ val }}</span>
               }
@@ -127,16 +253,19 @@
        FAQ
   ══════════════════════════════════════ -->
   <section class="faq-section">
-    <h2 class="section-title">Întrebări frecvente</h2>
+    <div class="faq-header">
+      <h2 class="section-title">Întrebări frecvente</h2>
+      <p class="faq-sub">Tot ce trebuie să știi înainte să începi.</p>
+    </div>
 
     <div class="faq-list">
       @for (faq of faqs; track $index) {
         <div class="faq-item" [class.open]="openFaq === $index">
           <button class="faq-q" (click)="toggleFaq($index)">
-            <span>{{ faq.q }}</span>
-            <span class="material-symbols-outlined faq-arrow">
-              {{ openFaq === $index ? 'expand_less' : 'expand_more' }}
+            <span class="faq-q-icon material-symbols-outlined">
+              {{ openFaq === $index ? 'remove' : 'add' }}
             </span>
+            <span>{{ faq.q }}</span>
           </button>
           @if (openFaq === $index) {
             <div class="faq-a">{{ faq.a }}</div>
@@ -153,8 +282,8 @@
     <div class="bottom-cta-card">
       <h2 class="bottom-cta-title">Gata să aduci mai mulți pacienți?</h2>
       <p class="bottom-cta-sub">
-        Înregistrează-te gratuit și intră în cel mai mare marketplace dentar din România.
-        Upgrade oricând fără bătăi de cap.
+        Înregistrează-te gratuit și intră în cel mai mare marketplace dentar din
+        România. Upgrade oricând fără bătăi de cap.
       </p>
       <a routerLink="/clinici/inscriere" class="bottom-cta-btn">
         <span class="material-symbols-outlined">rocket_launch</span>
@@ -162,5 +291,4 @@
       </a>
     </div>
   </section>
-
 </div>

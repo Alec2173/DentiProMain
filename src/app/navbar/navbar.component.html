@@ -1,7 +1,7 @@
 <nav class="navbar">
   <div class="navbar-left">
     <a routerLink="/" class="brand">
-      <img src="logo-new.png" alt="DentiPro" class="brand-logo" />
+      <img src="logo-new.webp" alt="DentiPro" class="brand-logo" />
     </a>
 
     <div class="nav-links">
@@ -11,8 +11,8 @@
       <a routerLink="/finder" routerLinkActive="active">
         <i class="fal fa-search"></i><span>Caută clinici</span>
       </a>
-      <a routerLink="/services" routerLinkActive="active">
-        <i class="fal fa-tooth"></i><span>Servicii</span>
+      <a routerLink="/dentisti" routerLinkActive="active">
+        <i class="fal fa-list-ul"></i><span>Toți dentiștii</span>
       </a>
       <a routerLink="/feed" routerLinkActive="active">
         <i class="fal fa-comments-alt"></i><span>Cereri</span>
@@ -99,9 +99,45 @@
 
     <!-- LOGGED IN -->
     @if (authService.isLoggedIn) {
-      <button class="icon-btn">
-        <i class="fal fa-bell"></i>
-      </button>
+      <!-- Bell notificări pacient -->
+      @if (authService.isPatient) {
+        <div class="notif-wrap" (click)="toggleNotif(); $event.stopPropagation()">
+          <button class="icon-btn notif-bell-btn" [class.has-unread]="unreadCount > 0">
+            <i class="fal fa-bell"></i>
+            @if (unreadCount > 0) {
+              <span class="notif-badge">{{ unreadCount > 9 ? '9+' : unreadCount }}</span>
+            }
+          </button>
+
+          @if (notifOpen) {
+            <div class="notif-dropdown" (click)="$event.stopPropagation()">
+              <div class="notif-drop-header">
+                <span>Notificări</span>
+                <a routerLink="/notificari" class="notif-see-all" (click)="notifOpen = false">
+                  Vezi toate
+                </a>
+              </div>
+
+              @if (notifLoading) {
+                <div class="notif-drop-empty"><i class="fal fa-spinner fa-spin"></i></div>
+              } @else if (notifications.length === 0) {
+                <div class="notif-drop-empty">Nicio notificare</div>
+              } @else {
+                @for (n of notifications.slice(0, 6); track n.id) {
+                  <div class="notif-drop-item" [class.unread]="!n.read_at" (click)="goNotif(n)">
+                    <div class="ndi-dot" [class.visible]="!n.read_at"></div>
+                    <div class="ndi-body">
+                      <div class="ndi-title">{{ n.title }}</div>
+                      @if (n.body) { <div class="ndi-desc">{{ n.body }}</div> }
+                      <div class="ndi-time">{{ notifTimeAgo(n.created_at) }}</div>
+                    </div>
+                  </div>
+                }
+              }
+            </div>
+          }
+        </div>
+      }
 
       <div class="user-area" (click)="toggleUserMenu(); $event.stopPropagation()">
         <div class="clinic-avatar patient-avatar">
@@ -157,6 +193,12 @@
             <a class="udd-item" routerLink="/profile" (click)="userMenuOpen = false">
               <i class="fal fa-user-circle"></i> Profilul meu
             </a>
+            <a class="udd-item" routerLink="/notificari" (click)="userMenuOpen = false">
+              <i class="fal fa-bell"></i> Notificările mele
+              @if (unreadCount > 0) {
+                <span class="udd-badge">{{ unreadCount }}</span>
+              }
+            </a>
 
             <div class="udd-divider"></div>
 
@@ -179,7 +221,7 @@
   <div class="mobile-menu">
     <a routerLink="/" (click)="closeMobileMenu()"><i class="fal fa-home"></i> Acasă</a>
     <a routerLink="/finder" (click)="closeMobileMenu()"><i class="fal fa-search"></i> Caută clinici</a>
-    <a routerLink="/services" (click)="closeMobileMenu()"><i class="fal fa-tooth"></i> Servicii</a>
+    <a routerLink="/dentisti" (click)="closeMobileMenu()"><i class="fal fa-list-ul"></i> Toți dentiștii</a>
     <a routerLink="/feed" (click)="closeMobileMenu()"><i class="fal fa-comments-alt"></i> Cereri pacienți</a>
     <a routerLink="/favorites" (click)="closeMobileMenu()"><i class="fal fa-heart"></i> Favorite</a>
     <a routerLink="/clinici" (click)="closeMobileMenu()" class="mobile-clinic-link">

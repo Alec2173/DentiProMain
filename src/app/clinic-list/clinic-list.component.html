@@ -5,35 +5,87 @@
   <nav class="cl-breadcrumb" aria-label="breadcrumb">
     <a routerLink="/" class="cl-bc-link">Acasă</a>
     <span class="cl-bc-sep">›</span>
-    <a routerLink="/dentisti/implanturi" class="cl-bc-link">Dentisti</a>
-    @if (serviciu) {
+    <a routerLink="/dentisti" class="cl-bc-link">Dentisti</a>
+    @if (serviciuLabel) {
       <span class="cl-bc-sep">›</span>
-      <a [routerLink]="['/dentisti', serviciu]" class="cl-bc-link">{{ serviciuLabel }}</a>
+      @if (oras) {
+        <a [routerLink]="['/dentisti', serviciu]" class="cl-bc-link">{{ serviciuLabel }}</a>
+      } @else {
+        <span class="cl-bc-current">{{ serviciuLabel }}</span>
+      }
     }
     @if (oras) {
       <span class="cl-bc-sep">›</span>
-      <span class="cl-bc-current">{{ formatCity(oras) }}</span>
+      <span class="cl-bc-current">{{ cityDisplay }}</span>
     }
   </nav>
 
-  <!-- H1 + meta -->
+  <!-- H1 -->
   <div class="cl-hero">
     <h1 class="cl-h1">{{ h1 }}</h1>
     @if (!isLoading) {
-      <p class="cl-meta">{{ total }} {{ total === 1 ? 'clinică găsită' : 'clinici găsite' }}</p>
+      <p class="cl-meta">
+        {{ total }} {{ total === 1 ? 'clinică găsită' : 'clinici găsite' }}
+        @if (activeFiltersCount > 0) {
+          <span class="cl-filter-badge">{{ activeFiltersCount }} filtru activ</span>
+        }
+      </p>
     }
   </div>
 
-  <!-- Filtre rapide pe serviciu -->
-  <div class="cl-service-chips">
-    @for (s of relatedServices; track s.id) {
-      <a [routerLink]="oras ? ['/dentisti', s.id, oras] : ['/dentisti', s.id]" class="cl-chip">
-        {{ s.label }}
-      </a>
+  <!-- ── FILTER BAR ────────────────────────────────────────────── -->
+  <div class="cl-filters">
+
+    <!-- Serviciu -->
+    <div class="cl-filter-field">
+      <span class="material-symbols-outlined cl-field-icon">healing</span>
+      <select class="cl-select" [ngModel]="serviciu" (ngModelChange)="onServiceChange($event)">
+        <option value="">Toate serviciile</option>
+        @for (s of allServices; track s.id) {
+          <option [value]="s.id">{{ s.label }}</option>
+        }
+      </select>
+      <span class="material-symbols-outlined cl-select-arrow">expand_more</span>
+    </div>
+
+    <!-- Oraș -->
+    <div class="cl-filter-field">
+      <span class="material-symbols-outlined cl-field-icon">location_on</span>
+      <select class="cl-select" [ngModel]="cityDisplay" (ngModelChange)="onCityChange($event)">
+        <option value="">Toate orașele</option>
+        @for (city of cities; track city) {
+          <option [value]="city">{{ city }}</option>
+        }
+      </select>
+      <span class="material-symbols-outlined cl-select-arrow">expand_more</span>
+    </div>
+
+    <!-- Preț maxim -->
+    <div class="cl-filter-field">
+      <span class="material-symbols-outlined cl-field-icon">payments</span>
+      <select class="cl-select" [ngModel]="maxPrice" (ngModelChange)="onMaxPriceChange($event)">
+        @for (r of priceRanges; track r.label) {
+          <option [ngValue]="r.value">{{ r.label }}</option>
+        }
+      </select>
+      <span class="material-symbols-outlined cl-select-arrow">expand_more</span>
+    </div>
+
+    <!-- Caută pe hartă -->
+    <button class="cl-map-btn" (click)="goToFinder()">
+      <span class="material-symbols-outlined">map</span>
+      Caută pe hartă
+    </button>
+
+    @if (activeFiltersCount > 0) {
+      <button class="cl-clear-btn" (click)="clearFilters()">
+        <span class="material-symbols-outlined">filter_alt_off</span>
+        Resetează
+      </button>
     }
   </div>
 
-  <!-- Grid clinici -->
+  <!-- ── GRID CLINICI ───────────────────────────────────────────── -->
   @if (isLoading) {
     <div class="cl-skeleton-grid">
       @for (i of [1,2,3,4,5,6]; track i) {
@@ -42,31 +94,31 @@
     </div>
   } @else if (clinics.length === 0) {
     <div class="cl-empty">
-      <i class="fal fa-search"></i>
-      <p>Nu am găsit clinici pentru această combinație.<br>Încearcă fără filtru de oraș.</p>
-      @if (oras) {
-        <a [routerLink]="['/dentisti', serviciu]" class="cl-btn-link">
-          Vezi toate clinicile pentru {{ serviciuLabel }}
-        </a>
-      }
+      <span class="material-symbols-outlined cl-empty-icon">search_off</span>
+      <p>Nu am găsit clinici pentru filtrele selectate.</p>
+      <button class="cl-btn-link" (click)="clearFilters()">Resetează filtrele</button>
     </div>
   } @else {
     <div class="cl-grid">
       @for (clinic of clinics; track clinic.id) {
-        <a [routerLink]="['/clinic-profile', clinic.id]" class="cl-card">
+        <a [routerLink]="['/descripton', clinic.id]" class="cl-card"
+           [class.cl-card--pro]="clinic.plan === 'pro'">
+
           <!-- Cover image -->
           <div class="cl-card-img">
             @if (clinic.images?.[0]) {
-              <img [src]="clinic.images[0]" [alt]="clinic.name" loading="lazy" />
+              <img [src]="clinic.images[0]" [alt]="clinic.name" loading="lazy" decoding="async" />
             } @else if (clinic.logo_url) {
-              <img [src]="clinic.logo_url" [alt]="clinic.name" loading="lazy" class="cl-card-img--logo" />
+              <img [src]="clinic.logo_url" [alt]="clinic.name" loading="lazy" decoding="async" class="cl-card-img--logo" />
             } @else {
-              <div class="cl-card-img-placeholder"><i class="fal fa-hospital"></i></div>
+              <div class="cl-card-img-placeholder">
+                <span class="material-symbols-outlined">local_hospital</span>
+              </div>
             }
             @if (clinic.plan === 'pro') {
-              <span class="cl-badge cl-badge--pro">Pro</span>
+              <span class="cl-badge cl-badge--pro">★ VIP</span>
             } @else if (clinic.plan === 'growth') {
-              <span class="cl-badge cl-badge--growth">Growth</span>
+              <span class="cl-badge cl-badge--growth">Promovat</span>
             }
           </div>
 
@@ -80,15 +132,23 @@
                 <h2 class="cl-card-name">{{ clinic.name }}</h2>
                 @if (clinic.city) {
                   <div class="cl-card-city">
-                    <i class="fal fa-map-marker-alt"></i> {{ clinic.city }}
+                    <span class="material-symbols-outlined">location_on</span>
+                    {{ clinic.city }}
                   </div>
                 }
               </div>
+              @if (clinic.avg_rating) {
+                <div class="cl-card-rating">
+                  <span class="material-symbols-outlined">star</span>
+                  {{ clinic.avg_rating }}
+                </div>
+              }
             </div>
 
             @if (getServicePrice(clinic)) {
               <div class="cl-card-price">
-                <i class="fal fa-tag"></i> {{ getServicePrice(clinic) }}
+                <span class="material-symbols-outlined">payments</span>
+                {{ getServicePrice(clinic) }}
               </div>
             }
 
@@ -105,7 +165,8 @@
 
             <div class="cl-card-cta">
               <span class="cl-cta-btn">
-                <i class="fal fa-calendar-check"></i> Programează
+                <span class="material-symbols-outlined">calendar_month</span>
+                Programează
               </span>
             </div>
           </div>
@@ -113,33 +174,42 @@
       }
     </div>
 
-    <!-- Load more -->
     @if (hasMore) {
       <div class="cl-load-more">
         <button class="cl-load-btn" (click)="loadMore()" [disabled]="isLoadingMore">
           @if (isLoadingMore) {
-            <i class="fal fa-spinner fa-spin"></i> Se încarcă...
+            <span class="material-symbols-outlined cl-spin">refresh</span> Se încarcă...
           } @else {
-            <i class="fal fa-plus"></i> Mai multe clinici
+            <span class="material-symbols-outlined">add</span> Mai multe clinici
           }
         </button>
       </div>
     }
   }
 
-  <!-- SEO footer -->
+  <!-- ── SERVICII ───────────────────────────────────────────────── -->
+  @if (relatedServices.length > 0) {
+    <div class="cl-related">
+      <p class="cl-related-title">{{ serviciu ? 'Alte servicii stomatologice' : 'Filtrează după serviciu' }}</p>
+      <div class="cl-chips">
+        @for (s of relatedServices; track s.id) {
+          <a [routerLink]="oras ? ['/dentisti', s.id, oras] : ['/dentisti', s.id]" class="cl-chip">
+            {{ s.label }}
+          </a>
+        }
+      </div>
+    </div>
+  }
+
+  <!-- ── SEO FOOTER ─────────────────────────────────────────────── -->
   <section class="cl-seo-footer">
     <h2 class="cl-seo-h2">{{ serviciuLabel }} — Ghid complet</h2>
     <p class="cl-seo-text">{{ seoFooterText }}</p>
-
-    <!-- Link-uri servicii înrudite -->
     <div class="cl-seo-links">
-      <strong>Alte servicii stomatologice:</strong>
+      <strong>Alte servicii:</strong>
       <div class="cl-seo-link-grid">
         @for (s of relatedServices; track s.id) {
-          <a [routerLink]="['/dentisti', s.id]" class="cl-seo-link">
-            {{ s.label }}
-          </a>
+          <a [routerLink]="['/dentisti', s.id]" class="cl-seo-link">{{ s.label }}</a>
         }
       </div>
     </div>

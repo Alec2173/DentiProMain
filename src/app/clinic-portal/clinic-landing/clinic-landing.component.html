@@ -56,6 +56,19 @@
     }
   </section>
 
+  <!-- ══ INTRO — CE ESTE DENTIPRO ══ -->
+  <section class="cl-section cl-intro-section">
+    <div class="cl-section-header">
+      <div class="cl-section-badge">Marketplace dentar</div>
+      <h2 class="cl-section-title">DentiPro este marketplace-ul care conectează clinicile dentare cu pacienți reali</h2>
+      <p class="cl-section-sub">
+        Funcționăm ca un singur loc unde pacienții din România caută, compară și aleg o clinică —
+        iar tu, ca clinică, primești vizibilitate, programări și instrumente de promovare fără
+        să faci marketing pe cont propriu.
+      </p>
+    </div>
+  </section>
+
   <!-- ══ FEATURES ══ -->
   <section class="cl-section">
     <div class="cl-section-header">
@@ -157,6 +170,132 @@
         <h3>Primești pacienți</h3>
         <p>Clinica ta apare în search, pe hartă și pe homepage pentru pacienți din zona ta.</p>
       </div>
+    </div>
+  </section>
+
+  <!-- ══ QUOTE — DE CE SĂ INVESTEȘTI ══ -->
+  <section class="wd-quote-section">
+    <blockquote class="wd-quote">
+      <span class="material-symbols-outlined wd-quote-icon">format_quote</span>
+      {{ quotes[0] }}
+    </blockquote>
+  </section>
+
+  <!-- ══ CICLUL BANILOR — "RECICLARE" ══ -->
+  <section class="cl-section">
+    <div class="cl-section-header">
+      <div class="cl-section-badge">Cum circulă investiția ta</div>
+      <h2 class="cl-section-title">Banii din abonament se reciclează în vizibilitate</h2>
+      <p class="cl-section-sub">
+        Nu plătești pentru o listă pasivă — plătești pentru un sistem care lucrează activ
+        ca să-ți aducă pacienți.
+      </p>
+    </div>
+
+    <div class="wd-cycle">
+      @for (step of cycleSteps; track step.title; let i = $index) {
+        <div class="wd-cycle-step">
+          <div class="wd-cycle-icon">
+            <span class="material-symbols-outlined">{{ step.icon }}</span>
+          </div>
+          <h3 class="wd-cycle-title">{{ step.title }}</h3>
+          <p class="wd-cycle-desc">{{ step.desc }}</p>
+        </div>
+        @if (i < cycleSteps.length - 1) {
+          <div class="wd-cycle-arrow">
+            <span class="material-symbols-outlined">arrow_forward</span>
+          </div>
+        }
+      }
+    </div>
+
+    <div class="wd-cycle-loop">
+      <span class="material-symbols-outlined wd-cycle-loop-icon">autorenew</span>
+      <span>
+        Ciclul se repetă în fiecare lună: <strong>platforma crește → clinica ta crește → reinvestești cu încredere.</strong>
+      </span>
+    </div>
+  </section>
+
+  <!-- ══ QUOTE 2 ══ -->
+  <section class="wd-quote-section wd-quote-section--alt">
+    <blockquote class="wd-quote">
+      <span class="material-symbols-outlined wd-quote-icon">format_quote</span>
+      {{ quotes[1] }}
+    </blockquote>
+  </section>
+
+  <!-- ══ PINUL AURIU + CARDUL VIP ══ -->
+  <section class="cl-section">
+    <div class="cl-section-header">
+      <div class="cl-section-badge">Design care atrage privirea</div>
+      <h2 class="cl-section-title">Pinul auriu și Cardul „★ VIP" — exclusiv pentru clinicile Pro</h2>
+      <p class="cl-section-sub">
+        Planul Pro nu înseamnă doar poziție mai bună — înseamnă un design vizual premium care
+        te diferențiază instant de restul clinicilor, pe hartă și în lista de rezultate.
+      </p>
+    </div>
+
+    <div class="wd-vip-demo">
+
+      <!-- PIN AURIU PE HARTĂ -->
+      <div class="wd-vip-block">
+        <span class="wd-vip-label">
+          <span class="material-symbols-outlined">map</span>
+          Pe hartă
+        </span>
+        <div class="wd-vip-pin-stage">
+          <div class="map-marker-wrap map-marker-wrap--pro wd-pin-standalone">
+            <div class="map-pin map-pin--pro">
+              <div class="map-pin__body">
+                <i class="fal fa-tooth map-pin__icon map-pin__icon--pro"></i>
+              </div>
+              <div class="map-pin__spike map-pin__spike--pro"></div>
+              <div class="map-pin__pulse map-pin__pulse--pro"></div>
+            </div>
+          </div>
+        </div>
+        <p class="wd-vip-caption">Pin auriu, vizibil din prima privire pe hartă — față de pinii standard ale clinicilor Starter și Growth.</p>
+      </div>
+
+      <!-- CARD VIP ÎN LISTA DE REZULTATE -->
+      <div class="wd-vip-block">
+        <span class="wd-vip-label">
+          <span class="material-symbols-outlined">view_list</span>
+          În lista clinicilor
+        </span>
+        <div class="wd-card-wrap">
+          <a class="wd-card" routerLink="/finder">
+            <div class="wd-vip-pill">★ VIP</div>
+
+            <div class="wd-card-image">
+              <img src="no-img.webp" alt="Exemplu — clinică dentară Pro" loading="lazy" />
+            </div>
+
+            <div class="wd-card-info">
+              <div class="wd-card-header">
+                <div class="wd-logo">
+                  <img src="no-img.webp" alt="Logo exemplu" loading="lazy" />
+                </div>
+                <span class="wd-city">BUCUREȘTI</span>
+              </div>
+              <h3 class="wd-clinic-name">Exemplu Clinică Pro</h3>
+              <div class="wd-service-price">
+                <span class="material-symbols-outlined">payments</span>
+                <span class="wd-service-label">Implant dentar</span>
+                <span class="wd-service-amount">de la 1200 lei</span>
+              </div>
+              <div class="wd-rating">
+                <span class="material-symbols-outlined">star</span>
+                5.0
+                <span class="wd-rating-count">(24)</span>
+              </div>
+            </div>
+          </a>
+        </div>
+        <p class="wd-vip-caption">Banderolă „★ VIP" cu design premium — primul lucru pe care îl observă pacientul.</p>
+      </div>
+
     </div>
   </section>
 

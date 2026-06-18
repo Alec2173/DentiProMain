@@ -22,13 +22,13 @@
         <div class="dp-gallery">
           @if (clinicImages.length > 0) {
             <div class="dp-gallery__main">
-              <img [src]="clinicImages[activeImageIndex]" class="dp-gallery__img" [alt]="clinics.name + ' — imagine clinică'" loading="lazy" />
+              <img [src]="clinicImages[activeImageIndex]" class="dp-gallery__img" [alt]="clinics.name + ' — imagine clinică'" loading="lazy" decoding="async" />
               <div class="dp-gallery__counter">{{ activeImageIndex + 1 }} / {{ clinicImages.length }}</div>
             </div>
             <div class="dp-gallery__thumbs">
               @for (img of clinicImages; track img; let i = $index) {
                 <img [src]="img" class="dp-thumb" [class.active]="i === activeImageIndex"
-                  (click)="activeImageIndex = i" [alt]="clinics.name + ' — imagine ' + (i + 1)" loading="lazy" />
+                  (click)="activeImageIndex = i" [alt]="clinics.name + ' — imagine ' + (i + 1)" loading="lazy" decoding="async" />
               }
             </div>
           } @else {
@@ -46,14 +46,21 @@
           <!-- Logo + Nume -->
           <div class="dp-info__header">
             @if (clinics.logo_url) {
-              <img [src]="clinics.logo_url" class="dp-info__logo" [alt]="'Logo ' + clinics.name" loading="lazy" />
+              <img [src]="clinics.logo_url" class="dp-info__logo" [alt]="'Logo ' + clinics.name" loading="lazy" decoding="async" />
             } @else {
               <div class="dp-info__logo dp-info__logo--initials">
-                {{ clinics.name ? clinics.name.charAt(0).toUpperCase() : 'C' }}
+                {{ clinicInitials }}
               </div>
             }
             <div class="dp-info__meta">
-              <h1 class="dp-info__name">{{ clinics.name }}</h1>
+              <h1 class="dp-info__name">{{ shortTitle }}</h1>
+              @if (titleChips.length > 0) {
+                <div class="dp-info__title-chips">
+                  @for (chip of titleChips; track chip) {
+                    <span class="dp-info__chip">{{ chip }}</span>
+                  }
+                </div>
+              }
               <div class="dp-info__city">
                 <i class="fal fa-map-marker-alt"></i> {{ clinics.city }}
               </div>
@@ -75,6 +82,11 @@
 
           <!-- Badges rapide -->
           <div class="dp-info__badges">
+            @if (clinics.plan === 'pro') {
+              <div class="dp-badge dp-badge--promoted">
+                <i class="fal fa-star"></i> Promovat
+              </div>
+            }
             @if (clinics.services?.length > 0) {
               <div class="dp-badge dp-badge--blue">
                 <i class="fal fa-tooth"></i> {{ clinics.services.length }} servicii
@@ -216,51 +228,6 @@
               <p class="dp-description">{{ clinics.additional_notes }}</p>
             </div>
           }
-
-          <div class="dp-card">
-            <h2 class="dp-card__title">
-              <span class="dp-card__title-dot"></span>
-              <i class="fal fa-address-card"></i> Contact
-            </h2>
-            <div class="dp-contact-list">
-              @if (clinics.phone_public) {
-                <div class="dp-contact-row">
-                  <div class="dp-contact-row__icon-wrap"><i class="fal fa-phone"></i></div>
-                  <div>
-                    <div class="dp-contact-row__label">Telefon</div>
-                    <div class="dp-contact-row__value">{{ clinics.phone_public }}</div>
-                  </div>
-                </div>
-              }
-              @if (clinics.email) {
-                <div class="dp-contact-row">
-                  <div class="dp-contact-row__icon-wrap"><i class="fal fa-envelope"></i></div>
-                  <div>
-                    <div class="dp-contact-row__label">Email</div>
-                    <div class="dp-contact-row__value">{{ clinics.email }}</div>
-                  </div>
-                </div>
-              }
-              @if (clinics.city) {
-                <div class="dp-contact-row">
-                  <div class="dp-contact-row__icon-wrap"><i class="fal fa-city"></i></div>
-                  <div>
-                    <div class="dp-contact-row__label">Oraș</div>
-                    <div class="dp-contact-row__value">{{ clinics.city }}</div>
-                  </div>
-                </div>
-              }
-              @if (displayAddress) {
-                <div class="dp-contact-row">
-                  <div class="dp-contact-row__icon-wrap"><i class="fal fa-map-marker-alt"></i></div>
-                  <div>
-                    <div class="dp-contact-row__label">Adresă</div>
-                    <div class="dp-contact-row__value">{{ displayAddress }}</div>
-                  </div>
-                </div>
-              }
-            </div>
-          </div>
 
         </div>
       </div>
@@ -526,6 +493,12 @@
         <button class="booking-close" (click)="closeBooking()">
           <i class="fal fa-times"></i>
         </button>
+      </div>
+
+      <!-- Reward Points badge -->
+      <div class="booking-points-badge">
+        <i class="fal fa-gift"></i>
+        Finalizează programarea și câștigă <strong>+10 puncte DentiPro</strong>
       </div>
 
       @if (!auth.isLoggedIn) {

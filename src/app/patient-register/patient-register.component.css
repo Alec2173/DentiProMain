@@ -128,6 +128,19 @@
 
 .reg-link:hover { text-decoration: underline; }
 
+.reg-link-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  color: #60a5fa;
+  font-size: inherit;
+  font-weight: 500;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.reg-link-btn:hover { text-decoration: underline; }
+
 /* ── FORM ─────────────────────────────────────────────────────── */
 .reg-form { display: flex; flex-direction: column; gap: 0; }
 

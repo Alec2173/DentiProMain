@@ -4,7 +4,7 @@
 ════════════════════════════════════════ */
 
 .finder-shell {
-  height: calc(100vh - 100px);
+  height: calc(100vh - 72px);
   display: flex;
   flex-direction: column;
 }
@@ -80,7 +80,7 @@ app-cards {
 /* Tablet / small laptop: tab switcher */
 @media (max-width: 1023px) {
   .finder-shell {
-    height: calc(100vh - 100px); /* adjust for navbar */
+    height: calc(100vh - 72px); /* adjust for navbar */
   }
 
   .finder-body {

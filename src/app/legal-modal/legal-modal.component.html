@@ -1,0 +1,128 @@
+<div class="lm-overlay" (click)="onOverlayClick($event)">
+  <div class="lm-dialog" role="dialog" aria-modal="true">
+
+    <!-- Header -->
+    <div class="lm-header">
+      <div class="lm-tabs">
+        <button class="lm-tab" [class.active]="activeTab === 'termeni'" (click)="activeTab = 'termeni'">
+          Termeni și Condiții
+        </button>
+        <button class="lm-tab" [class.active]="activeTab === 'gdpr'" (click)="activeTab = 'gdpr'">
+          Politica de Confidențialitate
+        </button>
+      </div>
+      <button class="lm-close" (click)="close()" aria-label="Închide">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+    </div>
+
+    <!-- Body -->
+    <div class="lm-body">
+
+      @if (activeTab === 'termeni') {
+        <div class="lm-content">
+          <p class="lm-meta">Ultima actualizare: 16.06.2026 · Operator: URBANIA DIGITAL GROUP S.R.L., CUI 54835299</p>
+
+          <p>Operator platformă: <strong>URBANIA DIGITAL GROUP S.R.L.</strong>, CUI 54835299, Nr. Reg. Com. J2026036946002, sediu social în România, București, Sector 1, Strada Târnăveni nr. 22. Email: <a href="mailto:contact@dentipro.ro">contact&#64;dentipro.ro</a>.</p>
+
+          <h3>1. Obiectul și acceptarea termenilor</h3>
+          <p>Acești Termeni reglementează utilizarea platformei DentiPro (dentipro.ro), operată de URBANIA DIGITAL GROUP S.R.L. DentiPro este o platformă SaaS și director online de tip marketplace, dedicată clinicilor stomatologice din România.</p>
+          <p><strong>DentiPro NU este furnizor de servicii medicale</strong> și nu este parte în actul medical prestat de clinici. Prin crearea unui cont, confirmați electronic că ați citit și acceptat acești Termeni.</p>
+
+          <h3>2. Restricții de vârstă</h3>
+          <p>Conturile DentiPro sunt destinate exclusiv persoanelor cu vârsta minimă de <strong>18 ani</strong>. Programările pentru minori pot fi realizate exclusiv de părinți sau reprezentanți legali.</p>
+
+          <h3>3. Conturi de utilizator</h3>
+          <ul>
+            <li>Tipuri de cont: pacient, clinică, administrator.</li>
+            <li>Utilizatorul este responsabil pentru confidențialitatea parolei și acuratețea datelor furnizate.</li>
+            <li>Un cont este personal și nu poate fi transferat sau partajat.</li>
+          </ul>
+          <p>DentiPro poate suspenda orice cont care furnizează informații false, încalcă acești Termeni sau este folosit în scop fraudulos.</p>
+
+          <h3>4. Conținut generat de utilizatori</h3>
+          <p>Clinicile sunt responsabile pentru acuratețea și legalitatea conținutului încărcat. Pacienții care lasă recenzii sunt responsabili pentru conținutul acestora.</p>
+
+          <h3>5. Plăți și abonamente</h3>
+          <p>Clinicile pot opta pentru planuri plătite (Growth — 79 RON/lună + TVA, Pro — 149 RON/lună + TVA) procesate securizat prin <strong>Stripe</strong>. Prețurile sunt fără TVA; TVA 21% se adaugă la facturare. Facturile fiscale sunt emise automat. Planul Starter este gratuit permanent. Garanție de rambursare 14 zile pentru prima plată.</p>
+
+          <h3>6. Limitarea răspunderii</h3>
+          <p>DentiPro nu este responsabil pentru calitatea serviciilor medicale prestate de clinicile listate, acuratețea informațiilor furnizate de clinici sau daune rezultate din utilizarea platformei. Răspunderea totală a DentiPro nu va depăși sumele plătite de utilizator în ultimele 12 luni sau 100 EUR.</p>
+
+          <h3>7. Forță majoră</h3>
+          <p>Niciuna dintre părți nu va fi responsabilă pentru neexecutarea obligațiilor cauzată de evenimente de forță majoră conform art. 1351 Cod civil.</p>
+
+          <h3>8. Proprietate intelectuală</h3>
+          <p>Conținutul platformei DentiPro (design, logo, texte, cod sursă) este proprietatea exclusivă a URBANIA DIGITAL GROUP S.R.L., protejat de Legea nr. 8/1996.</p>
+
+          <h3>9. Soluționarea litigiilor</h3>
+          <p>Orice litigiu se va soluționa pe cale amiabilă în 30 de zile, apoi prin instanțele din <strong>București</strong>. Consumatorii pot utiliza platforma ODR: <a href="https://ec.europa.eu/consumers/odr" target="_blank" rel="noopener">ec.europa.eu/consumers/odr</a>.</p>
+
+          <h3>10. Legea aplicabilă</h3>
+          <p>Acești Termeni sunt guvernați de legislația română.</p>
+
+          <h3>11. Contact</h3>
+          <p>Email juridic: <a href="mailto:legal@dentipro.ro">legal&#64;dentipro.ro</a> · Adresă: România, București, Sector 1, Strada Târnăveni nr. 22</p>
+        </div>
+      }
+
+      @if (activeTab === 'gdpr') {
+        <div class="lm-content">
+          <p class="lm-meta">Ultima actualizare: 16.06.2026 · Operator: URBANIA DIGITAL GROUP S.R.L., CUI 54835299</p>
+
+          <p>Această Politică descrie modul în care <strong>URBANIA DIGITAL GROUP S.R.L.</strong> colectează, utilizează, stochează și protejează datele cu caracter personal ale utilizatorilor platformei DentiPro (dentipro.ro), conform GDPR și Legii nr. 190/2018.</p>
+
+          <h3>1. Date colectate</h3>
+          <ul>
+            <li><strong>Clinici:</strong> denumire, adresă, email, telefon, logo, fotografii, servicii, prețuri, date de facturare prin Stripe (fără date de card).</li>
+            <li><strong>Pacienți:</strong> nume, email, parolă (criptată), telefon (opțional), programări, recenzii, cereri Feed.</li>
+            <li><strong>Vizitatori:</strong> date anonimizate prin Google Analytics și PostHog — doar cu consimțământul tău.</li>
+          </ul>
+
+          <h3>2. Scopuri și baze legale</h3>
+          <ul>
+            <li>Crearea și administrarea contului — Art. 6(1)(b) GDPR</li>
+            <li>Procesarea plăților prin Stripe — Art. 6(1)(b) GDPR</li>
+            <li>Cookie-uri analitice — Art. 6(1)(a) — consimțământ explicit</li>
+            <li>Securitatea platformei — Art. 6(1)(f) — interes legitim</li>
+            <li>Obligații fiscale — Art. 6(1)(c) — obligație legală</li>
+          </ul>
+
+          <h3>3. Furnizori terți</h3>
+          <p>Stripe (plăți), Cloudinary (imagini), MapTiler &amp; Google Maps (hărți), Resend (email), PostHog și Google Analytics (analiză — cu consimțământ), Render (hosting).</p>
+
+          <h3>4. Durata stocării</h3>
+          <ul>
+            <li>Date de cont activ — pe durata existenței contului</li>
+            <li>Date de facturare — 10 ani (Legea contabilității nr. 82/1991)</li>
+            <li>Backup-uri criptate — 90 de zile</li>
+            <li>Date analitice — 12–14 luni</li>
+          </ul>
+
+          <h3>5. Drepturile tale GDPR</h3>
+          <p>Ai dreptul la: acces, rectificare, ștergere, restricționare, portabilitate, opoziție și retragerea consimțământului — oricând, la <a href="mailto:privacy@dentipro.ro">privacy&#64;dentipro.ro</a>. Răspundem în 30 de zile.</p>
+
+          <h3>6. Securitate</h3>
+          <p>Parole criptate cu bcrypt, conexiuni HTTPS/TLS, acces restricționat la baza de date, backup-uri criptate. Breșele de securitate sunt notificate ANSPDCP în 72 de ore.</p>
+
+          <h3>7. Cookie-uri</h3>
+          <p>Cookie-uri strict necesare (autentificare) — mereu active. Cookie-uri analitice (Google Analytics, PostHog) — doar cu consimțământul tău explicit, gestionabil din bannerul cookie.</p>
+
+          <h3>8. Plângeri</h3>
+          <p>Poți depune o plângere la <strong>ANSPDCP</strong>: <a href="https://www.dataprotection.ro" target="_blank" rel="noopener">dataprotection.ro</a></p>
+
+          <h3>9. Contact</h3>
+          <p>Email protecția datelor: <a href="mailto:privacy@dentipro.ro">privacy&#64;dentipro.ro</a> · Adresă: România, București, Sector 1, Strada Târnăveni nr. 22</p>
+        </div>
+      }
+
+    </div>
+
+    <!-- Footer -->
+    <div class="lm-footer">
+      <span class="lm-footer-note">Documentele complete sunt disponibile la <em>/termeni</em> și <em>/GDPR</em></span>
+      <button class="lm-accept" (click)="close()">Am înțeles &amp; Închide</button>
+    </div>
+
+  </div>
+</div>

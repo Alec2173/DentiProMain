@@ -45,27 +45,22 @@
             <path class="checkmark-check" fill="none" d="M14 27l8 8 16-16"/>
           </svg>
         </div>
-        <h2>Cerere trimisă cu succes!</h2>
+        <h2>Clinica ta a fost înregistrată!</h2>
         <p>
-          Mulțumim! Înregistrarea clinicii tale a fost primită și este <strong>în curs de verificare</strong>.
-          Echipa DentiPro va analiza profilul și îl va activa în cel mai scurt timp.
+          Contul tău este creat. Intră în dashboard pentru a completa profilul și a atrage primii pacienți.
         </p>
         <div class="success-details">
           <div class="success-detail-item">
-            <span class="material-symbols-outlined">hourglass_empty</span>
-            Status: <strong>În așteptarea aprobării</strong>
-          </div>
-          <div class="success-detail-item">
-            <span class="material-symbols-outlined">schedule</span>
-            Timp de activare: 24–48 ore
-          </div>
-          <div class="success-detail-item">
-            <span class="material-symbols-outlined">workspace_premium</span>
+            <span class="material-symbols-outlined">check_circle</span>
             Plan ales: <strong>{{ getSelectedPlan()?.name }}</strong>
           </div>
+          <div class="success-detail-item">
+            <span class="material-symbols-outlined">rocket_launch</span>
+            Pasul următor: completează profilul din dashboard
+          </div>
         </div>
-        <button class="success-btn" routerLink="/">
-          Înapoi la pagina principală
+        <button class="success-btn" routerLink="/clinici/dashboard">
+          Mergi la dashboard
         </button>
       </div>
     </div>
@@ -91,7 +86,7 @@
 
     <!-- PROGRESS STEPS -->
     <div class="progress-steps">
-      @for (step of [1, 2, 3, 4, 5, 6, 7]; track step) {
+      @for (step of [1, 2, 3]; track step) {
         <div
           class="ps-step"
           [class.active]="currentStep === step"
@@ -109,7 +104,7 @@
             <span class="ps-name">{{ stepLabels[step - 1] }}</span>
           </div>
         </div>
-        @if (step < 7) {
+        @if (step < 3) {
           <div class="ps-line" [class.done]="currentStep > step"></div>
         }
       }
@@ -125,8 +120,8 @@
         <div class="step-header">
           <div class="step-num">01</div>
           <div>
-            <h2 class="step-title">Informații clinică</h2>
-            <p class="step-sub">Date de bază și contact pentru profilul tău public</p>
+            <h2 class="step-title">Informații de bază</h2>
+            <p class="step-sub">Îți creăm profilul în 2 minute. Restul detaliilor le completezi din dashboard.</p>
           </div>
         </div>
 
@@ -143,38 +138,6 @@
             autocomplete="off"
           />
         </label>
-
-        <div class="fields-grid two-cols">
-          <label class="field-group">
-            <span class="field-label">
-              <span class="material-symbols-outlined">phone</span>
-              Telefon afișat pe platformă <span class="req">*</span>
-            </span>
-            <span class="field-hint">Numărul pe care îl sună pacienții</span>
-            <input
-              type="tel"
-              [(ngModel)]="formData.clientPhone"
-              name="clientPhone"
-              placeholder="07xxxxxxxx"
-              autocomplete="off"
-            />
-          </label>
-
-          <label class="field-group">
-            <span class="field-label">
-              <span class="material-symbols-outlined">manage_accounts</span>
-              Telefon manager <span class="req">*</span>
-            </span>
-            <span class="field-hint">Intern DentiPro, nu este afișat public</span>
-            <input
-              type="tel"
-              [(ngModel)]="formData.managerPhone"
-              name="managerPhone"
-              placeholder="07xxxxxxxx"
-              autocomplete="off"
-            />
-          </label>
-        </div>
 
         <div class="fields-grid two-cols">
           <label class="field-group">
@@ -252,311 +215,21 @@
           </div>
         </div>
 
-        <label class="field-group">
-          <span class="field-label">
-            <span class="material-symbols-outlined">edit_note</span>
-            Observații suplimentare
-            <span class="char-count">{{ formData.additionalNotes.length }}/100</span>
-          </span>
-          <textarea
-            rows="3"
-            maxlength="100"
-            [(ngModel)]="formData.additionalNotes"
-            name="additionalNotes"
-            placeholder="Orice informație relevantă pentru echipa noastră..."
-          ></textarea>
-        </label>
+        <div class="onboarding-hint">
+          <span class="material-symbols-outlined">lightbulb</span>
+          <span>Logo, servicii, prețuri și adresă se completează din dashboard după înregistrare — nu îți blocăm accesul.</span>
+        </div>
       }
 
       <!-- ═══════════════════════════════════════
-           STEP 2 — PROFIL
+           STEP 2 — PLAN
       ═══════════════════════════════════════ -->
       @if (currentStep === 2) {
         <div class="step-header">
           <div class="step-num">02</div>
           <div>
-            <h2 class="step-title">Profil vizual</h2>
-            <p class="step-sub">Logo, galerie foto și preferința de afișare prețuri</p>
-          </div>
-        </div>
-
-        <div class="section-label">Media clinică</div>
-        <div class="fields-grid two-cols">
-          <label class="upload-zone">
-            <span class="material-symbols-outlined upload-icon">add_photo_alternate</span>
-            <span class="upload-title">Logo clinică</span>
-            <span class="upload-hint">
-              @if (logoName) { {{ logoName }} } @else { PNG, JPG — max 2MB }
-            </span>
-            <input type="file" (change)="onLogoUpload($event)" accept="image/*" />
-          </label>
-
-          <label class="upload-zone">
-            <span class="material-symbols-outlined upload-icon">photo_library</span>
-            <span class="upload-title">Imagini clinică</span>
-            <span class="upload-hint">
-              @if (imageNames.length > 0) {
-                {{ imageNames.length }} imagini selectate
-              } @else {
-                Selectează mai multe imagini
-              }
-            </span>
-            <input type="file" (change)="onImagesUpload($event)" multiple accept="image/*" />
-          </label>
-        </div>
-
-        <div class="section-label">Preferințe afișare prețuri</div>
-        <div class="radio-row">
-          <label class="radio-card" [class.selected]="formData.showPrices === true">
-            <input type="radio" name="showPrices" (change)="formData.showPrices = true" />
-            <span class="material-symbols-outlined radio-icon">visibility</span>
-            <span class="radio-text">Afișează prețurile</span>
-          </label>
-          <label class="radio-card" [class.selected]="formData.showPrices === false">
-            <input type="radio" name="showPrices" (change)="formData.showPrices = false" />
-            <span class="material-symbols-outlined radio-icon">visibility_off</span>
-            <span class="radio-text">Nu afișa prețurile</span>
-          </label>
-        </div>
-      }
-
-      <!-- ═══════════════════════════════════════
-           STEP 3 — LOCAȚIE
-      ═══════════════════════════════════════ -->
-      @if (currentStep === 3) {
-        <div class="step-header">
-          <div class="step-num">03</div>
-          <div>
-            <h2 class="step-title">Locație clinică</h2>
-            <p class="step-sub">Caută adresa clinicii sau dă click pe hartă pentru a o plasa exact</p>
-          </div>
-        </div>
-
-        <!-- ADDRESS SEARCHBAR -->
-        <div class="field-group addr-search-wrap" (click)="$event.stopPropagation()">
-          <span class="field-label">
-            <span class="material-symbols-outlined">search</span>
-            Caută adresa clinicii <span class="req">*</span>
-          </span>
-          <div class="addr-input-row">
-            <span class="material-symbols-outlined addr-search-icon">place</span>
-            <input
-              class="addr-input"
-              type="text"
-              [(ngModel)]="addressSearch"
-              name="addressSearch"
-              placeholder="ex. Str. Victoriei 12, Cluj-Napoca..."
-              autocomplete="off"
-              (input)="onAddressInput()"
-            />
-            @if (addressSearchLoading) {
-              <span class="addr-spinner"></span>
-            }
-            @if (addressSearch && !addressSearchLoading) {
-              <button class="addr-clear-btn" (click)="addressSearch = ''; addressResults = []; addressSearchOpen = false">
-                <span class="material-symbols-outlined">close</span>
-              </button>
-            }
-          </div>
-          @if (addressSearchOpen && addressResults.length > 0) {
-            <div class="addr-dropdown">
-              @for (result of addressResults; track result.place_name) {
-                <div class="addr-drop-item" (click)="selectAddress(result)">
-                  <span class="material-symbols-outlined">location_on</span>
-                  <span>{{ result.place_name }}</span>
-                </div>
-              }
-            </div>
-          }
-        </div>
-
-        <p class="map-instruction">
-          <span class="material-symbols-outlined">touch_app</span>
-          Sau dă click direct pe hartă pentru a plasa markarul la locația clinicii
-        </p>
-        <div id="location-map" class="map-wrapper"></div>
-
-        @if (formData.location.lat) {
-          <div class="location-set">
-            <span class="material-symbols-outlined">check_circle</span>
-            Locație setată: {{ formData.location.lat | number:'1.5-5' }},
-            {{ formData.location.lng | number:'1.5-5' }}
-          </div>
-        }
-      }
-
-      <!-- ═══════════════════════════════════════
-           STEP 4 — SERVICII
-      ═══════════════════════════════════════ -->
-      @if (currentStep === 4) {
-        <div class="step-header">
-          <div class="step-num">04</div>
-          <div>
-            <h2 class="step-title">Servicii oferite</h2>
-            <p class="step-sub">Selectați minimum 5 servicii. Puteți adăuga și servicii personalizate.</p>
-          </div>
-        </div>
-
-        <!-- COUNTER -->
-        <div class="services-counter" [class.ok]="totalSelectedCount >= 5">
-          <span class="material-symbols-outlined">
-            {{ totalSelectedCount >= 5 ? 'check_circle' : 'info' }}
-          </span>
-          {{ totalSelectedCount }} servicii selectate
-          @if (totalSelectedCount < 5) {
-            <span class="counter-remaining">— mai selectați {{ 5 - totalSelectedCount }}</span>
-          }
-        </div>
-
-        <!-- PREDEFINED CHIPS -->
-        <div class="services-grid">
-          @for (service of serviceObject; track service.id) {
-            <label
-              class="service-chip"
-              [class.selected]="isServiceSelected(service.id)"
-            >
-              <input
-                type="checkbox"
-                [value]="service.id"
-                [checked]="isServiceSelected(service.id)"
-                (change)="onServiceChange($event)"
-              />
-              {{ service.label }}
-            </label>
-          }
-        </div>
-
-        <!-- CUSTOM SERVICE ADD -->
-        <div class="section-label" style="margin-top: 8px;">Adaugă serviciu personalizat</div>
-        <div class="custom-service-add">
-          <input
-            type="text"
-            [(ngModel)]="newCustomService"
-            name="newCustomService"
-            placeholder="ex. Implant zimmer, Aparat invizibil..."
-            autocomplete="off"
-            (keydown.enter)="addCustomService()"
-          />
-          <button class="add-service-btn" (click)="addCustomService()">
-            <span class="material-symbols-outlined">add</span>
-            Adaugă
-          </button>
-        </div>
-
-        @if (customServices.length > 0) {
-          <div class="custom-services-list">
-            @for (cs of customServices; track cs.id) {
-              <div class="custom-service-tag">
-                <span class="material-symbols-outlined">star</span>
-                {{ cs.label }}
-                <button class="remove-custom-btn" (click)="removeCustomService(cs.id)">
-                  <span class="material-symbols-outlined">close</span>
-                </button>
-              </div>
-            }
-          </div>
-        }
-      }
-
-      <!-- ═══════════════════════════════════════
-           STEP 5 — TARIFE SERVICII
-      ═══════════════════════════════════════ -->
-      @if (currentStep === 5) {
-        <div class="step-header">
-          <div class="step-num">05</div>
-          <div>
-            <h2 class="step-title">Tarife servicii</h2>
-            <p class="step-sub">Introduceți tariful pentru fiecare serviciu selectat (în RON)</p>
-          </div>
-        </div>
-
-        <div class="prices-grid">
-          @for (item of formData.servicePrices; track item.id) {
-            <div class="price-row-item">
-              <div class="price-service-name">
-                @if (item.id.startsWith('custom_')) {
-                  <span class="material-symbols-outlined custom-star">star</span>
-                } @else {
-                  <span class="material-symbols-outlined svc-icon">dentistry</span>
-                }
-                {{ item.label }}
-              </div>
-
-              <!-- TYPE TOGGLE -->
-              <div class="price-type-toggle">
-                <button
-                  class="price-type-btn"
-                  [class.active]="item.priceType === 'fixed'"
-                  (click)="item.priceType = 'fixed'; item.priceMax = ''"
-                >
-                  <span class="material-symbols-outlined">tag</span>
-                  Preț fix
-                </button>
-                <button
-                  class="price-type-btn"
-                  [class.active]="item.priceType === 'range'"
-                  (click)="item.priceType = 'range'"
-                >
-                  <span class="material-symbols-outlined">swap_horiz</span>
-                  Interval
-                </button>
-              </div>
-
-              <!-- INPUTS -->
-              @if (item.priceType === 'fixed') {
-                <div class="price-input-wrap">
-                  <input
-                    type="number"
-                    [(ngModel)]="item.price"
-                    [name]="'price_' + item.id"
-                    placeholder="0"
-                    min="0"
-                    class="price-input"
-                  />
-                  <span class="price-currency">RON</span>
-                </div>
-              } @else {
-                <div class="price-range-wrap">
-                  <input
-                    type="number"
-                    [(ngModel)]="item.price"
-                    [name]="'priceMin_' + item.id"
-                    placeholder="minim"
-                    min="0"
-                    class="price-input"
-                  />
-                  <span class="price-range-sep">–</span>
-                  <input
-                    type="number"
-                    [(ngModel)]="item.priceMax"
-                    [name]="'priceMax_' + item.id"
-                    placeholder="maxim"
-                    min="0"
-                    class="price-input"
-                  />
-                  <span class="price-currency">RON</span>
-                </div>
-              }
-            </div>
-          }
-        </div>
-
-        <p class="price-note">
-          <span class="material-symbols-outlined">info</span>
-          Puteți pune 0 pentru servicii gratuite sau la cerere de ofertă.
-          Prețurile sunt afișate pe profilul clinicii dacă ați optat pentru afișare.
-        </p>
-      }
-
-      <!-- ═══════════════════════════════════════
-           STEP 6 — PLAN
-      ═══════════════════════════════════════ -->
-      @if (currentStep === 6) {
-        <div class="step-header">
-          <div class="step-num">06</div>
-          <div>
             <h2 class="step-title">Alege planul</h2>
-            <p class="step-sub">Poți face upgrade sau downgrade oricând. Growth și Pro includ 14 zile trial gratuit.</p>
+            <p class="step-sub">Starter este gratuit permanent. Poți face upgrade oricând din dashboard.</p>
           </div>
         </div>
 
@@ -572,7 +245,7 @@
           </span>
         </div>
 
-        <!-- PLAN CARDS — componente izolate, editabile separat -->
+        <!-- PLAN CARDS -->
         <div class="plan-cards-grid">
           @for (plan of plans; track plan.id) {
             <app-plan-card
@@ -587,16 +260,15 @@
 
         <p class="plan-note">
           <span class="material-symbols-outlined">info</span>
-          Starter este permanent gratuit. La plata anuală economisești 2 luni față de plata lunară.
+          Starter este permanent gratuit. La plata anuală economisești echivalentul a 2 luni.
         </p>
 
         @if (isPaidPlanSelected) {
           <div class="stripe-note">
             <span class="material-symbols-outlined">lock</span>
             <span>
-              Plata se face securizat prin <strong>Stripe</strong> — Visa, Mastercard, Amex.
-              Vei beneficia de <strong>14 zile trial gratuit</strong> fără card reținut.
-              Prin continuare accepți <a routerLink="/termeni" target="_blank">Termenii</a> și <a routerLink="/GDPR" target="_blank">GDPR</a>.
+              Plata se procesează securizat prin <strong>Stripe</strong>.
+              Prin continuare accepți <button class="link-btn" (click)="openLegal('termeni')">Termenii</button> și <button class="link-btn" (click)="openLegal('gdpr')">Politica de Confidențialitate</button>.
               Clinica ta devine <strong>activă imediat</strong> după confirmare.
             </span>
           </div>
@@ -604,64 +276,33 @@
       }
 
       <!-- ═══════════════════════════════════════
-           STEP 7 — FINALIZARE (revizuire + confirmare)
+           STEP 3 — FINALIZARE (doar pentru Starter)
       ═══════════════════════════════════════ -->
-      @if (currentStep === 7) {
+      @if (currentStep === 3) {
         <div class="step-header">
-          <div class="step-num">07</div>
+          <div class="step-num">03</div>
           <div>
             <h2 class="step-title">Finalizare</h2>
-            <p class="step-sub">Verifică datele și trimite cererea</p>
+            <p class="step-sub">Un pas mic, un profil mare. Gata în câteva secunde.</p>
           </div>
         </div>
 
-        <!-- SUMMARY -->
-        <div class="section-label" style="margin-top: 24px;">Rezumat înregistrare</div>
-        <div class="summary-grid">
-          <div class="summary-section">
-            <div class="summary-section-title">
-              <span class="material-symbols-outlined">business</span>
-              Clinica
-            </div>
-            <div class="summary-item">
-              <span class="s-label">Nume</span>
-              <span class="s-value">{{ formData.name }}</span>
-            </div>
-            <div class="summary-item">
-              <span class="s-label">Tel. platformă</span>
-              <span class="s-value">{{ formData.clientPhone }}</span>
-            </div>
-            <div class="summary-item">
-              <span class="s-label">Tel. manager</span>
-              <span class="s-value">{{ formData.managerPhone }}</span>
-            </div>
-            <div class="summary-item">
-              <span class="s-label">Email</span>
-              <span class="s-value">{{ formData.email }}</span>
-            </div>
-            <div class="summary-item">
-              <span class="s-label">Oraș</span>
-              <span class="s-value">{{ formData.city }}</span>
-            </div>
+        <div class="summary-simple">
+          <div class="summary-row">
+            <span class="material-symbols-outlined">business</span>
+            <span>{{ formData.name }}</span>
           </div>
-
-          <div class="summary-section">
-            <div class="summary-section-title">
-              <span class="material-symbols-outlined">dentistry</span>
-              Servicii & Prețuri
-            </div>
-            @for (item of formData.servicePrices.slice(0, 5); track item.id) {
-              <div class="summary-item">
-                <span class="s-label">{{ item.label }}</span>
-                <span class="s-value">{{ item.price || '—' }} RON</span>
-              </div>
-            }
-            @if (formData.servicePrices.length > 5) {
-              <div class="summary-item">
-                <span class="s-label">și alte</span>
-                <span class="s-value">{{ formData.servicePrices.length - 5 }} servicii</span>
-              </div>
-            }
+          <div class="summary-row">
+            <span class="material-symbols-outlined">alternate_email</span>
+            <span>{{ formData.email }}</span>
+          </div>
+          <div class="summary-row">
+            <span class="material-symbols-outlined">location_city</span>
+            <span>{{ formData.city }}</span>
+          </div>
+          <div class="summary-row">
+            <span class="material-symbols-outlined">workspace_premium</span>
+            <span>Plan <strong>{{ getSelectedPlan()?.name }}</strong> — Gratuit</span>
           </div>
         </div>
 
@@ -673,9 +314,9 @@
             </div>
             <span>
               Am citit și accept
-              <a routerLink="/termeni" target="_blank" class="terms-link">Termenii și condițiile</a>
+              <button class="link-btn" (click)="openLegal('termeni')">Termenii și condițiile</button>
               și
-              <a routerLink="/GDPR" target="_blank" class="terms-link">Politica de confidențialitate</a>
+              <button class="link-btn" (click)="openLegal('gdpr')">Politica de confidențialitate</button>
             </span>
           </label>
 
@@ -718,7 +359,7 @@
         }
 
         @if (currentStep < totalSteps) {
-          @if (currentStep === 6 && isPaidPlanSelected) {
+          @if (currentStep === 2 && isPaidPlanSelected) {
             <button class="btn-next btn-checkout" (click)="nextStep()" [disabled]="isLoading" [class.loading]="isLoading">
               @if (isLoading) {
                 <span class="spinner"></span>
@@ -756,3 +397,7 @@
     </div><!-- /form-card -->
   </div><!-- /form-wrapper -->
 </div>
+
+@if (showLegalModal) {
+  <app-legal-modal [initialTab]="legalModalTab" (closed)="showLegalModal = false" />
+}

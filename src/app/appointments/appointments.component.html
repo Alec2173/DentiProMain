@@ -123,7 +123,7 @@
                 </button>
               }
               @if (auth.isPatient && appt.status === 'completed' && appt.clinic_id) {
-                <a class="review-btn" [routerLink]="['/clinic-profile', appt.clinic_id]" [fragment]="'recenzii'">
+                <a class="review-btn" [routerLink]="['/descripton', appt.clinic_id]" [fragment]="'recenzii'">
                   <i class="fal fa-star"></i> Recenzie
                 </a>
               }

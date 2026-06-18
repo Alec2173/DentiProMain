@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { AuthService } from '../auth.service';
 import { RouterLink, Router } from '@angular/router';
+import { getInitials } from '../utils/text.utils';
 
 const API = 'https://www.dentipro.ro/api';
 
@@ -73,8 +74,5 @@ export class AppointmentsComponent implements OnInit {
     return this.appointments.filter(a => a.status === status).length;
   }
 
-  getInitials(name: string): string {
-    if (!name) return '?';
-    return name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
-  }
+  readonly getInitials = getInitials;
 }

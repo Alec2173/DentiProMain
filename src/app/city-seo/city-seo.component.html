@@ -1,0 +1,194 @@
+<div class="city-page">
+
+  <!-- Breadcrumb -->
+  <nav class="city-breadcrumb" aria-label="breadcrumb">
+    <a routerLink="/" class="city-bc-link">Acasă</a>
+    <span class="city-bc-sep">›</span>
+    <a routerLink="/dentisti" class="city-bc-link">Dentiști</a>
+    @if (cityName) {
+      <span class="city-bc-sep">›</span>
+      <span class="city-bc-current">Dentiști {{ cityName }}</span>
+    }
+  </nav>
+
+  @if (isLoading) {
+    <div class="city-skeleton-wrap">
+      <div class="city-skeleton city-sk-hero"></div>
+      <div class="city-skeleton city-sk-sub"></div>
+      <div class="city-sk-cards">
+        @for (i of [1,2,3]; track i) {
+          <div class="city-skeleton city-sk-card"></div>
+        }
+      </div>
+    </div>
+  }
+
+  @if (!isLoading && cityData) {
+
+    <!-- Hero -->
+    <div class="city-hero">
+      <div class="city-hero-badge">
+        <span class="material-symbols-outlined">location_city</span>
+      </div>
+      <h1 class="city-h1">Clinici stomatologice {{ cityName }}</h1>
+      <p class="city-sub">
+        <strong>{{ clinicCount }}</strong>
+        {{ clinicCount === 1 ? 'clinică listată' : 'clinici listate' }} pe DentiPro în {{ cityName }}.
+        Compară prețuri, citește recenzii și programează-te online.
+      </p>
+      <div class="city-hero-actions">
+        <a [routerLink]="['/dentisti', 'implanturi', slug]" class="city-cta-primary">
+          <span class="material-symbols-outlined">search</span>
+          Caută clinici în {{ cityName }}
+        </a>
+        <a [routerLink]="['/finder']" [queryParams]="{city: cityName}" class="city-cta-secondary">
+          <span class="material-symbols-outlined">map</span>
+          Vezi pe hartă
+        </a>
+      </div>
+    </div>
+
+    <!-- Top 3 clinici -->
+    @if (topClinics.length > 0) {
+      <section class="city-section">
+        <h2 class="city-section-title">Top clinici stomatologice {{ cityName }}</h2>
+        <div class="city-clinic-grid">
+          @for (clinic of topClinics; track clinic.id) {
+            <a [routerLink]="['/clinic-profile', clinic.id]" class="city-clinic-card"
+               [class.city-clinic-card--pro]="clinic.plan === 'pro'">
+              <div class="city-clinic-img">
+                @if (clinic.cover_image || clinic.logo_url) {
+                  <img [src]="clinic.cover_image || clinic.logo_url" [alt]="clinic.name"
+                       loading="lazy" decoding="async" />
+                } @else {
+                  <div class="city-clinic-img-ph">
+                    <span class="material-symbols-outlined">local_hospital</span>
+                  </div>
+                }
+                @if (planBadge(clinic.plan)) {
+                  <span class="city-plan-badge city-plan-badge--{{ clinic.plan }}">
+                    {{ planBadge(clinic.plan) }}
+                  </span>
+                }
+              </div>
+              <div class="city-clinic-body">
+                @if (clinic.logo_url) {
+                  <img [src]="clinic.logo_url" [alt]="clinic.name" class="city-clinic-logo" />
+                }
+                <h3 class="city-clinic-name">{{ clinic.name }}</h3>
+                @if (clinic.address) {
+                  <p class="city-clinic-addr">
+                    <span class="material-symbols-outlined">location_on</span>
+                    {{ clinic.address }}
+                  </p>
+                }
+                @if (clinic.avg_rating) {
+                  <div class="city-clinic-rating">
+                    <span class="material-symbols-outlined">star</span>
+                    {{ clinic.avg_rating }}
+                    @if (clinic.review_count) {
+                      <span class="city-rating-count">({{ clinic.review_count }} recenzii)</span>
+                    }
+                  </div>
+                }
+                <span class="city-clinic-cta">
+                  <span class="material-symbols-outlined">calendar_month</span>
+                  Programează
+                </span>
+              </div>
+            </a>
+          }
+        </div>
+        <div class="city-all-link-wrap">
+          <a [routerLink]="['/dentisti']" [queryParams]="{city: cityName}" class="city-all-link">
+            Vezi toate clinicile din {{ cityName }}
+            <span class="material-symbols-outlined">arrow_forward</span>
+          </a>
+        </div>
+      </section>
+    }
+
+    <!-- Prețuri servicii -->
+    @if (keyServices.length > 0) {
+      <section class="city-section">
+        <h2 class="city-section-title">Prețuri servicii stomatologice în {{ cityName }}</h2>
+        <p class="city-section-sub">
+          Prețuri medii practicate de clinicile listate pe DentiPro din {{ cityName }}.
+          Valorile sunt orientative — solicită un deviz gratuit direct de la clinică.
+        </p>
+        <div class="city-prices-table">
+          <div class="city-prices-header">
+            <span>Serviciu</span>
+            <span>Preț minim</span>
+            <span>Preț mediu</span>
+            <span>Clinici</span>
+          </div>
+          @for (svc of keyServices; track svc.label) {
+            <div class="city-prices-row">
+              <span class="city-price-label">{{ svc.label }}</span>
+              <span class="city-price-val">{{ formatPrice(svc.min_price) }}</span>
+              <span class="city-price-val city-price-avg">{{ formatPrice(svc.avg_price) }}</span>
+              <span class="city-price-count">{{ svc.clinic_count }} clinici</span>
+            </div>
+          }
+        </div>
+      </section>
+    }
+
+    <!-- Filtre rapide după serviciu -->
+    <section class="city-section">
+      <h2 class="city-section-title">Caută după serviciu în {{ cityName }}</h2>
+      <div class="city-service-chips">
+        <a [routerLink]="['/dentisti', 'implanturi', slug]" class="city-chip">Implanturi dentare</a>
+        <a [routerLink]="['/dentisti', 'albire', slug]" class="city-chip">Albire dentară</a>
+        <a [routerLink]="['/dentisti', 'aparate', slug]" class="city-chip">Aparate dentare</a>
+        <a [routerLink]="['/dentisti', 'fatete', slug]" class="city-chip">Fațete dentare</a>
+        <a [routerLink]="['/dentisti', 'ortodontie', slug]" class="city-chip">Ortodonție</a>
+        <a [routerLink]="['/dentisti', 'coronite', slug]" class="city-chip">Coroane dentare</a>
+        <a [routerLink]="['/dentisti', 'chirurgie', slug]" class="city-chip">Chirurgie dentară</a>
+        <a [routerLink]="['/dentisti', 'endodontie', slug]" class="city-chip">Tratament canal</a>
+        <a [routerLink]="['/dentisti', 'pediatrica', slug]" class="city-chip">Stomatologie pediatrică</a>
+        <a [routerLink]="['/dentisti', 'estetica', slug]" class="city-chip">Estetică dentară</a>
+      </div>
+    </section>
+
+    <!-- Text SEO -->
+    <section class="city-seo-text">
+      <h2>Clinici stomatologice în {{ cityName }} — Ghid complet</h2>
+      <p>{{ longDesc }}</p>
+      <p>
+        Pe DentiPro poți compara clinicile stomatologice din {{ cityName }} după preț, servicii oferite,
+        recenzii ale pacienților și localizare. Toate profilurile includ galerie foto, program de lucru,
+        adresă exactă și număr de telefon verificat.
+      </p>
+      <p>
+        Caută clinici pentru <a [routerLink]="['/dentisti', 'implanturi', slug]">implanturi dentare {{ cityName }}</a>,
+        <a [routerLink]="['/dentisti', 'albire', slug]">albire dentară {{ cityName }}</a>,
+        <a [routerLink]="['/dentisti', 'aparate', slug]">aparate dentare {{ cityName }}</a> sau
+        <a [routerLink]="['/dentisti', 'fatete', slug]">fațete dentare {{ cityName }}</a>.
+      </p>
+    </section>
+
+    <!-- Link alte orașe -->
+    <section class="city-section">
+      <h2 class="city-section-title">Clinici stomatologice în alte orașe</h2>
+      <div class="city-service-chips">
+        <a routerLink="/dentisti/bucuresti" class="city-chip">București</a>
+        <a routerLink="/dentisti/cluj-napoca" class="city-chip">Cluj-Napoca</a>
+        <a routerLink="/dentisti/timisoara" class="city-chip">Timișoara</a>
+        <a routerLink="/dentisti/iasi" class="city-chip">Iași</a>
+        <a routerLink="/dentisti/brasov" class="city-chip">Brașov</a>
+      </div>
+    </section>
+
+  }
+
+  @if (!isLoading && !cityData) {
+    <div class="city-error">
+      <span class="material-symbols-outlined">error_outline</span>
+      <p>Nu am găsit date pentru acest oraș.</p>
+      <a routerLink="/dentisti" class="city-cta-primary">Caută în toate orașele</a>
+    </div>
+  }
+
+</div>

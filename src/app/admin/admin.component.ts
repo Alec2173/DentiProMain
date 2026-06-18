@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { DecimalPipe, LowerCasePipe } from '@angular/common';
+import { DecimalPipe, LowerCasePipe, DatePipe, UpperCasePipe } from '@angular/common';
 import { AuthService } from '../auth.service';
 
 const API = 'https://www.dentipro.ro/api';
@@ -44,7 +44,7 @@ interface AddClinicForm {
 @Component({
   selector: 'app-admin',
   standalone: true,
-  imports: [FormsModule, DecimalPipe, LowerCasePipe],
+  imports: [FormsModule, DecimalPipe, LowerCasePipe, DatePipe, UpperCasePipe],
   templateUrl: './admin.component.html',
   styleUrl: './admin.component.css',
 })
@@ -156,7 +156,10 @@ export class AdminComponent implements OnInit {
   }
 
   applyFilter() {
-    let list = this.clinics.filter(c => !this.DEV_EMAILS.includes(c.email?.toLowerCase()));
+    const base = this.clinics.filter(c => !this.DEV_EMAILS.includes(c.email?.toLowerCase()));
+    this.recomputeCounts(base);
+
+    let list = base;
     if (this.filterStatus !== 'all') list = list.filter(c => c.status === this.filterStatus);
     if (this.filterPlan !== 'all') list = list.filter(c => c.plan === this.filterPlan);
     if (this.filterOnboarding === 'never_logged') list = list.filter(c => !c.last_login_at);
@@ -174,6 +177,42 @@ export class AdminComponent implements OnInit {
     this.adminPage = 0;
   }
 
+  private recomputeCounts(clinics: AdminClinic[]): void {
+    let pending = 0, active = 0, suspended = 0, pendingPayment = 0;
+    let neverLogged = 0, notVerified = 0, incomplete = 0;
+    let starter = 0, growth = 0, pro = 0, paid = 0, pastDue = 0;
+
+    for (const c of clinics) {
+      if (c.status === 'pending') pending++;
+      else if (c.status === 'active') active++;
+      else if (c.status === 'suspended') suspended++;
+      else if (c.status === 'pending_payment') pendingPayment++;
+
+      if (!c.last_login_at) neverLogged++;
+      if (c.user_id && !c.email_verified) notVerified++;
+      if (!this.isProfileComplete(c)) incomplete++;
+
+      if (c.plan === 'starter') starter++;
+      else if (c.plan === 'growth') { growth++; paid++; }
+      else if (c.plan === 'pro') { pro++; paid++; }
+
+      if (c.stripe_subscription_status === 'past_due') pastDue++;
+    }
+
+    this.pendingCount = pending;
+    this.activeCount = active;
+    this.suspendedCount = suspended;
+    this.pendingPaymentCount = pendingPayment;
+    this.neverLoggedCount = neverLogged;
+    this.notVerifiedCount = notVerified;
+    this.incompleteCount = incomplete;
+    this.starterCount = starter;
+    this.growthCount = growth;
+    this.proCount = pro;
+    this.paidCount = paid;
+    this.pastDueCount = pastDue;
+  }
+
   get pagedClinics() {
     const start = this.adminPage * this.adminPageSize;
     return this.filtered.slice(start, start + this.adminPageSize);
@@ -183,14 +222,16 @@ export class AdminComponent implements OnInit {
   prevPage() { if (this.adminPage > 0) this.adminPage--; }
   nextPage() { if (this.adminPage < this.totalPages - 1) this.adminPage++; }
 
+  private hasClinicMedia(c: AdminClinic): boolean {
+    return c.image_count > 0 || !!c.logo_url;
+  }
+
   isProfileComplete(c: AdminClinic): boolean {
-    const hasMedia = c.image_count > 0 || !!c.logo_url;
-    return hasMedia && c.service_count > 0 && c.has_address;
+    return this.hasClinicMedia(c) && c.service_count > 0 && c.has_address;
   }
 
   profileScore(c: AdminClinic): number {
-    const hasMedia = c.image_count > 0 || !!c.logo_url;
-    return [hasMedia, c.service_count > 0, c.has_address, c.has_description]
+    return [this.hasClinicMedia(c), c.service_count > 0, c.has_address, c.has_description]
       .filter(Boolean).length;
   }
 
@@ -216,18 +257,18 @@ export class AdminComponent implements OnInit {
     });
   }
 
-  get pendingCount()        { return this.clinics.filter(c => c.status === 'pending').length; }
-  get activeCount()         { return this.clinics.filter(c => c.status === 'active').length; }
-  get suspendedCount()      { return this.clinics.filter(c => c.status === 'suspended').length; }
-  get pendingPaymentCount() { return this.clinics.filter(c => c.status === 'pending_payment').length; }
-  get neverLoggedCount()    { return this.clinics.filter(c => !c.last_login_at).length; }
-  get notVerifiedCount()    { return this.clinics.filter(c => c.user_id && !c.email_verified).length; }
-  get incompleteCount()     { return this.clinics.filter(c => !this.isProfileComplete(c)).length; }
-  get starterCount()        { return this.clinics.filter(c => c.plan === 'starter').length; }
-  get growthCount()         { return this.clinics.filter(c => c.plan === 'growth').length; }
-  get proCount()            { return this.clinics.filter(c => c.plan === 'pro').length; }
-  get paidCount()           { return this.clinics.filter(c => c.plan === 'growth' || c.plan === 'pro').length; }
-  get pastDueCount()        { return this.clinics.filter(c => c.stripe_subscription_status === 'past_due').length; }
+  pendingCount = 0;
+  activeCount = 0;
+  suspendedCount = 0;
+  pendingPaymentCount = 0;
+  neverLoggedCount = 0;
+  notVerifiedCount = 0;
+  incompleteCount = 0;
+  starterCount = 0;
+  growthCount = 0;
+  proCount = 0;
+  paidCount = 0;
+  pastDueCount = 0;
 
   // ── ADD CLINIC ────────────────────────────────────────────
   openAddClinic() {
@@ -526,6 +567,156 @@ export class AdminComponent implements OnInit {
       error: (err) => {
         this.exportingInactive = false;
         alert('❌ Export eșuat: ' + (err.error?.error ?? err.message));
+      },
+    });
+  }
+
+  // ── REWARD POINTS ADMIN ──────────────────────────────────
+  showPointsPanel = false;
+  pointsPatients: any[] = [];
+  pointsLoading = false;
+  selectedPatientPoints: { userId: number; name: string; history: any[] } | null = null;
+  historyLoading = false;
+  manualPts = 0;
+  manualDesc = '';
+  manualSaving = false;
+  manualError = '';
+
+  loadPointsPanel() {
+    this.showPointsPanel = true;
+    this.pointsLoading = true;
+    this.http.get<any[]>(`${API}/admin/points`, { headers: this.headers() }).subscribe({
+      next: (data) => { this.pointsPatients = data; this.pointsLoading = false; },
+      error: () => { this.pointsLoading = false; },
+    });
+  }
+
+  openPatientHistory(userId: number, name: string) {
+    this.selectedPatientPoints = { userId, name, history: [] };
+    this.historyLoading = true;
+    this.manualPts = 0;
+    this.manualDesc = '';
+    this.manualError = '';
+    this.http.get<any[]>(`${API}/admin/points/${userId}/history`, { headers: this.headers() }).subscribe({
+      next: (h) => { this.selectedPatientPoints!.history = h; this.historyLoading = false; },
+      error: () => { this.historyLoading = false; },
+    });
+  }
+
+  saveManualPoints() {
+    if (!this.manualPts || !this.manualDesc.trim()) { this.manualError = 'Completează toate câmpurile.'; return; }
+    this.manualSaving = true;
+    this.manualError = '';
+    const userId = this.selectedPatientPoints!.userId;
+    this.http.post<any>(`${API}/admin/points/${userId}`,
+      { points: this.manualPts, description: this.manualDesc.trim() },
+      { headers: this.headers() }
+    ).subscribe({
+      next: () => {
+        this.manualSaving = false;
+        this.manualPts = 0;
+        this.manualDesc = '';
+        // Refresh
+        this.openPatientHistory(userId, this.selectedPatientPoints!.name);
+        this.loadPointsPanel();
+      },
+      error: (err) => {
+        this.manualError = err.error?.error || 'Eroare la salvare.';
+        this.manualSaving = false;
+      },
+    });
+  }
+
+  levelClass(name: string): string {
+    return name.toLowerCase();
+  }
+
+  // ── PROGRAM PARTENER ─────────────────────────────────────
+  sendingPartnerEmails = false;
+  showPartnerPanel = false;
+  partnerApps: any[] = [];
+  partnerLoading = false;
+  expandedPartner: number | null = null;
+
+  loadPartnerPanel() {
+    this.showPartnerPanel = true;
+    this.partnerLoading = true;
+    this.http.get<any[]>(`${API}/admin/partner-applications`, { headers: this.headers() }).subscribe({
+      next: (data) => { this.partnerApps = data; this.partnerLoading = false; },
+      error: () => { this.partnerLoading = false; },
+    });
+  }
+
+  updatePartnerStatus(id: number, status: string) {
+    this.http.patch(`${API}/admin/partner-applications/${id}/status`, { status }, { headers: this.headers() }).subscribe({
+      next: () => {
+        const app = this.partnerApps.find(a => a.id === id);
+        if (app) app.status = status;
+      },
+    });
+  }
+
+  partnerBeneficii(app: any): string {
+    if (!app.beneficii) return '—';
+    return Object.entries(app.beneficii)
+      .filter(([k, v]) => v && k !== 'alt')
+      .map(([k]) => k.replace(/_/g, ' '))
+      .concat(app.beneficii.alt ? [`Alt: ${app.beneficii.alt}`] : [])
+      .join(', ') || '—';
+  }
+
+  partnerServicii(app: any): string {
+    if (!app.servicii) return '—';
+    return Object.entries(app.servicii).filter(([,v]) => v).map(([k]) => k).join(', ') || '—';
+  }
+
+  partnerModel(app: any): string {
+    if (!app.model_business) return '—';
+    return Object.entries(app.model_business).filter(([,v]) => v).map(([k]) => k.replace(/_/g,' ')).join(', ') || '—';
+  }
+
+  partnerReducere(app: any): string {
+    if (!app.reducere) return '—';
+    const vals: string[] = [];
+    if (app.reducere.p5) vals.push('5%');
+    if (app.reducere.p10) vals.push('10%');
+    if (app.reducere.p15) vals.push('15%');
+    if (app.reducere.p20) vals.push('20%');
+    if (app.reducere.alta) vals.push(`Alta: ${app.reducere.alta || ''}`);
+    return vals.join(', ') || '—';
+  }
+
+  partnerStatusColor(s: string): string {
+    return { new: '#60a5fa', contacted: '#fbbf24', signed: '#4ade80', rejected: '#f87171' }[s] ?? '#94a3b8';
+  }
+
+  sendPartnerTestEmail() {
+    // Trimite DOAR la Stomadent (ID 116, alec.constant04@icloud.com)
+    if (!confirm('Trimiți emailul de test parteneriat DOAR la Stomadent (alec.constant04@icloud.com)?')) return;
+    this.sendingPartnerEmails = true;
+    this.http.post<any>(`${API}/admin/send-partnership-email`, { clinicIds: [116] }, { headers: this.headers() }).subscribe({
+      next: (r) => {
+        this.sendingPartnerEmails = false;
+        alert(`✅ Email de test trimis la Stomadent (${r.sent} din ${r.total}).`);
+      },
+      error: (e) => {
+        this.sendingPartnerEmails = false;
+        alert('❌ Eroare: ' + (e.error?.error ?? 'necunoscut'));
+      },
+    });
+  }
+
+  sendPartnerEmails() {
+    if (!confirm('Trimiți emailul de invitație partener la TOATE clinicile active? Confirmă.')) return;
+    this.sendingPartnerEmails = true;
+    this.http.post<any>(`${API}/admin/send-partnership-email`, {}, { headers: this.headers() }).subscribe({
+      next: (r) => {
+        this.sendingPartnerEmails = false;
+        alert(`✅ Trimis cu succes la ${r.sent} din ${r.total} clinici.`);
+      },
+      error: (e) => {
+        this.sendingPartnerEmails = false;
+        alert('❌ Eroare: ' + (e.error?.error ?? 'necunoscut'));
       },
     });
   }

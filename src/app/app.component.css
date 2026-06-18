@@ -8,6 +8,32 @@ body {
   box-sizing: border-box;
 }
 
+/* ── GLOBAL NAVIGATION LOADING BAR ──────────────────────── */
+
+.nav-progress-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 0%;
+  height: 3px;
+  background: linear-gradient(90deg, #2563eb, #0ea5e9, #06b6d4);
+  z-index: 9999;
+  transition: width 0.2s ease;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.nav-progress-bar--active {
+  opacity: 1;
+  animation: nav-progress 1.2s ease-in-out infinite;
+}
+
+@keyframes nav-progress {
+  0%   { width: 0%; opacity: 1; }
+  50%  { width: 75%; opacity: 1; }
+  100% { width: 95%; opacity: 1; }
+}
+
 /* ── GLOBAL FOOTER ───────────────────────────────────────────── */
 .site-footer {
   background: #020b18;

@@ -12,8 +12,8 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding-top: 130px;
-  padding-bottom: 100px;
+  padding-top: 80px;
+  padding-bottom: 80px;
   color: white;
 }
 
@@ -61,19 +61,20 @@
 }
 
 .hero-title {
-  font-size: 56px;
-  font-weight: 700;
-  letter-spacing: -0.03em;
-  line-height: 1.1;
+  font-size: 62px;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 1.08;
   margin: 0;
   color: white;
 }
 
 .title-gradient {
-  background: linear-gradient(135deg, #60a5fa 0%, #0ea5e9 50%, #38bdf8 100%);
+  background: linear-gradient(135deg, #60a5fa 0%, #38bdf8 40%, #22d3ee 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+  filter: drop-shadow(0 0 32px rgba(56, 189, 248, 0.35));
 }
 
 .hero-subtitle {
@@ -369,15 +370,19 @@
 }
 
 .trust-num {
-  font-size: 15px;
-  font-weight: 700;
+  font-size: 17px;
+  font-weight: 800;
   color: white;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.03em;
+  background: linear-gradient(135deg, #fff 60%, #93c5fd 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .trust-label {
   font-size: 13px;
-  color: rgba(255, 255, 255, 0.35);
+  color: rgba(255, 255, 255, 0.38);
 }
 
 .trust-sep {
@@ -392,27 +397,27 @@
 ════════════════════════════════════════ */
 
 @media (max-width: 1024px) {
-  .hero-title { font-size: 48px; }
+  .hero-title { font-size: 52px; }
 }
 
 @media (max-width: 900px) {
-  .main { padding-top: 100px; padding-bottom: 72px; }
-  .hero-title { font-size: 44px; }
+  .main { padding-top: 64px; padding-bottom: 64px; }
+  .hero-title { font-size: 46px; }
   .hero-subtitle { font-size: 16px; }
   .search-board-wrapper { max-width: 100%; }
 }
 
 @media (max-width: 768px) {
-  .hero-title { font-size: 38px; }
+  .hero-title { font-size: 40px; }
   .hero { gap: 22px; margin-bottom: 48px; }
   .search-bar { border-radius: 16px; }
   .search-action { padding: 0 20px; }
 }
 
 @media (max-width: 600px) {
-  .main { padding-top: 80px; padding-bottom: 56px; }
+  .main { padding-top: 56px; padding-bottom: 48px; }
   .hero { gap: 20px; margin-bottom: 40px; padding: 0 16px; }
-  .hero-title { font-size: 32px; letter-spacing: -0.02em; }
+  .hero-title { font-size: 34px; letter-spacing: -0.025em; }
   .hero-subtitle { font-size: 15px; }
   .hero-badge { font-size: 12px; padding: 6px 12px; }
 
@@ -437,8 +442,8 @@
 }
 
 @media (max-width: 480px) {
-  .main { padding-top: 72px; }
-  .hero-title { font-size: 28px; }
+  .main { padding-top: 48px; }
+  .hero-title { font-size: 30px; }
   .trust-bar { gap: 10px; }
   .trust-sep { display: none; }
   .trust-label { font-size: 12px; }

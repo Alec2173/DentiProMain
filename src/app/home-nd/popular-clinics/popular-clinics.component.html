@@ -29,13 +29,13 @@
     }
 
     <!-- REAL DATA -->
-    @if (!isLoading) {
+    @if (!isLoading && clinics.length > 0) {
       <div class="clinic-grid">
         @for (clinic of clinics; track clinic.id) {
           <a class="clinic-card" [routerLink]="['/descripton', clinic.id]">
             <div class="card-image">
               @if (getCoverImage(clinic)) {
-                <img [src]="getCoverImage(clinic)" [alt]="clinic.name" loading="lazy" />
+                <img [src]="getCoverImage(clinic)" [alt]="clinic.name" loading="lazy" decoding="async" />
               } @else {
                 <div class="card-image-placeholder">
                   <span class="material-symbols-outlined">local_hospital</span>
@@ -61,6 +61,13 @@
             </div>
           </a>
         }
+      </div>
+    }
+
+    @if (!isLoading && clinics.length === 0) {
+      <div class="pc-empty">
+        <span class="material-symbols-outlined">local_hospital</span>
+        <p>Nicio clinică disponibilă momentan. Revino curând!</p>
       </div>
     }
 

@@ -7,6 +7,7 @@ import { AuthService } from '../auth.service';
 import { AnalyticsService } from '../analytics.service';
 import { RouterLink } from '@angular/router';
 import { DecimalPipe } from '@angular/common';
+import { getInitials } from '../utils/text.utils';
 
 @Component({
   selector: 'app-cards',
@@ -225,10 +226,5 @@ export class CardsComponent implements OnInit, AfterViewInit, OnDestroy {
     return clinic.id;
   }
 
-  clinicInitials(name: string): string {
-    if (!name) return '?';
-    const words = name.split(/\s+/).filter(Boolean);
-    if (words.length >= 2) return (words[0][0] + words[1][0]).toUpperCase();
-    return (words[0]?.[0] || '?').toUpperCase();
-  }
+  readonly getInitials = getInitials;
 }

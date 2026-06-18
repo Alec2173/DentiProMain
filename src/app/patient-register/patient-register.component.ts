@@ -3,16 +3,25 @@ import { Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../auth.service';
 import { SeoService } from '../seo.service';
+import { LegalModalComponent, LegalTab } from '../legal-modal/legal-modal.component';
 
 @Component({
   selector: 'app-patient-register',
   standalone: true,
-  imports: [FormsModule, RouterLink],
+  imports: [FormsModule, RouterLink, LegalModalComponent],
   templateUrl: './patient-register.component.html',
   styleUrl: './patient-register.component.css',
 })
 export class PatientRegisterComponent implements OnInit {
   private seo = inject(SeoService);
+
+  showLegalModal = false;
+  legalModalTab: LegalTab = 'termeni';
+
+  openLegal(tab: LegalTab) {
+    this.legalModalTab = tab;
+    this.showLegalModal = true;
+  }
 
   step: 'register' | 'verify' = 'register';
 

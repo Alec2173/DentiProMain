@@ -43,6 +43,27 @@
         <i class="fal fa-chart-bar"></i> Email stats
       </button>
 
+      <button class="adm-points-btn" (click)="loadPointsPanel()">
+        <i class="fal fa-gift"></i> Puncte pacienți
+      </button>
+
+      <button class="adm-partner-btn" (click)="loadPartnerPanel()">
+        <i class="fal fa-handshake"></i> Parteneriat
+        @if (partnerApps.length > 0) {
+          <span class="adm-unread-badge">{{ partnerApps.length }}</span>
+        }
+      </button>
+
+      <button class="adm-partner-send-btn" (click)="sendPartnerTestEmail()" [disabled]="sendingPartnerEmails" title="Test DOAR la Stomadent">
+        <i class="fal fa-flask"></i>
+        Test email partener
+      </button>
+
+      <button class="adm-partner-send-btn" (click)="sendPartnerEmails()" [disabled]="sendingPartnerEmails">
+        <i class="fal fa-paper-plane"></i>
+        {{ sendingPartnerEmails ? 'Se trimite...' : 'Trimite tuturor' }}
+      </button>
+
       <!-- Export clinici inactive -->
       <div class="adm-devtools-wrap">
         <button class="adm-export-btn" (click)="showExportPanel = !showExportPanel">
@@ -1094,3 +1115,195 @@
   </div>
 }
 
+
+<!-- ══════════════════════════════════════════════
+     REWARD POINTS PANEL
+═══════════════════════════════════════════════ -->
+<!-- ══════════════════════════════════════════════════
+     PARTNER APPLICATIONS PANEL
+═══════════════════════════════════════════════════ -->
+@if (showPartnerPanel) {
+  <div class="adm-points-panel">
+    <div class="adm-points-header">
+      <h2><i class="fal fa-handshake"></i> Cereri Parteneriat ({{ partnerApps.length }})</h2>
+      <button class="adm-close-panel" (click)="showPartnerPanel = false"><i class="fal fa-times"></i></button>
+    </div>
+    <div style="padding:16px;overflow-x:auto;">
+      @if (partnerLoading) {
+        <div class="adm-pts-loading"><i class="fal fa-spinner fa-spin"></i> Se încarcă...</div>
+      } @else if (partnerApps.length === 0) {
+        <div class="adm-pts-empty" style="padding:24px;text-align:center;">Nicio cerere primită.</div>
+      } @else {
+        @for (app of partnerApps; track app.id) {
+          <div class="partner-app-row" [class.expanded]="expandedPartner === app.id">
+            <div class="partner-app-header" (click)="expandedPartner = expandedPartner === app.id ? null : app.id">
+              <div class="partner-app-main">
+                <strong>{{ app.clinic_name }}</strong>
+                @if (app.city) { <span class="partner-app-city">{{ app.city }}</span> }
+              </div>
+              <div class="partner-app-meta">
+                <span>{{ app.email }}</span>
+                @if (app.phone) { <span>{{ app.phone }}</span> }
+                <span class="partner-app-date">{{ app.created_at | date:'dd.MM.yyyy HH:mm' }}</span>
+                <span class="partner-status-badge" [style.color]="partnerStatusColor(app.status)">{{ app.status | uppercase }}</span>
+              </div>
+              <i class="fal fa-chevron-down partner-app-chevron" [class.rotated]="expandedPartner === app.id"></i>
+            </div>
+
+            @if (expandedPartner === app.id) {
+              <div class="partner-app-details">
+                <div class="partner-detail-grid">
+                  <div class="partner-detail-row">
+                    <span class="partner-detail-label">Contact</span>
+                    <span>{{ app.contact_person || '—' }}</span>
+                  </div>
+                  <div class="partner-detail-row">
+                    <span class="partner-detail-label">Beneficii oferite</span>
+                    <span>{{ partnerBeneficii(app) }}</span>
+                  </div>
+                  <div class="partner-detail-row">
+                    <span class="partner-detail-label">Reducere</span>
+                    <span>{{ partnerReducere(app) }}</span>
+                  </div>
+                  <div class="partner-detail-row">
+                    <span class="partner-detail-label">Servicii</span>
+                    <span>{{ partnerServicii(app) }}</span>
+                  </div>
+                  <div class="partner-detail-row">
+                    <span class="partner-detail-label">Model business</span>
+                    <span>{{ partnerModel(app) }}</span>
+                  </div>
+                  @if (app.comentarii) {
+                    <div class="partner-detail-row">
+                      <span class="partner-detail-label">Comentarii</span>
+                      <span>{{ app.comentarii }}</span>
+                    </div>
+                  }
+                </div>
+                <div class="partner-status-actions">
+                  <span class="partner-detail-label">Status:</span>
+                  @for (s of ['new','contacted','signed','rejected']; track s) {
+                    <button class="partner-status-btn"
+                      [class.active]="app.status === s"
+                      [style.borderColor]="partnerStatusColor(s)"
+                      [style.color]="app.status === s ? 'white' : partnerStatusColor(s)"
+                      (click)="updatePartnerStatus(app.id, s)">
+                      {{ s | uppercase }}
+                    </button>
+                  }
+                </div>
+              </div>
+            }
+          </div>
+        }
+      }
+    </div>
+  </div>
+}
+
+@if (showPointsPanel) {
+  <div class="adm-points-panel">
+    <div class="adm-points-header">
+      <h2><i class="fal fa-gift"></i> Puncte pacienți</h2>
+      <button class="adm-close-panel" (click)="showPointsPanel = false">
+        <i class="fal fa-times"></i>
+      </button>
+    </div>
+
+    <div class="adm-points-body">
+
+      <!-- Lista pacienți -->
+      <div class="adm-points-list">
+        @if (pointsLoading) {
+          <div class="adm-pts-loading"><i class="fal fa-spinner fa-spin"></i> Se încarcă...</div>
+        } @else {
+          <table class="adm-pts-table">
+            <thead>
+              <tr>
+                <th>Pacient</th>
+                <th>Nivel</th>
+                <th>Puncte curente</th>
+                <th>Total acumulat</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (p of pointsPatients; track p.id) {
+                <tr [class.adm-pts-selected]="selectedPatientPoints?.userId === p.id" (click)="openPatientHistory(p.id, p.name)">
+                  <td>
+                    <strong>{{ p.name }}</strong><br>
+                    <small>{{ p.email }}</small>
+                  </td>
+                  <td>
+                    <span class="adm-level-badge adm-level-{{ levelClass(p.level.name) }}">
+                      {{ p.level.icon }} {{ p.level.name }}
+                    </span>
+                  </td>
+                  <td class="adm-pts-current">{{ p.current_points }}</td>
+                  <td class="adm-pts-lifetime">{{ p.lifetime_points }}</td>
+                  <td><i class="fal fa-chevron-right"></i></td>
+                </tr>
+              }
+              @if (pointsPatients.length === 0) {
+                <tr><td colspan="5" class="adm-pts-empty">Niciun pacient cu puncte înregistrate.</td></tr>
+              }
+            </tbody>
+          </table>
+        }
+      </div>
+
+      <!-- Detalii pacient selectat -->
+      @if (selectedPatientPoints) {
+        <div class="adm-pts-detail">
+          <div class="adm-pts-detail-header">
+            <strong>{{ selectedPatientPoints.name }}</strong>
+            <button class="adm-close-detail" (click)="selectedPatientPoints = null">
+              <i class="fal fa-times"></i>
+            </button>
+          </div>
+
+          <!-- Ajustare manuală -->
+          <div class="adm-pts-manual">
+            <div class="adm-pts-manual-title">Ajustare manuală</div>
+            <div class="adm-pts-manual-row">
+              <input type="number" class="adm-pts-input" [(ngModel)]="manualPts"
+                placeholder="±puncte (ex: 10 sau -5)" />
+              <input type="text" class="adm-pts-input adm-pts-desc" [(ngModel)]="manualDesc"
+                placeholder="Motiv (obligatoriu)" />
+              <button class="adm-pts-save-btn" (click)="saveManualPoints()" [disabled]="manualSaving">
+                {{ manualSaving ? 'Se salvează...' : 'Aplică' }}
+              </button>
+            </div>
+            @if (manualError) {
+              <div class="adm-pts-error">{{ manualError }}</div>
+            }
+          </div>
+
+          <!-- Istoric -->
+          <div class="adm-pts-history-title">Istoric tranzacții</div>
+          @if (historyLoading) {
+            <div class="adm-pts-loading"><i class="fal fa-spinner fa-spin"></i></div>
+          } @else {
+            @for (h of selectedPatientPoints.history; track h.id) {
+              <div class="adm-pts-history-item">
+                <span class="adm-pts-hist-pts" [class.neg]="h.points < 0">
+                  {{ h.points > 0 ? '+' : '' }}{{ h.points }}
+                </span>
+                <div class="adm-pts-hist-info">
+                  <span>{{ h.description }}</span>
+                  @if (h.admin_name) {
+                    <small>Admin: {{ h.admin_name }}</small>
+                  }
+                </div>
+                <span class="adm-pts-hist-date">{{ h.created_at | date:'dd.MM.yy HH:mm' }}</span>
+              </div>
+            }
+            @if (selectedPatientPoints.history.length === 0) {
+              <div class="adm-pts-empty">Nicio tranzacție.</div>
+            }
+          }
+        </div>
+      }
+    </div>
+  </div>
+}

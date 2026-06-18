@@ -1,11 +1,10 @@
 import { Component, signal, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { OraseComponent } from '../orase/orase.component';
 
 @Component({
   selector: 'app-left-sidebar',
-  imports: [CommonModule, RouterModule, OraseComponent],
+  imports: [CommonModule, RouterModule],
   templateUrl: './left-sidebar.component.html',
   styleUrl: './left-sidebar.component.css',
 })

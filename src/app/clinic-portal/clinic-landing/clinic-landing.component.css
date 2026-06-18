@@ -653,3 +653,365 @@
   .cl-stat-value { font-size: 22px; }
   .cl-cta-btn { padding: 14px 24px; }
 }
+
+/* ══ QUOTES — "DE CE SĂ INVESTEȘTI" ══ */
+
+.wd-quote-section {
+  max-width: 780px;
+  margin: 0 auto;
+  padding: 30px 24px 60px;
+  text-align: center;
+}
+
+.wd-quote-section--alt { padding: 60px 24px 30px; }
+
+.wd-quote {
+  position: relative;
+  margin: 0;
+  font-size: clamp(20px, 3vw, 28px);
+  font-weight: 700;
+  font-style: italic;
+  color: rgba(255,255,255,0.88);
+  line-height: 1.45;
+  letter-spacing: -0.01em;
+  padding-top: 8px;
+}
+
+.wd-quote-icon {
+  display: block;
+  font-size: 28px;
+  color: rgba(212,165,48,0.5);
+  margin-bottom: 8px;
+}
+
+/* ══ CICLUL BANILOR ══ */
+
+.wd-cycle {
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  gap: 0;
+  flex-wrap: wrap;
+}
+
+.wd-cycle-step {
+  flex: 1 1 200px;
+  max-width: 230px;
+  padding: 24px 18px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 18px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.wd-cycle-icon {
+  width: 46px;
+  height: 46px;
+  border-radius: 12px;
+  background: rgba(37,99,235,0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.wd-cycle-icon .material-symbols-outlined {
+  font-size: 24px;
+  color: #60a5fa;
+}
+
+.wd-cycle-title {
+  font-size: 14.5px;
+  font-weight: 700;
+  color: white;
+  margin: 0;
+}
+
+.wd-cycle-desc {
+  font-size: 12.5px;
+  color: rgba(255,255,255,0.4);
+  line-height: 1.55;
+  margin: 0;
+}
+
+.wd-cycle-arrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 6px;
+  color: rgba(255,255,255,0.2);
+}
+
+.wd-cycle-arrow .material-symbols-outlined { font-size: 22px; }
+
+.wd-cycle-loop {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 32px;
+  padding: 16px 24px;
+  background: rgba(212,165,48,0.07);
+  border: 1px solid rgba(212,165,48,0.2);
+  border-radius: 14px;
+  color: rgba(255,255,255,0.6);
+  font-size: 13.5px;
+  text-align: center;
+  flex-wrap: wrap;
+  max-width: 720px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.wd-cycle-loop strong { color: #e6c050; }
+
+.wd-cycle-loop-icon {
+  color: #d4a52a;
+  font-size: 20px;
+  animation: wd-spin 4s linear infinite;
+}
+
+@keyframes wd-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ══ PINUL AURIU + CARDUL VIP ══ */
+
+.wd-vip-demo {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 32px;
+  align-items: start;
+}
+
+.wd-vip-block {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.wd-vip-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.4);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.wd-vip-label .material-symbols-outlined { font-size: 16px; }
+
+.wd-vip-pin-stage {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 180px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 18px;
+}
+
+.wd-pin-standalone {
+  position: relative;
+  transform: scale(1.4);
+}
+
+.wd-vip-caption {
+  font-size: 13px;
+  color: rgba(255,255,255,0.4);
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* ── Card VIP (replicat din pricing demo, scopat aici) ── */
+
+.wd-card-wrap { width: 100%; }
+
+a.wd-card {
+  all: unset;
+  display: flex;
+  width: 100%;
+  height: 130px;
+  border-radius: 16px;
+  overflow: hidden;
+  cursor: pointer;
+  position: relative;
+  box-sizing: border-box;
+  background: linear-gradient(135deg, rgba(14, 30, 62, 0.97), rgba(9, 20, 44, 0.99));
+  border: 1px solid rgba(196, 152, 40, 0.45);
+  box-shadow: 0 4px 24px rgba(0,0,0,0.45), inset 0 1px 0 rgba(220,170,50,0.18);
+  transition: border-color 0.25s ease, box-shadow 0.25s ease, transform 0.22s ease, background 0.25s ease;
+}
+
+a.wd-card::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent 0%, rgba(212,165,48,0.7) 30%, rgba(245,198,80,0.9) 50%, rgba(212,165,48,0.7) 70%, transparent 100%);
+  pointer-events: none;
+  z-index: 3;
+}
+
+a.wd-card:hover {
+  border-color: rgba(220, 172, 52, 0.65);
+  background: linear-gradient(135deg, rgba(16, 34, 70, 0.98), rgba(11, 24, 52, 0.99));
+  box-shadow: 0 8px 32px rgba(0,0,0,0.55), 0 0 18px rgba(180,138,28,0.12), inset 0 1px 0 rgba(230,180,60,0.22);
+  transform: translateY(-2px);
+}
+
+a.wd-card:active { transform: translateY(0); }
+
+.wd-vip-pill {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  padding: 3px 10px;
+  border-radius: 4px;
+  border: 1px solid rgba(200,155,40,0.55);
+  color: #d4a52a;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  background: rgba(8,18,40,0.75);
+  backdrop-filter: blur(8px);
+  pointer-events: none;
+  z-index: 6;
+}
+
+.wd-card-image {
+  width: 118px;
+  height: 100%;
+  flex-shrink: 0;
+  overflow: hidden;
+  position: relative;
+}
+
+.wd-card-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.45s ease;
+}
+
+a.wd-card:hover .wd-card-image img { transform: scale(1.07); }
+
+.wd-card-image::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent 55%, rgba(9,20,44,0.85) 100%);
+  pointer-events: none;
+}
+
+.wd-card-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 12px 14px 12px 12px;
+  gap: 5px;
+  min-width: 0;
+}
+
+.wd-card-header {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.wd-logo {
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(200,155,40,0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.wd-logo img { width: 100%; height: 100%; object-fit: contain; }
+
+.wd-city {
+  font-size: 10.5px;
+  color: rgba(210,165,55,0.75);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+.wd-clinic-name {
+  font-size: 14.5px;
+  font-weight: 700;
+  color: rgba(255,255,255,0.95);
+  letter-spacing: -0.02em;
+  line-height: 1.25;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: color 0.2s;
+}
+
+a.wd-card:hover .wd-clinic-name { color: #fff; }
+
+.wd-service-price {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 9px;
+  background: rgba(16,185,129,0.12);
+  border: 1px solid rgba(16,185,129,0.22);
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #10b981;
+  width: fit-content;
+}
+
+.wd-service-price .material-symbols-outlined { font-size: 13px; font-variation-settings: 'FILL' 1; }
+
+.wd-service-label {
+  font-weight: 500;
+  color: #6ee7b7;
+  max-width: 110px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.wd-service-amount {
+  font-weight: 700;
+  color: #10b981;
+  white-space: nowrap;
+  padding-left: 3px;
+  border-left: 1px solid rgba(16,185,129,0.3);
+}
+
+.wd-rating {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  color: rgba(255,255,255,0.45);
+  font-weight: 400;
+  width: fit-content;
+}
+
+.wd-rating .material-symbols-outlined { font-size: 14px; color: #f59e0b; font-variation-settings: 'FILL' 1; }
+
+.wd-rating-count { font-size: 11px; color: rgba(255,255,255,0.25); }
+
+@media (max-width: 800px) {
+  .wd-vip-demo { grid-template-columns: 1fr; }
+  .wd-cycle-arrow { transform: rotate(90deg); padding: 4px 0; }
+}

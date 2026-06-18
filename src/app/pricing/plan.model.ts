@@ -1,4 +1,3 @@
-/** Setează pe true când firma e înregistrată și Stripe e activ */
 export const PAID_PLANS_ENABLED = false;
 
 export interface PlanFeature {
@@ -52,7 +51,7 @@ export const PLANS: PlanDef[] = [
     monthlyPrice: 79,
     annualMonthlyPrice: 66,
     annualTotal: 790,
-    badge: 'Cel mai ales',
+    badge: 'Recomandat',
     featured: true,
     cta: 'Upgrade la Growth',
     features: [
@@ -82,7 +81,7 @@ export const PLANS: PlanDef[] = [
     features: [
       { text: 'Ocupi primele poziții în căutările din orașul tău', included: true, tag: null },
       { text: 'Badge „★ VIP" — design premium ce atrage privirile', included: true, tag: null },
-      { text: 'Notificări automate pacienți în raza 20 km', included: true, tag: 'SMART' },
+      { text: 'Notificări automate pacienți în raza 20 km', included: false, tag: 'CURÂND' },
       { text: 'Promovare nelimitată oferte pacienți activi', included: true, tag: null },
       { text: 'Apariție prioritară pe homepage DentiPro', included: true, tag: 'NOU' },
       { text: 'Analiză avansată & poziționare față de concurență', included: true, tag: null },
@@ -90,7 +89,7 @@ export const PLANS: PlanDef[] = [
       { text: 'Raport lunar automat de performanță', included: true, tag: null },
       { text: 'Calendar programări online', included: true, tag: null },
       { text: 'Suport prioritar 24h', included: true, tag: null },
-      { text: 'Acces API (în curând)', included: true, tag: null },
+      { text: 'Acces API', included: false, tag: 'CURÂND' },
     ],
   },
 ];

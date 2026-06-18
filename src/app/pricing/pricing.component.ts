@@ -143,9 +143,9 @@ export class PricingComponent implements OnInit, AfterViewInit, OnDestroy {
       card.className = 'map-popup-card map-popup-card--pro';
       card.innerHTML = `
         <div class="popup-pro-badge"><span class="popup-pro-shine"></span><i class="fal fa-crown"></i> VIP</div>
-        <div class="popup-image"><img src="no-img.jpg" loading="lazy" alt="Exemplu clinică" /></div>
+        <div class="popup-image"><img src="no-img.webp" loading="lazy" alt="Exemplu clinică" /></div>
         <div class="popup-info">
-          <div class="popup-header"><img class="popup-logo popup-logo--pro" src="no-img.jpg" alt="Logo" /><span class="popup-city">București</span></div>
+          <div class="popup-header"><img class="popup-logo popup-logo--pro" src="no-img.webp" alt="Logo" /><span class="popup-city">București</span></div>
           <div class="popup-name popup-name--pro">Exemplu</div>
           <div class="popup-footer">
             <span class="popup-rating"><span class="material-symbols-outlined popup-star">star</span>5.0</span>

@@ -4,10 +4,12 @@ Allow: /
 Disallow: /clinici/dashboard
 Disallow: /clinici/profil
 Disallow: /clinici/autentificare
+Disallow: /clinici/contact
 Disallow: /administrator
 Disallow: /calendar
 Disallow: /favorites
 Disallow: /appointments
+Disallow: /profile
 Disallow: /sidebar
 Disallow: /viewer
 

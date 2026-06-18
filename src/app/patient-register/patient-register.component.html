@@ -88,8 +88,8 @@
         </form>
 
         <p class="reg-terms">
-          Prin înregistrare, ești de acord cu <a routerLink="/termeni" class="reg-link">Termenii și condițiile</a>
-          și <a routerLink="/GDPR" class="reg-link">Politica de confidențialitate</a>.
+          Prin înregistrare, ești de acord cu <button class="reg-link-btn" (click)="openLegal('termeni')">Termenii și condițiile</button>
+          și <button class="reg-link-btn" (click)="openLegal('gdpr')">Politica de confidențialitate</button>.
         </p>
 
       } @else {
@@ -136,3 +136,7 @@
   </div>
 
 </div>
+
+@if (showLegalModal) {
+  <app-legal-modal [initialTab]="legalModalTab" (closed)="showLegalModal = false" />
+}

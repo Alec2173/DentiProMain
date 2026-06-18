@@ -1,4 +1,5 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject } from '@angular/core';
+import { Subject, takeUntil } from 'rxjs';
 import { ClinicDataService } from '../clinic-data.service';
 import { SeoService } from '../seo.service';
 
@@ -26,12 +27,18 @@ import { CtaComponent } from './cta/cta.component';
   templateUrl: './home-nd.component.html',
   styleUrl: './home-nd.component.css',
 })
-export class HomeNdComponent implements OnInit {
+export class HomeNdComponent implements OnInit, OnDestroy {
   clinics: any[] = [];
 
   private seo = inject(SeoService);
+  private destroy$ = new Subject<void>();
 
   constructor(private clinicData: ClinicDataService) {}
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
 
   ngOnInit() {
     this.seo.set({
@@ -50,13 +57,11 @@ export class HomeNdComponent implements OnInit {
       },
     });
 
-    this.clinicData.loadClinicsAuto().subscribe({
+    this.clinicData.loadClinicsAuto().pipe(takeUntil(this.destroy$)).subscribe({
       next: (data) => {
         this.clinics = data;
       },
-      error: (err) => {
-        console.error('Eroare la încărcare clinici:', err);
-      },
+      error: () => {},
     });
   }
   trackByClinicId(index: number, clinic: any): number {

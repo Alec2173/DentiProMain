@@ -3,104 +3,162 @@
 
     <div class="legal-header">
       <h1>Politica de Confidențialitate</h1>
-      <p class="legal-date">Ultima actualizare: martie 2026</p>
+      <p class="legal-date">Ultima actualizare: 16.06.2026 · Operator: URBANIA DIGITAL GROUP S.R.L., CUI 54835299</p>
     </div>
 
     <p>
-      Această politică de confidențialitate descrie modul în care platforma <strong>DentiPro</strong>
-      colectează, utilizează și protejează datele personale ale utilizatorilor, în conformitate cu
-      Regulamentul (UE) 2016/679 (GDPR).
+      Această Politică descrie modul în care <strong>URBANIA DIGITAL GROUP S.R.L.</strong>, cu sediul social în
+      România, București, Sector 1, Strada Târnăveni nr. 22, Camera 1, Etaj 5, Apartament 5.4, înregistrată la
+      Registrul Comerțului sub nr. J2026036946002, în calitate de operator de date, colectează, utilizează,
+      stochează și protejează datele cu caracter personal ale utilizatorilor platformei <strong>DentiPro</strong>
+      (dentipro.ro), în conformitate cu Regulamentul (UE) 2016/679 (GDPR) și Legea nr. 190/2018.
     </p>
 
-    <h2>1. Cine suntem</h2>
-    <p>
-      DentiPro (<strong>dentipro.ro</strong>) este o platformă digitală de tip marketplace dentar din România,
-      care conectează pacienții cu clinici stomatologice. Platforma se află în faza de pre-lansare.
-      Contact: <a href="mailto:contact.dentipro@gmail.com">contact.dentipro&#64;gmail.com</a>
-    </p>
+    <h2>1. Categorii de date colectate</h2>
 
-    <h2>2. Ce date colectăm și de la cine</h2>
-
-    <h3>Clinici stomatologice</h3>
+    <h3>Clinici stomatologice (cont profesional)</h3>
     <ul>
-      <li>Denumirea clinicii, adresa, orașul, coordonate GPS</li>
-      <li>Adresa de email și numerele de telefon (public și manager)</li>
-      <li>Logo și imagini ale clinicii (stocate pe Cloudinary)</li>
-      <li>Servicii oferite și prețuri</li>
+      <li>Denumirea clinicii, adresă, oraș, coordonate GPS</li>
+      <li>Email și numere de telefon (public și manager)</li>
+      <li>Logo și fotografii ale clinicii (stocate pe Cloudinary)</li>
+      <li>Servicii oferite și prețuri, descriere, program de lucru</li>
+      <li>Date de facturare/abonament (legate prin Stripe Customer ID — nu stocăm date de card)</li>
       <li>Parola contului (stocată criptat cu bcrypt — nu avem acces la parola în clar)</li>
     </ul>
 
-    <h3>Pacienți / Utilizatori înregistrați</h3>
+    <h3>Pacienți / utilizatori înregistrați</h3>
     <ul>
       <li>Nume, adresă de email, parolă (criptată)</li>
+      <li>Numere de telefon (opțional, la programare)</li>
       <li>Clinici salvate la favorite</li>
       <li>Programări efectuate (clinică, serviciu, dată, oră, note opționale)</li>
+      <li>Recenzii și evaluări lăsate</li>
+      <li>Cereri din secțiunea Feed (descriere, imagini opționale, oraș, buget estimat)</li>
     </ul>
 
     <h3>Vizitatori neînregistrați</h3>
     <ul>
-      <li>Date anonime de utilizare a site-ului prin Google Analytics (doar dacă accepți cookie-urile de analiză)</li>
+      <li>Date de utilizare anonimizate/pseudonimizate prin Google Analytics și PostHog — doar dacă accepți cookie-urile de analiză</li>
+      <li>Adresă IP, procesată tehnic de server și de furnizorii de analiză</li>
+      <li>Date de atribuire UTM / referrer</li>
     </ul>
 
-    <h2>3. Scopul și baza legală a prelucrării</h2>
-    <ul>
-      <li><strong>Executarea unui serviciu</strong> — afișarea profilului clinicii pe platformă, gestionarea programărilor</li>
-      <li><strong>Consimțământ explicit</strong> — cookie-uri de analiză (Google Analytics), dacă sunt acceptate</li>
-      <li><strong>Interes legitim</strong> — securitatea platformei, prevenirea fraudei</li>
-    </ul>
+    <h3>Note opționale de programare</h3>
+    <p>
+      Notele opționale introduse la o programare (ex. motivul vizitei) sunt transmise direct clinicii pentru a
+      facilita comunicarea și nu constituie o fișă medicală. DentiPro nu colectează și nu prelucrează fișe
+      medicale, diagnostice sau istoricul tratamentelor — acestea rămân exclusiv în gestiunea clinicii, conform
+      Legii nr. 95/2006 și Legii nr. 46/2003 a drepturilor pacientului.
+    </p>
 
-    <h2>4. Servicii terțe care procesează date</h2>
-    <ul>
-      <li><strong>Google Analytics</strong> (Google LLC) — statistici de trafic anonimizate, <em>doar dacă accepți cookie-urile de analiză</em></li>
-      <li><strong>Cloudinary</strong> — stocare imagini (logo, galerie clinici) pe servere externe</li>
-      <li><strong>MapTiler</strong> — geocodare adrese (transformarea adresei în coordonate GPS)</li>
-      <li><strong>Google Maps</strong> — afișarea hărților interactive</li>
-      <li><strong>Gmail SMTP</strong> (Google LLC) — trimiterea emailurilor tranzacționale</li>
-    </ul>
+    <h2>2. Scopurile și bazele legale ale prelucrării</h2>
+    <table>
+      <tr><th>Scop</th><th>Bază legală GDPR</th></tr>
+      <tr><td>Crearea și administrarea contului</td><td>Art. 6(1)(b) — executarea contractului</td></tr>
+      <tr><td>Afișarea profilului public al clinicii</td><td>Art. 6(1)(b) — executarea contractului</td></tr>
+      <tr><td>Procesarea programărilor online</td><td>Art. 6(1)(b) — executarea contractului</td></tr>
+      <tr><td>Procesarea plăților abonamentelor (Stripe)</td><td>Art. 6(1)(b) — executarea contractului</td></tr>
+      <tr><td>Comunicări tranzacționale</td><td>Art. 6(1)(b) — executarea contractului</td></tr>
+      <tr><td>Cookie-uri de analiză (PostHog, Google Analytics)</td><td>Art. 6(1)(a) — consimțământ explicit</td></tr>
+      <tr><td>Newsletter / comunicări de marketing</td><td>Art. 6(1)(a) — consimțământ explicit, opțional</td></tr>
+      <tr><td>Securitatea platformei, prevenirea fraudei</td><td>Art. 6(1)(f) — interes legitim</td></tr>
+      <tr><td>Obligații fiscale/contabile (facturare)</td><td>Art. 6(1)(c) — obligație legală</td></tr>
+      <tr><td>Soluționarea litigiilor și plângerilor</td><td>Art. 6(1)(f) / Art. 6(1)(c)</td></tr>
+    </table>
 
-    <h2>5. Durata stocării datelor</h2>
-    <ul>
-      <li>Datele contului — pe durata existenței contului activ</li>
-      <li>Programări — 2 ani de la data programării</li>
-      <li>Date Google Analytics — 14 luni</li>
-      <li>La ștergerea contului — datele sunt eliminate din baza de date</li>
-    </ul>
+    <h2>3. Furnizori terți care procesează date</h2>
+    <table>
+      <tr><th>Furnizor</th><th>Rol</th><th>Date transferate</th></tr>
+      <tr><td><strong>Stripe</strong></td><td>Procesare plăți</td><td>Date de facturare, fără date de card complete</td></tr>
+      <tr><td><strong>Cloudinary</strong></td><td>Stocare imagini</td><td>Fotografii clinici</td></tr>
+      <tr><td><strong>MapTiler</strong></td><td>Geocodare și hărți</td><td>Adresa clinicii</td></tr>
+      <tr><td><strong>Google Maps</strong></td><td>Hărți interactive</td><td>Adresă, coordonate</td></tr>
+      <tr><td><strong>Resend</strong></td><td>Email tranzacțional</td><td>Email, conținut notificare</td></tr>
+      <tr><td><strong>PostHog</strong></td><td>Analiză produs (cu consimțământ)</td><td>Evenimente anonimizate</td></tr>
+      <tr><td><strong>Google Analytics</strong></td><td>Analiză trafic (cu consimțământ)</td><td>Date comportamentale pseudonimizate</td></tr>
+      <tr><td><strong>Render</strong></td><td>Hosting și bază de date</td><td>Toate datele platformei</td></tr>
+    </table>
+    <p>
+      Pentru furnizorii din afara Spațiului Economic European, transferul se face în baza Clauzelor Contractuale
+      Standard aprobate de Comisia Europeană și/sau a mecanismelor de adecvare recunoscute.
+    </p>
 
-    <h2>6. Cookie-uri</h2>
-    <p>Folosim două categorii de cookie-uri:</p>
-    <ul>
-      <li><strong>Strict necesare</strong> — token de autentificare (JWT) stocat în localStorage, necesar pentru a rămâne autentificat. Nu poate fi dezactivat.</li>
-      <li><strong>Analiză și performanță</strong> (opțional) — Google Analytics. Se activează doar dacă accepți explicit prin bannerul de cookie-uri.</li>
-    </ul>
+    <h2>4. Durata stocării datelor</h2>
+    <table>
+      <tr><th>Tip de date</th><th>Durată</th></tr>
+      <tr><td>Date de cont activ</td><td>Pe durata existenței contului</td></tr>
+      <tr><td>Date de cont după ștergere</td><td>Eliminate în maximum 30 de zile</td></tr>
+      <tr><td>Backup-uri criptate</td><td>90 de zile</td></tr>
+      <tr><td>Programări</td><td>2 ani de la data programării</td></tr>
+      <tr><td>Date de facturare</td><td>10 ani (Legea contabilității nr. 82/1991)</td></tr>
+      <tr><td>Mesaje suport/contact</td><td>24 de luni</td></tr>
+      <tr><td>Date Google Analytics</td><td>14 luni</td></tr>
+      <tr><td>Date PostHog</td><td>12 luni</td></tr>
+    </table>
 
-    <h2>7. Drepturile tale conform GDPR</h2>
+    <h2>5. Drepturile tale conform GDPR</h2>
     <ul>
       <li><strong>Dreptul de acces</strong> — poți solicita o copie a datelor pe care le deținem</li>
       <li><strong>Dreptul la rectificare</strong> — poți corecta datele inexacte</li>
-      <li><strong>Dreptul la ștergere</strong> — poți solicita ștergerea contului și a tuturor datelor asociate</li>
+      <li><strong>Dreptul la ștergere</strong> — poți solicita ștergerea contului și a datelor asociate</li>
+      <li><strong>Dreptul la restricționare</strong> — poți limita prelucrarea în anumite situații</li>
       <li><strong>Dreptul la portabilitate</strong> — poți solicita datele într-un format exportabil</li>
-      <li><strong>Dreptul de opoziție</strong> — poți refuza cookie-urile de analiză oricând</li>
+      <li><strong>Dreptul de opoziție</strong> — te poți opune prelucrării bazate pe interes legitim sau marketingului direct</li>
+      <li><strong>Dreptul de retragere a consimțământului</strong> — pentru cookie-uri de analiză și newsletter, oricând</li>
     </ul>
     <p>
-      Pentru orice solicitare: <a href="mailto:contact.dentipro@gmail.com"><strong>contact.dentipro&#64;gmail.com</strong></a>
+      Detalii complete și procedura de exercitare: <a routerLink="/drepturile-tale-gdpr">Drepturile tale GDPR</a>.
+      Pentru orice solicitare: <a href="mailto:privacy@dentipro.ro"><strong>privacy&#64;dentipro.ro</strong></a>
     </p>
 
-    <h2>8. Securitate</h2>
+    <h2>6. Cookie-uri</h2>
     <p>
-      Parolele sunt stocate criptat (bcrypt, 12 runde). Conexiunile sunt protejate prin HTTPS.
-      Accesul la baza de date este restricționat și protejat prin autentificare.
+      Folosim cookie-uri strict necesare (autentificare) — mereu active — și cookie-uri de analiză (Google
+      Analytics, PostHog) — doar cu consimțământul tău explicit. Detalii complete: <a routerLink="/cookie-uri">Politica de Cookie-uri</a>.
     </p>
 
-    <h2>9. Plângeri</h2>
+    <h2>7. Securitate</h2>
+    <p>
+      Parolele sunt stocate criptat (bcrypt). Conexiunile sunt protejate prin HTTPS/TLS. Accesul la baza de date
+      este restricționat, autentificat și auditat. Păstrăm backup-uri criptate timp de 90 de zile. Monitorizăm
+      continuu incidentele de securitate și, în cazul unei breșe care afectează date personale, notificăm
+      ANSPDCP în maximum 72 de ore, conform art. 33-34 GDPR, precum și persoanele vizate afectate, atunci când
+      riscul este ridicat.
+    </p>
+
+    <h2>8. Transferuri internaționale</h2>
+    <p>
+      Anumiți furnizori (Stripe, Google) procesează date și în afara Spațiului Economic European, exclusiv în
+      baza Clauzelor Contractuale Standard aprobate de Comisia Europeană și/sau a deciziilor de adecvare
+      aplicabile.
+    </p>
+
+    <h2>9. Decizii automatizate</h2>
+    <p>
+      DentiPro nu utilizează procese de decizie automatizată sau profilare cu efecte juridice asupra
+      utilizatorilor (art. 22 GDPR). Poziționarea clinicilor în rezultate este determinată exclusiv de planul de
+      abonament ales de clinică.
+    </p>
+
+    <h2>10. Responsabilul cu protecția datelor</h2>
+    <p>
+      URBANIA DIGITAL GROUP S.R.L. nu desemnează în prezent un Responsabil cu Protecția Datelor (DPO) formal,
+      activitatea de prelucrare nefiind o prelucrare pe scară largă de categorii speciale de date sau o
+      monitorizare sistematică pe scară largă, în sensul art. 37 GDPR. Punctul de contact pentru toate aspectele
+      GDPR este <a href="mailto:privacy@dentipro.ro">privacy&#64;dentipro.ro</a>.
+    </p>
+
+    <h2>11. Plângeri</h2>
     <p>
       Dacă consideri că drepturile tale au fost încălcate, poți depune o plângere la
       <strong>ANSPDCP</strong>: <a href="https://www.dataprotection.ro" target="_blank" rel="noopener">dataprotection.ro</a>
     </p>
 
-    <h2>10. Modificări</h2>
+    <h2>12. Contact</h2>
     <p>
-      Ne rezervăm dreptul de a actualiza această politică. Modificările semnificative vor fi comunicate
-      prin email sau notificare pe platformă.
+      <strong>URBANIA DIGITAL GROUP S.R.L.</strong><br>
+      Email protecția datelor: <a href="mailto:privacy@dentipro.ro">privacy&#64;dentipro.ro</a><br>
+      Adresă: România, București, Sector 1, Strada Târnăveni nr. 22, Camera 1, Etaj 5, Apartament 5.4
     </p>
 
   </div>

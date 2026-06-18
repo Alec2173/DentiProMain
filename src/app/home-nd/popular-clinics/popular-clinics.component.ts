@@ -22,7 +22,12 @@ export class PopularClinicsComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (data) => {
-          this.clinics = data.slice(0, 3);
+          // Pro primele, Growth urmează, restul la final
+          const sorted = [...data].sort((a, b) => {
+            const rank = (p: string) => p === 'pro' ? 0 : p === 'growth' ? 1 : 2;
+            return rank(a.plan) - rank(b.plan);
+          });
+          this.clinics = sorted.slice(0, 3);
           this.isLoading = false;
         },
         error: () => { this.isLoading = false; },

@@ -1,70 +1,129 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { BehaviorSubject, Observable, of } from 'rxjs';
+import { tap, catchError, map } from 'rxjs/operators';
+import { AuthService } from './auth.service';
+
+const API = 'https://www.dentipro.ro/api';
 
 export type SubscriptionPlan = 'starter' | 'growth' | 'pro';
-export type SubscriptionStatus = 'active' | 'inactive' | 'trial';
+export type SubscriptionStatus = 'active' | 'inactive' | 'trialing' | 'trial' | 'past_due' | 'canceled';
 
 export interface ClinicSubscription {
-  clinicId: number;
   plan: SubscriptionPlan;
   status: SubscriptionStatus;
-  billingCycle: 'monthly' | 'annual';
-  expiry: Date | null;
-  offersUsedThisMonth: number;
+  subscriptionId: string | null;
+  currentPeriodEnd: string | null;
+  trialEndsAt: string | null;
+  hasStripe: boolean;
 }
-
-// Mock data — va fi înlocuit cu API call
-const MOCK_SUBSCRIPTIONS: ClinicSubscription[] = [
-  { clinicId: 1, plan: 'pro',     status: 'active', billingCycle: 'annual',  expiry: new Date('2026-12-31'), offersUsedThisMonth: 0 },
-  { clinicId: 2, plan: 'growth',  status: 'active', billingCycle: 'monthly', expiry: new Date('2026-04-18'), offersUsedThisMonth: 7 },
-  { clinicId: 3, plan: 'starter', status: 'active', billingCycle: 'monthly', expiry: null,                   offersUsedThisMonth: 0 },
-];
 
 const GROWTH_OFFER_LIMIT = 10;
 
+const DEFAULT_SUB: ClinicSubscription = {
+  plan: 'starter',
+  status: 'active',
+  subscriptionId: null,
+  currentPeriodEnd: null,
+  trialEndsAt: null,
+  hasStripe: false,
+};
+
 @Injectable({ providedIn: 'root' })
 export class SubscriptionService {
+  private http = inject(HttpClient);
+  private auth = inject(AuthService);
 
-  private getSubscription(clinicId: number): ClinicSubscription {
-    return (
-      MOCK_SUBSCRIPTIONS.find((s) => s.clinicId === clinicId) ?? {
-        clinicId,
-        plan: 'starter',
-        status: 'active',
-        billingCycle: 'monthly',
-        expiry: null,
-        offersUsedThisMonth: 0,
-      }
+  private sub$ = new BehaviorSubject<ClinicSubscription>(DEFAULT_SUB);
+  private loaded = false;
+
+  /** Starea curentă ca Observable — componentele pot subscribe */
+  readonly subscription$ = this.sub$.asObservable();
+
+  get snapshot(): ClinicSubscription {
+    return this.sub$.value;
+  }
+
+  get plan(): SubscriptionPlan {
+    return this.sub$.value.plan;
+  }
+
+  get isPro(): boolean {
+    return this.sub$.value.plan === 'pro';
+  }
+
+  get isGrowthOrPro(): boolean {
+    const p = this.sub$.value.plan;
+    return p === 'growth' || p === 'pro';
+  }
+
+  get canSendOffer(): boolean {
+    const p = this.sub$.value.plan;
+    if (p === 'starter') return false;
+    if (p === 'pro') return true;
+    return this.monthlyOffersUsed < GROWTH_OFFER_LIMIT;
+  }
+
+  get offersRemaining(): number {
+    if (this.sub$.value.plan === 'pro') return Infinity;
+    if (this.sub$.value.plan === 'starter') return 0;
+    return Math.max(0, GROWTH_OFFER_LIMIT - this.monthlyOffersUsed);
+  }
+
+  private get offerCountKey(): string {
+    const month = new Date().toISOString().slice(0, 7);
+    return `dp_offc_${this.auth.currentUser?.clinicId}_${month}`;
+  }
+
+  get monthlyOffersUsed(): number {
+    try { return parseInt(localStorage.getItem(this.offerCountKey) ?? '0', 10); } catch { return 0; }
+  }
+
+  incrementOfferCount(): void {
+    if (this.sub$.value.plan === 'growth') {
+      localStorage.setItem(this.offerCountKey, String(this.monthlyOffersUsed + 1));
+    }
+  }
+
+  /**
+   * Încarcă abonamentul de la backend.
+   * Apelează o singură dată pe sesiune; apeluri ulterioare returnează cache-ul.
+   */
+  load(force = false): Observable<ClinicSubscription> {
+    if (this.loaded && !force) {
+      return of(this.sub$.value);
+    }
+
+    const token = this.auth.getToken();
+    if (!token) {
+      return of(DEFAULT_SUB);
+    }
+
+    const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
+
+    return this.http.get<any>(`${API}/stripe/subscription`, { headers }).pipe(
+      map(data => ({
+        plan: (data.plan ?? 'starter') as SubscriptionPlan,
+        status: (data.status ?? 'active') as SubscriptionStatus,
+        subscriptionId: data.subscriptionId ?? null,
+        currentPeriodEnd: data.currentPeriodEnd ?? null,
+        trialEndsAt: data.trialEndsAt ?? null,
+        hasStripe: data.hasStripe ?? false,
+      })),
+      tap(sub => {
+        this.sub$.next(sub);
+        this.loaded = true;
+      }),
+      catchError(() => {
+        this.loaded = true;
+        return of(this.sub$.value);
+      }),
     );
   }
 
-  getClinicPlan(clinicId: number): SubscriptionPlan {
-    return this.getSubscription(clinicId).plan;
-  }
-
-  isPro(clinicId: number): boolean {
-    return this.getClinicPlan(clinicId) === 'pro';
-  }
-
-  isGrowthOrPro(clinicId: number): boolean {
-    const plan = this.getClinicPlan(clinicId);
-    return plan === 'growth' || plan === 'pro';
-  }
-
-  canSendOffer(clinicId: number): boolean {
-    const sub = this.getSubscription(clinicId);
-    if (sub.plan === 'starter') return false;
-    if (sub.plan === 'pro') return true;
-    return sub.offersUsedThisMonth < GROWTH_OFFER_LIMIT;
-  }
-
-  getRemainingOffers(clinicId: number): number {
-    const sub = this.getSubscription(clinicId);
-    if (sub.plan === 'pro') return Infinity;
-    if (sub.plan === 'starter') return 0;
-    return Math.max(0, GROWTH_OFFER_LIMIT - sub.offersUsedThisMonth);
-  }
-
-  getOffersUsed(clinicId: number): number {
-    return this.getSubscription(clinicId).offersUsedThisMonth;
+  /** Resetează cache-ul (ex. după upgrade plan) */
+  reset(): void {
+    this.loaded = false;
+    this.sub$.next(DEFAULT_SUB);
   }
 }

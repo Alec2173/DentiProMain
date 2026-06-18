@@ -16,7 +16,7 @@ export class CliniciComponent implements OnInit {
   ngOnInit() {
     this.clinicData.loadClinicsAuto().subscribe({
       next: (data) => { this.clinics = data; },
-      error: (err) => { console.error('Eroare la încărcare clinici:', err); },
+      error: () => {},
     });
   }
 

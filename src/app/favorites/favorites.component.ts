@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { RouterLink, Router } from '@angular/router';
 import { FavoritesService } from '../favorites.service';
 import { AuthService } from '../auth.service';
+import { getInitials } from '../utils/text.utils';
 
 @Component({
   selector: 'app-favorites',
@@ -30,8 +31,5 @@ export class FavoritesComponent implements OnInit {
     this.clinics = this.clinics.filter(c => c.id !== clinicId);
   }
 
-  getInitials(name: string): string {
-    if (!name) return '?';
-    return name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
-  }
+  readonly getInitials = getInitials;
 }

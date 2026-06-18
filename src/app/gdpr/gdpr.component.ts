@@ -1,9 +1,10 @@
 import { Component, OnInit, inject } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import { SeoService } from '../seo.service';
 
 @Component({
   selector: 'app-gdpr',
-  imports: [],
+  imports: [RouterLink],
   templateUrl: './gdpr.component.html',
   styleUrl: './gdpr.component.css',
 })

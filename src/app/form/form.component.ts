@@ -13,13 +13,14 @@ import { PlanCardComponent } from '../pricing/plan-card/plan-card.component';
 import { PLANS, PAID_PLANS_ENABLED } from '../pricing/plan.model';
 import { AnalyticsService } from '../analytics.service';
 import { ConfigService } from '../config.service';
+import { LegalModalComponent, LegalTab } from '../legal-modal/legal-modal.component';
 
 const API = 'https://www.dentipro.ro/api';
 
 @Component({
   selector: 'app-form',
   standalone: true,
-  imports: [FormsModule, CommonModule, RouterLink, PlanCardComponent],
+  imports: [FormsModule, CommonModule, RouterLink, PlanCardComponent, LegalModalComponent],
   templateUrl: './form.component.html',
   styleUrl: './form.component.css',
 })
@@ -34,6 +35,15 @@ export class FormComponent implements OnInit, OnDestroy {
     'Alege planul tău',
     'Verifică și trimite',
   ];
+
+  // ── LEGAL MODAL ────────────────────────────────────────────
+  showLegalModal = false;
+  legalModalTab: LegalTab = 'termeni';
+
+  openLegal(tab: LegalTab) {
+    this.legalModalTab = tab;
+    this.showLegalModal = true;
+  }
 
   // ── STATE ──────────────────────────────────────────────────
   isLoading = false;
@@ -92,7 +102,6 @@ export class FormComponent implements OnInit, OnDestroy {
   };
 
   // ── PLANS — sursă unică: plan.model.ts ─────────────────────
-  readonly paidPlansEnabled = PAID_PLANS_ENABLED;
   readonly plans = PAID_PLANS_ENABLED ? PLANS : PLANS.filter(p => p.id === 'starter');
 
   private seo = inject(SeoService);
@@ -558,11 +567,10 @@ export class FormComponent implements OnInit, OnDestroy {
         } else {
           // Plan plătit fără URL de checkout = eroare de configurare
           this.isLoading = false;
-          this.errorMessage = 'Plata nu a putut fi inițiată. Contactați suportul la office.dentipro@gmail.com.';
+          this.errorMessage = 'Plata nu a putut fi inițiată. Contactați suportul la contact@dentipro.ro.';
         }
       },
       error: (err) => {
-        console.error(err);
         this.errorMessage = err?.error?.error || 'A apărut o eroare. Vă rugăm să încercați din nou.';
         this.isLoading = false;
       },
@@ -593,8 +601,7 @@ export class FormComponent implements OnInit, OnDestroy {
         this.analytics.signupCompleted('starter');
       },
       error: (err) => {
-        console.error(err);
-        this.errorMessage = 'A apărut o eroare la trimitere. Vă rugăm să încercați mai târziu.';
+        this.errorMessage = err?.error?.error || 'A apărut o eroare la trimitere. Vă rugăm să încercați mai târziu.';
         this.isLoading = false;
       },
     });

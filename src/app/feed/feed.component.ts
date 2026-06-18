@@ -1,11 +1,13 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { DecimalPipe } from '@angular/common';
+import { Subject, takeUntil } from 'rxjs';
 import { AuthService } from '../auth.service';
 import { SeoService } from '../seo.service';
 import { ServiciiService } from '../servicii.service';
+import { SubscriptionService } from '../subscription.service';
 
 const API = 'https://www.dentipro.ro/api';
 
@@ -44,7 +46,7 @@ export interface PostOffer {
   templateUrl: './feed.component.html',
   styleUrl: './feed.component.css',
 })
-export class FeedComponent implements OnInit {
+export class FeedComponent implements OnInit, OnDestroy {
   private seo = inject(SeoService);
 
   // Feed
@@ -91,12 +93,25 @@ export class FeedComponent implements OnInit {
   alreadyOffered = false;
   existingOffer: { message: string; price_estimate: number | null } | null = null;
 
+  // Plan & offer limit (Growth: 10/lună)
+  /** @deprecated folosim SubscriptionService */
+  clinicPlan = 'starter';
+  clinicPlanLoaded = false;
+
   // Image viewer
   viewerImages: string[] = [];
   viewerIndex = 0;
   showViewer = false;
 
+  readonly sub = inject(SubscriptionService);
+  private destroy$ = new Subject<void>();
+
   constructor(public auth: AuthService, private http: HttpClient, private serviciiSvc: ServiciiService) {}
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
 
   get headers(): HttpHeaders {
     return new HttpHeaders({ Authorization: `Bearer ${this.auth.getToken()}` });
@@ -110,6 +125,17 @@ export class FeedComponent implements OnInit {
     });
     this.allServices = this.serviciiSvc.getServices();
     this.loadFeed();
+    if (this.auth.isClinic) {
+      this.sub.load().pipe(takeUntil(this.destroy$)).subscribe(s => { this.clinicPlan = s.plan; });
+    }
+  }
+
+  get offerLimitReached(): boolean {
+    return !this.sub.canSendOffer && this.sub.plan !== 'starter';
+  }
+
+  get offersRemaining(): number {
+    return this.sub.offersRemaining === Infinity ? 999 : this.sub.offersRemaining;
   }
 
   // ── FEED ─────────────────────────────────────────────────
@@ -127,7 +153,7 @@ export class FeedComponent implements OnInit {
     const cityParam = this.appliedCity ? `&city=${encodeURIComponent(this.appliedCity)}` : '';
     const serviceParam = this.appliedService ? `&service=${encodeURIComponent(this.appliedService)}` : '';
 
-    this.http.get<FeedPost[]>(`${API}/feed?limit=20&offset=${offset}${cityParam}${serviceParam}`).subscribe({
+    this.http.get<FeedPost[]>(`${API}/feed?limit=20&offset=${offset}${cityParam}${serviceParam}`).pipe(takeUntil(this.destroy$)).subscribe({
       next: (data) => {
         if (reset) {
           this.posts = data;
@@ -175,7 +201,7 @@ export class FeedComponent implements OnInit {
 
   loadMyPosts() {
     this.myPostsLoading = true;
-    this.http.get<FeedPost[]>(`${API}/feed/mine`, { headers: this.headers }).subscribe({
+    this.http.get<FeedPost[]>(`${API}/feed/mine`, { headers: this.headers }).pipe(takeUntil(this.destroy$)).subscribe({
       next: (data) => {
         this.myPosts = data;
         this.myPostsLoading = false;
@@ -187,7 +213,7 @@ export class FeedComponent implements OnInit {
 
   toggleMyPostStatus(post: FeedPost) {
     const newStatus = post.status === 'open' ? 'closed' : 'open';
-    this.http.patch(`${API}/feed/${post.id}/status`, { status: newStatus }, { headers: this.headers }).subscribe({
+    this.http.patch(`${API}/feed/${post.id}/status`, { status: newStatus }, { headers: this.headers }).pipe(takeUntil(this.destroy$)).subscribe({
       next: () => {
         post.status = newStatus;
       }
@@ -196,7 +222,7 @@ export class FeedComponent implements OnInit {
 
   deleteMyPost(post: FeedPost) {
     if (!confirm('Ești sigur că vrei să ștergi această cerere?')) return;
-    this.http.delete(`${API}/feed/${post.id}`, { headers: this.headers }).subscribe({
+    this.http.delete(`${API}/feed/${post.id}`, { headers: this.headers }).pipe(takeUntil(this.destroy$)).subscribe({
       next: () => {
         this.myPosts = this.myPosts.filter(p => p.id !== post.id);
         this.posts = this.posts.filter(p => p.id !== post.id);
@@ -272,7 +298,7 @@ export class FeedComponent implements OnInit {
       images: this.createImages,
     };
 
-    this.http.post<FeedPost>(`${API}/feed`, body, { headers: this.headers }).subscribe({
+    this.http.post<FeedPost>(`${API}/feed`, body, { headers: this.headers }).pipe(takeUntil(this.destroy$)).subscribe({
       next: (post) => {
         this.createLoading = false;
         this.closeCreate();
@@ -306,7 +332,7 @@ export class FeedComponent implements OnInit {
     this.existingOffer = null;
 
     // Load full post (with images)
-    this.http.get<FeedPost>(`${API}/feed/${postSummary.id}`).subscribe({
+    this.http.get<FeedPost>(`${API}/feed/${postSummary.id}`).pipe(takeUntil(this.destroy$)).subscribe({
       next: (post) => {
         this.activePost = post;
         this.postLoading = false;
@@ -326,7 +352,7 @@ export class FeedComponent implements OnInit {
 
   loadOffers(postId: number) {
     this.offersLoading = true;
-    this.http.get<any[]>(`${API}/feed/${postId}/offers`, { headers: this.headers }).subscribe({
+    this.http.get<any[]>(`${API}/feed/${postId}/offers`, { headers: this.headers }).pipe(takeUntil(this.destroy$)).subscribe({
       next: (offers) => {
         this.offersLoading = false;
         if (this.auth.isClinic) {
@@ -352,21 +378,31 @@ export class FeedComponent implements OnInit {
       price_estimate: this.offerPrice ? Number(this.offerPrice) : null,
     };
 
-    this.http.post(`${API}/feed/${this.activePost!.id}/offers`, body, { headers: this.headers }).subscribe({
+    this.http.post(`${API}/feed/${this.activePost!.id}/offers`, body, { headers: this.headers }).pipe(takeUntil(this.destroy$)).subscribe({
       next: () => {
         this.offerLoading = false;
         this.offerSuccess = true;
         this.alreadyOffered = true;
         this.existingOffer = { message: this.offerMessage.trim(), price_estimate: body.price_estimate };
         if (this.activePost) this.activePost.offers_count++;
-        // Update feed count
         const fp = this.posts.find(p => p.id === this.activePost?.id);
         if (fp) fp.offers_count++;
+        // Incrementează contorul lunar pentru Growth
+        this.sub.incrementOfferCount();
       },
       error: (err) => {
-        this.offerError = err.error?.error || 'Eroare la trimitere.';
         this.offerLoading = false;
-        if (err.status === 409) this.alreadyOffered = true;
+        if (err.status === 409) {
+          this.alreadyOffered = true;
+          this.offerError = 'Ai trimis deja o ofertă pentru această cerere.';
+        } else if (err.status === 429 || err.error?.code === 'MONTHLY_LIMIT_REACHED') {
+          const used = err.error?.used ?? 10;
+          this.offerError = `Ai atins limita lunară de ${used} oferte (plan Growth). Revine luna viitoare sau fă upgrade la Pro pentru oferte nelimitate.`;
+        } else if (err.status === 403) {
+          this.offerError = 'Planul Starter nu permite trimiterea de oferte. Upgrade la Growth sau Pro.';
+        } else {
+          this.offerError = err.error?.error || 'Eroare la trimitere. Încearcă din nou.';
+        }
       }
     });
   }

@@ -42,7 +42,7 @@
                   <svg class="card-image__placeholder-tooth" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M12 2C9.5 2 8 3.5 7 4.5C6 5.5 4 5.5 3 7C2 8.5 2 10 2.5 12C3 14 4 15 4 17C4 19 4.5 22 6 22C7.5 22 8 20 9 18C9.5 17 10.5 16.5 12 16.5C13.5 16.5 14.5 17 15 18C16 20 16.5 22 18 22C19.5 22 20 19 20 17C20 15 21 14 21.5 12C22 10 22 8.5 21 7C20 5.5 18 5.5 17 4.5C16 3.5 14.5 2 12 2Z" stroke="#60a5fa" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
                   </svg>
-                  <span class="card-image__placeholder-initials">{{ clinicInitials(clinic.name) }}</span>
+                  <span class="card-image__placeholder-initials">{{ getInitials(clinic.name) }}</span>
                 </div>
               }
             </div>
@@ -53,7 +53,7 @@
                   @if (clinic.logo_url) {
                     <img [src]="clinic.logo_url" [alt]="'Logo ' + clinic.name" loading="lazy" />
                   } @else {
-                    <div class="logo--initials">{{ clinicInitials(clinic.name)[0] }}</div>
+                    <div class="logo--initials">{{ getInitials(clinic.name) }}</div>
                   }
                 </div>
                 <span class="city">{{ clinic.city }}</span>

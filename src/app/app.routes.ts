@@ -23,12 +23,40 @@ export const routes: Routes = [
     loadComponent: () => import('./map/map.component').then((m) => m.MapComponent),
   },
   {
+    path: 'parteneriat',
+    loadComponent: () => import('./parteneriat/parteneriat.component').then(m => m.ParteneriatComponent),
+  },
+  {
+    path: 'notificari',
+    loadComponent: () => import('./notificari/notificari.component').then(m => m.NotificariComponent),
+  },
+  {
     path: 'GDPR',
     loadComponent: () => import('./gdpr/gdpr.component').then((m) => m.GDPRComponent),
   },
   {
     path: 'termeni',
     loadComponent: () => import('./termeni/termeni.component').then((m) => m.TermeniComponent),
+  },
+  {
+    path: 'cookie-uri',
+    loadComponent: () => import('./cookie-uri/cookie-uri.component').then((m) => m.CookieUriComponent),
+  },
+  {
+    path: 'rambursare',
+    loadComponent: () => import('./rambursare/rambursare.component').then((m) => m.RambursareComponent),
+  },
+  {
+    path: 'drepturile-tale-gdpr',
+    loadComponent: () => import('./drepturile-tale-gdpr/drepturile-tale-gdpr.component').then((m) => m.DrepturileTaleGdprComponent),
+  },
+  {
+    path: 'disclaimer-medical',
+    loadComponent: () => import('./disclaimer-medical/disclaimer-medical.component').then((m) => m.DisclaimerMedicalComponent),
+  },
+  {
+    path: 'legal',
+    loadComponent: () => import('./legal/legal.component').then((m) => m.LegalComponent),
   },
   {
     path: 'calendar',
@@ -62,6 +90,10 @@ export const routes: Routes = [
   {
     path: 'clinici/profil',
     loadComponent: () => import('./clinic-profile/clinic-profile.component').then((m) => m.ClinicProfileComponent),
+  },
+  {
+    path: 'clinici/contact',
+    loadComponent: () => import('./contact/contact.component').then((m) => m.ContactComponent),
   },
 
   // ── LEGACY REDIRECTS ──────────────────────────────────────
@@ -112,6 +144,16 @@ export const routes: Routes = [
 
   // ── SEO ROUTES ─────────────────────────────────────────────
   {
+    path: 'dentisti',
+    loadComponent: () => import('./clinic-list/clinic-list.component').then((m) => m.ClinicListComponent),
+  },
+  // City SEO pages — must be declared BEFORE dentisti/:serviciu to take priority
+  { path: 'dentisti/bucuresti',   data: { citySlug: 'bucuresti' },   loadComponent: () => import('./city-seo/city-seo.component').then(m => m.CitySeoComponent) },
+  { path: 'dentisti/cluj-napoca', data: { citySlug: 'cluj-napoca' }, loadComponent: () => import('./city-seo/city-seo.component').then(m => m.CitySeoComponent) },
+  { path: 'dentisti/timisoara',   data: { citySlug: 'timisoara' },   loadComponent: () => import('./city-seo/city-seo.component').then(m => m.CitySeoComponent) },
+  { path: 'dentisti/iasi',        data: { citySlug: 'iasi' },        loadComponent: () => import('./city-seo/city-seo.component').then(m => m.CitySeoComponent) },
+  { path: 'dentisti/brasov',      data: { citySlug: 'brasov' },      loadComponent: () => import('./city-seo/city-seo.component').then(m => m.CitySeoComponent) },
+  {
     path: 'dentisti/:serviciu',
     loadComponent: () => import('./clinic-list/clinic-list.component').then((m) => m.ClinicListComponent),
   },
@@ -126,6 +168,11 @@ export const routes: Routes = [
   {
     path: 'pentru-clinici',
     loadComponent: () => import('./pentru-clinici/pentru-clinici.component').then((m) => m.PentruCliniciComponent),
+  },
+
+  {
+    path: 'recenzie',
+    loadComponent: () => import('./review-page/review-page.component').then((m) => m.ReviewPageComponent),
   },
 
   {

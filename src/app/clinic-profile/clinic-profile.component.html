@@ -2,7 +2,7 @@
 
   <!-- hidden inputs always rendered for @ViewChild -->
   <input type="file" #logoInput hidden accept="image/*" (change)="onLogoFileSelected($event)" />
-  <input type="file" #galleryInput hidden accept="image/*" multiple (change)="onGalleryFilesSelected($event)" />
+  <input type="file" #galleryInput hidden accept="image/*,video/mp4,video/mov,video/webm" multiple (change)="onGalleryFilesSelected($event)" />
 
   <!-- ═══════════════════════════════════════════
        SKELETON
@@ -110,8 +110,8 @@
 
         <!-- cover -->
         <div class="hero-cover">
-          @if (clinicImages.length > 0) {
-            <img [src]="clinicImages[0]" class="cover-img" [alt]="clinic.name + ' — imagine de copertă'" />
+          @if (coverImageUrl) {
+            <img [src]="coverImageUrl" class="cover-img" [alt]="clinic.name + ' — imagine de copertă'" />
           } @else {
             <div class="cover-gradient-bg"></div>
           }
@@ -205,6 +205,15 @@
 
             <!-- badges row -->
             <div class="hero-badges">
+              @if (clinic.plan === 'pro') {
+                <div class="badge badge-plan badge-plan--pro">
+                  <i class="fal fa-crown"></i> VIP Pro
+                </div>
+              } @else if (clinic.plan === 'growth') {
+                <div class="badge badge-plan badge-plan--growth">
+                  <i class="fal fa-bolt"></i> Promovat
+                </div>
+              }
               @if (clinic.services && clinic.services.length > 0) {
                 <div class="badge badge-services">
                   <i class="fal fa-tooth"></i>
@@ -214,7 +223,7 @@
               @if (clinicImages.length > 0) {
                 <div class="badge badge-images">
                   <i class="fal fa-photo-video"></i>
-                  {{ clinicImages.length }} imagini
+                  {{ clinicImages.length }} {{ clinicImages.length === 1 ? 'fișier' : 'fișiere' }}
                 </div>
               }
               @if (clinic.status) {
@@ -291,7 +300,11 @@
 
             @if (clinicImages.length > 0) {
               <div class="gallery-main-wrap">
-                <img [src]="clinicImages[activeImageIndex]" class="gallery-main-img" [alt]="clinic.name + ' — imagine galerie ' + (activeImageIndex + 1)" />
+                @if (mediaItems[activeImageIndex]?.isVideo) {
+                  <video [src]="clinicImages[activeImageIndex]" class="gallery-main-img" controls playsinline></video>
+                } @else {
+                  <img [src]="clinicImages[activeImageIndex]" class="gallery-main-img" [alt]="clinic.name + ' — imagine galerie ' + (activeImageIndex + 1)" />
+                }
                 <div class="gallery-count-badge">
                   <i class="fal fa-layer-group"></i>
                   {{ activeImageIndex + 1 }} / {{ clinicImages.length }}
@@ -300,7 +313,11 @@
               <div class="gallery-thumbs">
                 @for (img of clinicImages; track img; let i = $index) {
                   <div class="thumb-wrap" [class.active]="i === activeImageIndex" (click)="activeImageIndex = i">
-                    <img [src]="img" class="thumb-img" [alt]="clinic.name + ' — thumbnail ' + (i + 1)" />
+                    @if (mediaItems[i]?.isVideo) {
+                      <div class="thumb-video-placeholder"><i class="fal fa-play-circle"></i></div>
+                    } @else {
+                      <img [src]="img" class="thumb-img" [alt]="clinic.name + ' — thumbnail ' + (i + 1)" />
+                    }
                   </div>
                 }
               </div>
@@ -794,6 +811,190 @@
         </div>
       }
 
+      <!-- ── PROGRAMARE ONLINE ─────────────────────────────── -->
+      @if (!isOwner) {
+        <div class="card booking-card" id="programare">
+          <div class="card-header">
+            <div class="card-title-group">
+              <div class="card-title-icon booking-icon-blue"><i class="fal fa-calendar-check"></i></div>
+              <h2 class="card-title">Programează-te online</h2>
+            </div>
+          </div>
+
+          @if (bookingSlotsLoading) {
+            <div class="booking-loading"><i class="fal fa-spinner fa-spin"></i> Se încarcă disponibilitatea...</div>
+          } @else if (bookingSlots.length === 0 && !bookingSuccess) {
+            <div class="booking-no-slots">
+              <i class="fal fa-calendar-times"></i>
+              <p>Această clinică nu are sloturi disponibile momentan.</p>
+              <span>Contactează clinica direct pentru a stabili o programare.</span>
+            </div>
+          } @else if (bookingSuccess) {
+            <div class="booking-success">
+              <i class="fal fa-check-circle"></i>
+              <h3>Programare înregistrată!</h3>
+              <p>Vei primi un email de confirmare. Clinica te va contacta în curând.</p>
+              <button class="booking-back-btn" (click)="resetBooking()">Fă altă programare</button>
+            </div>
+          } @else {
+
+            <!-- Step 1: pick date + slot -->
+            @if (!bookingSelectedSlot) {
+              <div class="booking-step">
+                <p class="booking-step-label"><i class="fal fa-calendar-day"></i> Alege o dată disponibilă</p>
+                <div class="booking-date-chips">
+                  @for (day of bookingAvailableDays; track day.date) {
+                    <button class="booking-date-chip"
+                            [class.booking-date-chip--active]="bookingSelectedDate === day.date"
+                            (click)="selectBookingDate(day.date)">
+                      <span class="bdc-weekday">{{ day.weekday }}</span>
+                      <span class="bdc-day">{{ day.day }}</span>
+                      <span class="bdc-month">{{ day.month }}</span>
+                    </button>
+                  }
+                </div>
+
+                @if (bookingSelectedDate) {
+                  <p class="booking-step-label" style="margin-top:16px"><i class="fal fa-clock"></i> Alege ora</p>
+                  <div class="booking-time-chips">
+                    @for (slot of bookingSlotsForDate; track slot.id) {
+                      <button class="booking-time-chip" (click)="bookingSelectedSlot = slot">
+                        {{ formatSlotTimeStr(slot.start_time) }}
+                        <span class="btc-dur">{{ slot.duration_minutes }} min</span>
+                      </button>
+                    }
+                  </div>
+                }
+              </div>
+            }
+
+            <!-- Step 2: fill in details -->
+            @if (bookingSelectedSlot) {
+              <div class="booking-step">
+                <div class="booking-selected-slot">
+                  <i class="fal fa-calendar-check"></i>
+                  <span>{{ formatBookingSlotDisplay(bookingSelectedSlot) }}</span>
+                  <button class="booking-change-btn" (click)="bookingSelectedSlot = null">
+                    <i class="fal fa-edit"></i> Schimbă
+                  </button>
+                </div>
+                <div class="booking-form">
+                  <div class="booking-field">
+                    <label>Nume complet *</label>
+                    <input type="text" class="booking-input" [(ngModel)]="bookingName" placeholder="Ex: Ion Popescu" />
+                  </div>
+                  <div class="booking-field">
+                    <label>Email *</label>
+                    <input type="email" class="booking-input" [(ngModel)]="bookingEmail" placeholder="email@exemplu.ro" />
+                  </div>
+                  <div class="booking-field">
+                    <label>Telefon</label>
+                    <input type="tel" class="booking-input" [(ngModel)]="bookingPhone" placeholder="07xx xxx xxx" />
+                  </div>
+                  <div class="booking-field">
+                    <label>Mențiuni (opțional)</label>
+                    <textarea class="booking-input booking-textarea" [(ngModel)]="bookingNotes" placeholder="Ex: urgență, tip tratament, alergii..."></textarea>
+                  </div>
+                  @if (bookingError) {
+                    <p class="booking-error"><i class="fal fa-exclamation-circle"></i> {{ bookingError }}</p>
+                  }
+                  <button class="booking-submit-btn" (click)="submitBooking()" [disabled]="bookingSubmitting">
+                    @if (bookingSubmitting) {
+                      <i class="fal fa-spinner fa-spin"></i> Se trimite...
+                    } @else {
+                      <i class="fal fa-calendar-check"></i> Confirmă programarea
+                    }
+                  </button>
+                </div>
+              </div>
+            }
+          }
+        </div>
+      }
+
+      <!-- ── REVIEWS ──────────────────────────────────────────── -->
+      @if (!isOwner) {
+        <div class="card reviews-card">
+          <div class="card-header">
+            <div class="card-title-group">
+              <div class="card-title-icon reviews-icon"><i class="fal fa-star"></i></div>
+              <h2 class="card-title">Recenzii pacienți</h2>
+            </div>
+            @if (reviewCount > 0) {
+              <div class="reviews-summary-badge">
+                <span class="reviews-avg">{{ reviewAvgRating }}</span>
+                <span class="reviews-stars">
+                  @for (s of [1,2,3,4,5]; track s) {
+                    <i class="fas fa-star" [class.star-filled]="s <= (reviewAvgRating || 0)" [class.star-empty]="s > (reviewAvgRating || 0)"></i>
+                  }
+                </span>
+                <span class="reviews-count-lbl">({{ reviewCount }})</span>
+              </div>
+            }
+          </div>
+
+          @if (reviewsLoading) {
+            <div class="reviews-loading">Se încarcă recenziile...</div>
+          } @else if (reviewCount === 0) {
+            <div class="reviews-empty">
+              <i class="fal fa-comment-dots reviews-empty-icon"></i>
+              <p>Nicio recenzie încă. Fii primul care lasă o recenzie!</p>
+            </div>
+          } @else {
+            <!-- Rating breakdown -->
+            <div class="rating-breakdown">
+              @for (row of reviewBreakdown; track row.star) {
+                <div class="breakdown-row">
+                  <span class="breakdown-star">{{ row.star }} <i class="fas fa-star breakdown-star-icon"></i></span>
+                  <div class="breakdown-bar-wrap">
+                    <div class="breakdown-bar-fill" [style.width.%]="reviewCount > 0 ? (row.count / reviewCount) * 100 : 0"></div>
+                  </div>
+                  <span class="breakdown-count">{{ row.count }}</span>
+                </div>
+              }
+            </div>
+
+            <!-- Review list -->
+            <div class="reviews-list">
+              @for (r of reviewsToShow; track r.id) {
+                <div class="review-item">
+                  <div class="review-header">
+                    <div class="review-author-wrap">
+                      <div class="review-avatar">{{ r.patient_name?.[0]?.toUpperCase() || '?' }}</div>
+                      <div>
+                        <div class="review-author">{{ r.patient_name }}</div>
+                        <div class="review-date">{{ formatReviewDate(r.created_at) }}</div>
+                      </div>
+                    </div>
+                    <div class="review-right">
+                      <div class="review-stars">
+                        @for (s of [1,2,3,4,5]; track s) {
+                          <i class="fas fa-star" [class.star-filled]="s <= r.rating" [class.star-empty]="s > r.rating"></i>
+                        }
+                      </div>
+                      @if (r.verified) {
+                        <div class="verified-badge">
+                          <i class="fal fa-shield-check"></i> Recenzie verificată
+                        </div>
+                      }
+                    </div>
+                  </div>
+                  @if (r.text) {
+                    <p class="review-text">{{ r.text }}</p>
+                  }
+                </div>
+              }
+            </div>
+
+            @if (reviews.length > 3 && !showAllReviews) {
+              <button class="btn-show-all-reviews" (click)="showAllReviews = true">
+                <i class="fal fa-chevron-down"></i> Vezi toate {{ reviews.length }} recenziile
+              </button>
+            }
+          }
+        </div>
+      }
+
       <!-- ── SIMILAR CLINICS ────────────────────────────────── -->
       @if (!isOwner && similarClinics.length > 0) {
         <div class="card similar-card">
@@ -805,7 +1006,7 @@
           </div>
           <div class="similar-list">
             @for (sim of similarClinics; track sim.id) {
-              <a [routerLink]="['/clinic-profile', sim.id]" class="similar-item">
+              <a [routerLink]="['/descripton', sim.id]" class="similar-item">
                 <div class="similar-avatar">
                   @if (sim.logo_url) {
                     <img [src]="sim.logo_url" [alt]="sim.name" class="similar-logo" />
@@ -1170,11 +1371,15 @@
 
             @if (clinicImages.length > 0) {
               <div class="modal-section">
-                <p class="modal-label">Imagini curente</p>
+                <p class="modal-label">Fișiere curente ({{ clinicImages.length }})</p>
                 <div class="modal-images-grid">
                   @for (img of clinicImages; track img; let i = $index) {
                     <div class="modal-img-wrap">
-                      <img [src]="img" class="modal-img" [alt]="clinic.name + ' — imagine ' + (i + 1)" />
+                      @if (mediaItems[i]?.isVideo) {
+                        <div class="modal-img thumb-video-placeholder"><i class="fal fa-play-circle"></i></div>
+                      } @else {
+                        <img [src]="img" class="modal-img" [alt]="clinic.name + ' — imagine ' + (i + 1)" />
+                      }
                       <button class="remove-img-btn" (click)="removeExistingImage(i)">
                         <i class="fal fa-times"></i>
                       </button>
@@ -1185,33 +1390,37 @@
             }
 
             <div class="modal-section">
-              <p class="modal-label">Adaugă imagini noi</p>
-              <div class="upload-zone" (click)="triggerGalleryInput()">
-                <i class="fal fa-cloud-upload upload-icon"></i>
-                <p>Click pentru a selecta imagini</p>
-                <span class="upload-hint">JPG, PNG, WEBP — multiple fișiere acceptate</span>
-              </div>
-              @if (newImagePreviews.length > 0) {
-                <div class="modal-images-grid" style="margin-top:16px;">
-                  @for (preview of newImagePreviews; track preview; let i = $index) {
-                    <div class="modal-img-wrap new-preview">
-                      <img [src]="preview" class="modal-img" [alt]="clinic.name + ' — preview ' + (i + 1)" />
-                      <button class="remove-img-btn" (click)="removeNewPreview(i)">
-                        <i class="fal fa-times"></i>
-                      </button>
-                    </div>
-                  }
+              <p class="modal-label">
+                Adaugă imagini sau video
+                @if (imageLimit !== null) {
+                  <span class="gallery-limit-badge">{{ totalImagesAfterSave }}/{{ imageLimit }}</span>
+                }
+              </p>
+              @if (galleryLimitError) {
+                <div class="gallery-limit-error">
+                  <i class="fal fa-lock"></i> {{ galleryLimitError }}
+                  <a routerLink="/clinici/pricing" class="gallery-upgrade-link">Upgrade</a>
                 </div>
               }
+              <div class="upload-zone" (click)="triggerGalleryInput()" [class.upload-zone--disabled]="imageLimit !== null && totalImagesAfterSave >= imageLimit">
+                @if (galleryUploading) {
+                  <div class="upload-spinner"><i class="fal fa-spinner fa-spin"></i></div>
+                  <p>Se încarcă...</p>
+                } @else {
+                  <i class="fal fa-cloud-upload upload-icon"></i>
+                  <p>Click pentru a selecta fișiere</p>
+                  <span class="upload-hint">Imagini (JPG, PNG, WEBP) sau video (MP4, MOV) — max 50MB</span>
+                }
+              </div>
             </div>
 
           </div>
 
           <div class="modal-footer">
             <button class="btn-cancel-lg" (click)="closeGalleryEdit()">Renunță</button>
-            <button class="btn-save-lg" (click)="saveGallery()">
+            <button class="btn-save-lg" (click)="saveGallery()" [disabled]="galleryUploading">
               <i class="fal fa-check"></i>
-              Salvează galeria
+              {{ galleryUploading ? 'Se încarcă...' : 'Închide' }}
             </button>
           </div>
 

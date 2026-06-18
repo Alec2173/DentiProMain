@@ -351,6 +351,20 @@
   border: 1px solid rgba(251, 191, 36, 0.22);
 }
 
+.badge-plan--pro {
+  color: #f59e0b;
+  background: rgba(245, 158, 11, 0.13);
+  border: 1px solid rgba(245, 158, 11, 0.35);
+  font-weight: 700;
+}
+
+.badge-plan--growth {
+  color: #60a5fa;
+  background: rgba(59, 130, 246, 0.13);
+  border: 1px solid rgba(59, 130, 246, 0.35);
+  font-weight: 700;
+}
+
 .badge-services {
   color: #60a5fa;
   background: rgba(59, 130, 246, 0.1);
@@ -563,6 +577,24 @@
   height: 100%;
   object-fit: cover;
   display: block;
+}
+
+.thumb-video-placeholder {
+  width: 100%;
+  height: 100%;
+  background: rgba(30, 58, 138, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #93c5fd;
+  font-size: 22px;
+}
+
+.gallery-main-img video {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  background: #000;
 }
 
 .gallery-empty {
@@ -1129,6 +1161,57 @@
 .upload-hint {
   font-size: 12px;
   color: rgba(255, 255, 255, 0.25);
+}
+
+.upload-zone--disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.upload-spinner {
+  font-size: 28px;
+  color: #3b82f6;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+.gallery-limit-badge {
+  display: inline-block;
+  margin-left: 8px;
+  font-size: 11px;
+  font-weight: 700;
+  background: rgba(245, 158, 11, 0.15);
+  color: #fbbf24;
+  border: 1px solid rgba(245, 158, 11, 0.25);
+  border-radius: 20px;
+  padding: 1px 8px;
+}
+
+.gallery-limit-error {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(245, 158, 11, 0.08);
+  border: 1px solid rgba(245, 158, 11, 0.2);
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-size: 13px;
+  color: #fbbf24;
+  margin-bottom: 12px;
+}
+
+.gallery-upgrade-link {
+  margin-left: auto;
+  font-size: 12px;
+  font-weight: 700;
+  color: #f59e0b;
+  text-decoration: underline;
+  cursor: pointer;
 }
 
 .modal-footer {
@@ -2334,3 +2417,212 @@
 .modal-textarea { width: 100%; box-sizing: border-box; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 10px 14px; color: #f1f5f9; font-size: 14px; font-family: inherit; outline: none; resize: vertical; }
 .modal-textarea:focus { border-color: rgba(37,99,235,0.5); }
 
+
+/* ── BOOKING WIDGET ─────────────────────────────────────── */
+.booking-icon-blue { background: rgba(96,165,250,0.12); color: #60a5fa; }
+
+.booking-loading, .booking-no-slots {
+  text-align: center;
+  padding: 28px;
+  color: #6b7280;
+  font-size: .88rem;
+}
+.booking-no-slots i { font-size: 2rem; display: block; margin-bottom: 10px; color: #374151; }
+.booking-no-slots p { margin: 0 0 4px; }
+.booking-no-slots span { font-size: .8rem; }
+
+.booking-success {
+  text-align: center;
+  padding: 32px;
+  color: #34d399;
+}
+.booking-success i { font-size: 2.5rem; display: block; margin-bottom: 12px; }
+.booking-success h3 { margin: 0 0 8px; font-size: 1.1rem; color: #f3f4f6; }
+.booking-success p { color: #9ca3af; font-size: .88rem; margin: 0 0 16px; }
+.booking-back-btn {
+  background: rgba(52,211,153,0.15);
+  border: 1px solid rgba(52,211,153,0.25);
+  color: #34d399;
+  border-radius: 8px;
+  padding: 8px 20px;
+  font-size: .85rem;
+  cursor: pointer;
+}
+
+.booking-step { display: flex; flex-direction: column; gap: 12px; }
+
+.booking-step-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: .82rem;
+  font-weight: 600;
+  color: #9ca3af;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+}
+.booking-step-label i { color: #60a5fa; }
+
+.booking-date-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.booking-date-chip {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 8px 14px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 10px;
+  cursor: pointer;
+  min-width: 56px;
+  transition: background .2s, border-color .2s;
+  gap: 2px;
+}
+.booking-date-chip:hover { background: rgba(96,165,250,0.1); border-color: rgba(96,165,250,0.25); }
+.booking-date-chip--active { background: #1d4ed8 !important; border-color: #1d4ed8 !important; }
+
+.bdc-weekday { font-size: .7rem; color: #9ca3af; text-transform: capitalize; }
+.bdc-day { font-size: 1.1rem; font-weight: 700; color: #f3f4f6; }
+.bdc-month { font-size: .7rem; color: #9ca3af; text-transform: capitalize; }
+.booking-date-chip--active .bdc-weekday,
+.booking-date-chip--active .bdc-day,
+.booking-date-chip--active .bdc-month { color: #fff; }
+
+.booking-time-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.booking-time-chip {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 8px 16px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: .9rem;
+  font-weight: 600;
+  color: #f3f4f6;
+  transition: background .2s, border-color .2s;
+  gap: 2px;
+}
+.booking-time-chip:hover { background: rgba(96,165,250,0.15); border-color: rgba(96,165,250,0.3); color: #93c5fd; }
+
+.btc-dur { font-size: .7rem; font-weight: 400; color: #6b7280; }
+
+.booking-selected-slot {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  background: rgba(96,165,250,0.1);
+  border: 1px solid rgba(96,165,250,0.2);
+  border-radius: 8px;
+  font-size: .88rem;
+  font-weight: 600;
+  color: #93c5fd;
+}
+.booking-selected-slot i { color: #60a5fa; }
+.booking-change-btn {
+  margin-left: auto;
+  background: transparent;
+  border: none;
+  color: #6b7280;
+  font-size: .78rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  border-radius: 6px;
+  transition: background .2s;
+}
+.booking-change-btn:hover { background: rgba(255,255,255,0.06); color: #d1d5db; }
+
+.booking-form { display: flex; flex-direction: column; gap: 12px; margin-top: 4px; }
+
+.booking-field { display: flex; flex-direction: column; gap: 5px; }
+.booking-field label { font-size: .78rem; font-weight: 600; color: #9ca3af; letter-spacing: .03em; }
+
+.booking-input {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 8px;
+  padding: 10px 14px;
+  color: #f3f4f6;
+  font-size: .88rem;
+  font-family: inherit;
+  outline: none;
+  transition: border-color .2s;
+}
+.booking-input:focus { border-color: rgba(96,165,250,0.45); }
+.booking-textarea { resize: vertical; min-height: 72px; }
+
+.booking-error {
+  color: #f87171;
+  font-size: .82rem;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.booking-submit-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: linear-gradient(135deg, #1d4ed8, #0891b2);
+  color: #fff;
+  font-weight: 700;
+  font-size: .9rem;
+  padding: 12px 24px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  transition: opacity .2s, transform .15s;
+}
+.booking-submit-btn:hover:not(:disabled) { opacity: .88; transform: translateY(-1px); }
+.booking-submit-btn:disabled { opacity: .5; cursor: default; }
+
+/* ── REVIEWS ─────────────────────────────────────────────── */
+.reviews-card { margin-bottom: 16px; }
+.reviews-icon { background: rgba(234,179,8,.15); color: #eab308; }
+.reviews-summary-badge { display: flex; align-items: center; gap: 8px; }
+.reviews-avg { font-size: 1.4rem; font-weight: 700; color: #fbbf24; }
+.reviews-stars .fas.star-filled { color: #fbbf24; font-size: .85rem; }
+.reviews-stars .fas.star-empty  { color: #334155; font-size: .85rem; }
+.reviews-count-lbl { font-size: .82rem; color: #64748b; }
+.reviews-loading { padding: 20px; text-align: center; color: #64748b; font-size: .88rem; }
+.reviews-empty { display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 28px 16px; color: #475569; }
+.reviews-empty-icon { font-size: 2rem; color: #334155; }
+.reviews-empty p { margin: 0; font-size: .9rem; }
+
+.rating-breakdown { padding: 12px 0 20px; border-bottom: 1px solid rgba(255,255,255,.06); margin-bottom: 16px; }
+.breakdown-row { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
+.breakdown-star { font-size: .8rem; color: #94a3b8; min-width: 36px; display: flex; align-items: center; gap: 3px; }
+.breakdown-star-icon { color: #fbbf24; font-size: .75rem; }
+.breakdown-bar-wrap { flex: 1; height: 7px; background: rgba(255,255,255,.07); border-radius: 4px; overflow: hidden; }
+.breakdown-bar-fill { height: 100%; background: linear-gradient(90deg, #fbbf24, #f59e0b); border-radius: 4px; transition: width .4s; }
+.breakdown-count { font-size: .78rem; color: #64748b; min-width: 18px; text-align: right; }
+
+.reviews-list { display: flex; flex-direction: column; gap: 16px; }
+.review-item { border: 1px solid rgba(255,255,255,.07); border-radius: 10px; padding: 14px 16px; }
+.review-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; gap: 12px; flex-wrap: wrap; }
+.review-author-wrap { display: flex; align-items: center; gap: 10px; }
+.review-avatar { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, #1d4ed8, #0ea5e9); display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 700; font-size: .9rem; flex-shrink: 0; }
+.review-author { font-weight: 600; font-size: .9rem; color: #e2e8f0; }
+.review-date { font-size: .75rem; color: #64748b; margin-top: 2px; }
+.review-right { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
+.review-stars .fas.star-filled { color: #fbbf24; font-size: .8rem; }
+.review-stars .fas.star-empty  { color: #334155; font-size: .8rem; }
+.verified-badge { display: flex; align-items: center; gap: 4px; background: rgba(16,185,129,.12); color: #10b981; font-size: .72rem; font-weight: 600; padding: 3px 8px; border-radius: 20px; border: 1px solid rgba(16,185,129,.2); }
+.review-text { margin: 0; font-size: .87rem; color: #94a3b8; line-height: 1.55; }
+.btn-show-all-reviews { margin-top: 16px; width: 100%; padding: 10px; background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.1); border-radius: 8px; color: #94a3b8; font-size: .85rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; transition: background .2s; }
+.btn-show-all-reviews:hover { background: rgba(255,255,255,.08); color: #e2e8f0; }

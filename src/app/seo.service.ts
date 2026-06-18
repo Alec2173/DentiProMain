@@ -56,17 +56,18 @@ export class SeoService {
     this.meta.updateTag({ name: 'twitter:image', content: data.image || this.DEFAULT_IMAGE });
   }
 
-  setStructuredData(schema: object): void {
-    const id = 'ld-json-schema';
-    // Remove previous dynamic schema to avoid stale data on navigation
-    const existing = this.doc.getElementById(id);
-    if (existing) existing.remove();
+  setStructuredData(schema: object | object[]): void {
+    // Remove all previously injected dynamic schemas
+    this.doc.querySelectorAll('script[data-denti-schema]').forEach(el => el.remove());
 
-    const script = this.doc.createElement('script');
-    script.id = id;
-    script.type = 'application/ld+json';
-    script.text = JSON.stringify(schema);
-    this.doc.head.appendChild(script);
+    const schemas = Array.isArray(schema) ? schema : [schema];
+    schemas.forEach((s, i) => {
+      const script = this.doc.createElement('script');
+      script.setAttribute('data-denti-schema', String(i));
+      script.type = 'application/ld+json';
+      script.text = JSON.stringify(s);
+      this.doc.head.appendChild(script);
+    });
   }
 
   /** Convenience: set everything at once */

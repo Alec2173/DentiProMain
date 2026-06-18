@@ -4,18 +4,18 @@ import { ClinicDataService, Clinic, ClinicService } from '../clinic-data.service
 import { AuthService } from '../auth.service';
 import { ServiciiService } from '../servicii.service';
 import { FormsModule } from '@angular/forms';
-import { TitleCasePipe, DecimalPipe } from '@angular/common';
+import { TitleCasePipe } from '@angular/common';
 import { RouterLink, Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { Meta } from '@angular/platform-browser';
 import * as maplibregl from 'maplibre-gl';
-
-const MAPTILER_KEY = 'cwyGOMCDF8zwmBEDJrCr';
+import { AnalyticsService } from '../analytics.service';
+import { ConfigService } from '../config.service';
 
 @Component({
   selector: 'app-clinic-profile',
   standalone: true,
-  imports: [FormsModule, TitleCasePipe, DecimalPipe, RouterLink],
+  imports: [FormsModule, TitleCasePipe, RouterLink],
   templateUrl: './clinic-profile.component.html',
   styleUrl: './clinic-profile.component.css',
 })
@@ -24,8 +24,12 @@ export class ClinicProfileComponent implements OnInit, OnDestroy {
   @ViewChild('galleryInput') galleryInput!: ElementRef<HTMLInputElement>;
   @ViewChild('clinicMapContainer') clinicMapContainer!: ElementRef<HTMLDivElement>;
 
+  readonly API = 'https://www.dentipro.ro/api';
+
   clinic: Clinic | null = null;
   clinicImages: string[] = [];
+  /** Metadata completă (id + url + isVideo) — încărcată separat pentru owner */
+  mediaItems: { id: number; url: string; isVideo: boolean }[] = [];
   activeImageIndex = 0;
   isLoading = true;
 
@@ -34,6 +38,8 @@ export class ClinicProfileComponent implements OnInit, OnDestroy {
 
   editingGallery = false;
   newImagePreviews: string[] = [];
+  galleryUploading = false;
+  logoUploading = false;
 
   // ── SERVICES EDIT ─────────────────────────────────────
   editingServices = false;
@@ -84,6 +90,7 @@ export class ClinicProfileComponent implements OnInit, OnDestroy {
   private origAddress = '';
 
   private metaService = inject(Meta);
+  private config      = inject(ConfigService);
 
   constructor(
     private route: ActivatedRoute,
@@ -93,6 +100,7 @@ export class ClinicProfileComponent implements OnInit, OnDestroy {
     private http: HttpClient,
     private zone: NgZone,
     private router: Router,
+    private analytics: AnalyticsService,
   ) {}
 
   ngOnInit(): void {
@@ -129,10 +137,13 @@ export class ClinicProfileComponent implements OnInit, OnDestroy {
         setTimeout(() => this.initClinicMap(), 200);
         this.loadBeforeAfter();
         this.loadPromotions();
+        this.loadMediaItems();
         if (!this.isOwner) {
           this.loadSimilarClinics();
-          // Înregistrează vizualizarea profilului (async)
+          this.loadBookingSlots(clinic.id);
+          this.loadReviews(clinic.id);
           this.http.post(`https://www.dentipro.ro/api/clinics/${clinic.id}/view`, {}).subscribe();
+          this.analytics.clinicViewed(clinic.id, clinic.name, clinic.city || '');
         }
       },
       error: () => { this.isLoading = false; },
@@ -162,6 +173,12 @@ export class ClinicProfileComponent implements OnInit, OnDestroy {
     this.editValue = '';
   }
 
+  /** Prima imagine non-video pentru cover/hero */
+  get coverImageUrl(): string | null {
+    const first = this.mediaItems.find(m => !m.isVideo);
+    return first ? first.url : (this.clinicImages[0] ?? null);
+  }
+
   get isIncomplete(): boolean {
     if (!this.clinic) return false;
     return (!this.clinic.services || this.clinic.services.length === 0) ||
@@ -186,45 +203,119 @@ export class ClinicProfileComponent implements OnInit, OnDestroy {
   onLogoFileSelected(event: Event) {
     const input = event.target as HTMLInputElement;
     if (!input.files?.[0] || !this.clinic) return;
+    const file = input.files[0];
+    // Previzualizare locală imediată
     const reader = new FileReader();
-    reader.onload = (e) => {
-      this.clinic!.logo_url = e.target?.result as string;
-    };
-    reader.readAsDataURL(input.files[0]);
+    reader.onload = (e) => { this.clinic!.logo_url = e.target?.result as string; };
+    reader.readAsDataURL(file);
+    // Upload la backend
+    this.logoUploading = true;
+    const formData = new FormData();
+    formData.append('file', file);
+    const token = this.authService.getToken() ?? '';
+    this.http.post<{ logo_url: string }>(`${this.API}/clinics/${this.clinic.id}/logo`, formData, {
+      headers: { Authorization: `Bearer ${token}` }
+    }).subscribe({
+      next: (res) => { this.clinic!.logo_url = res.logo_url; this.logoUploading = false; },
+      error: () => { this.logoUploading = false; },
+    });
+  }
+
+  /** Încarcă imaginile cu metadata completă (id + isVideo) — endpoint public */
+  private loadMediaItems() {
+    if (!this.clinic) return;
+    this.http.get<{ id: number; url: string; is_video: boolean }[]>(
+      `${this.API}/clinics/${this.clinic.id}/images`
+    ).subscribe({
+      next: (items) => {
+        this.mediaItems = items.map(i => ({ id: i.id, url: i.url, isVideo: i.is_video }));
+        this.clinicImages = this.mediaItems.map(m => m.url);
+      },
+      error: () => {},
+    });
+  }
+
+  readonly IMAGE_LIMIT_STARTER = 5;
+  galleryLimitError = '';
+
+  get imageLimit(): number | null {
+    return this.clinic?.plan === 'starter' ? this.IMAGE_LIMIT_STARTER : null;
+  }
+
+  get totalImagesAfterSave(): number {
+    return this.mediaItems.length;
   }
 
   // --- Gallery ---
   openGalleryEdit() {
+    this.galleryLimitError = '';
     this.editingGallery = true;
   }
 
   closeGalleryEdit() {
     this.editingGallery = false;
     this.newImagePreviews = [];
+    this.galleryLimitError = '';
   }
 
   triggerGalleryInput() {
+    if (this.imageLimit !== null && this.mediaItems.length >= this.imageLimit) {
+      this.galleryLimitError = `Planul Starter permite maximum ${this.imageLimit} imagini. Upgrade la Growth pentru galerie nelimitată.`;
+      return;
+    }
     this.galleryInput.nativeElement.click();
   }
 
   onGalleryFilesSelected(event: Event) {
     const input = event.target as HTMLInputElement;
-    if (!input.files) return;
+    if (!input.files || !this.clinic) return;
+    const limit = this.imageLimit;
     Array.from(input.files).forEach((file) => {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        this.newImagePreviews.push(e.target?.result as string);
-      };
-      reader.readAsDataURL(file);
+      if (limit !== null && this.mediaItems.length >= limit) {
+        this.galleryLimitError = `Planul Starter permite maximum ${limit} imagini. Upgrade la Growth pentru galerie nelimitată.`;
+        return;
+      }
+      this.galleryUploading = true;
+      const formData = new FormData();
+      formData.append('file', file);
+      const token = this.authService.getToken() ?? '';
+      this.http.post<{ id: number; url: string; is_video: boolean }>(
+        `${this.API}/clinics/${this.clinic!.id}/images`, formData,
+        { headers: { Authorization: `Bearer ${token}` } }
+      ).subscribe({
+        next: (res) => {
+          this.mediaItems.push({ id: res.id, url: res.url, isVideo: res.is_video });
+          this.clinicImages.push(res.url);
+          this.galleryUploading = false;
+          this.galleryLimitError = '';
+        },
+        error: (err) => {
+          if (err.status === 403) {
+            this.galleryLimitError = `Limita de imagini a fost atinsă. Upgrade la Growth pentru galerie nelimitată.`;
+          }
+          this.galleryUploading = false;
+        },
+      });
     });
     input.value = '';
   }
 
   removeExistingImage(index: number) {
-    this.clinicImages.splice(index, 1);
-    if (this.activeImageIndex >= this.clinicImages.length) {
-      this.activeImageIndex = Math.max(0, this.clinicImages.length - 1);
-    }
+    const item = this.mediaItems[index];
+    if (!item || !this.clinic) return;
+    const token = this.authService.getToken() ?? '';
+    this.http.delete(`${this.API}/clinics/${this.clinic.id}/images/${item.id}`, {
+      headers: { Authorization: `Bearer ${token}` }
+    }).subscribe({
+      next: () => {
+        this.mediaItems.splice(index, 1);
+        this.clinicImages.splice(index, 1);
+        if (this.activeImageIndex >= this.clinicImages.length) {
+          this.activeImageIndex = Math.max(0, this.clinicImages.length - 1);
+        }
+      },
+      error: () => {},
+    });
   }
 
   removeNewPreview(index: number) {
@@ -232,15 +323,8 @@ export class ClinicProfileComponent implements OnInit, OnDestroy {
   }
 
   saveGallery() {
-    this.clinicImages = [...this.clinicImages, ...this.newImagePreviews];
     if (this.activeImageIndex >= this.clinicImages.length) {
       this.activeImageIndex = 0;
-    }
-    if (this.clinic) {
-      const token = this.authService.getToken() ?? '';
-      this.clinicService.updateClinic(this.clinic.id, {} as Partial<Clinic>, token).subscribe({
-        error: (err) => console.error('Eroare la salvare galerie:', err),
-      });
     }
     this.closeGalleryEdit();
   }
@@ -261,7 +345,7 @@ export class ClinicProfileComponent implements OnInit, OnDestroy {
     this.zone.runOutsideAngular(() => {
       this.map = new maplibregl.Map({
         container: this.clinicMapContainer.nativeElement,
-        style: `https://api.maptiler.com/maps/streets-v2/style.json?key=${MAPTILER_KEY}`,
+        style: `https://api.maptiler.com/maps/streets-v2/style.json?key=${this.config.getMaptilerKey()}`,
         center: hasCoords ? [lng, lat] : [25.0, 45.9],
         zoom: hasCoords ? 15 : 6,
         interactive: true,
@@ -374,7 +458,7 @@ export class ClinicProfileComponent implements OnInit, OnDestroy {
   }
 
   private reverseGeocodeTemp(lat: number, lng: number) {
-    const url = `https://api.maptiler.com/geocoding/${lng},${lat}.json?key=${MAPTILER_KEY}&language=ro`;
+    const url = `https://api.maptiler.com/geocoding/${lng},${lat}.json?key=${this.config.getMaptilerKey()}&language=ro`;
     this.http.get<any>(url).subscribe({
       next: (res) => {
         const feature = res.features?.[0];
@@ -399,7 +483,7 @@ export class ClinicProfileComponent implements OnInit, OnDestroy {
     }
     if (this.suggestDebounce) clearTimeout(this.suggestDebounce);
     this.suggestDebounce = setTimeout(() => {
-      const url = `https://api.maptiler.com/geocoding/${encodeURIComponent(query)}.json?key=${MAPTILER_KEY}&language=ro&country=ro&limit=6`;
+      const url = `https://api.maptiler.com/geocoding/${encodeURIComponent(query)}.json?key=${this.config.getMaptilerKey()}&language=ro&country=ro&limit=6`;
       this.http.get<any>(url).subscribe({
         next: (res) => {
           this.mapSuggestions = (res.features || []).map((f: any) => ({
@@ -440,7 +524,7 @@ export class ClinicProfileComponent implements OnInit, OnDestroy {
     const query = this.mapAddressInput.trim();
     if (!query || !this.map) return;
     this.geocodingInProgress = true;
-    const url = `https://api.maptiler.com/geocoding/${encodeURIComponent(query)}.json?key=${MAPTILER_KEY}&language=ro&country=ro`;
+    const url = `https://api.maptiler.com/geocoding/${encodeURIComponent(query)}.json?key=${this.config.getMaptilerKey()}&language=ro&country=ro`;
     this.http.get<any>(url).subscribe({
       next: (res) => {
         this.geocodingInProgress = false;
@@ -780,6 +864,135 @@ export class ClinicProfileComponent implements OnInit, OnDestroy {
   formatPromoDate(d: string): string {
     if (!d) return '';
     return new Date(d).toLocaleDateString('ro-RO', { day: '2-digit', month: 'long', year: 'numeric' });
+  }
+
+  // ── REVIEWS ───────────────────────────────────────────────
+  reviews: any[] = [];
+  reviewsLoading = false;
+  reviewAvgRating: number | null = null;
+  reviewCount = 0;
+  reviewBreakdown: { star: number; count: number }[] = [];
+  showAllReviews = false;
+
+  private loadReviews(clinicId: number) {
+    this.reviewsLoading = true;
+    this.http.get<any>(`${this.API}/reviews/clinic/${clinicId}`).subscribe({
+      next: (data) => {
+        this.reviews = data.reviews || [];
+        this.reviewAvgRating = data.avgRating ?? null;
+        this.reviewCount = data.count ?? 0;
+        this.reviewBreakdown = data.breakdown || [];
+        this.reviewsLoading = false;
+      },
+      error: () => { this.reviewsLoading = false; },
+    });
+  }
+
+  formatReviewDate(d: string): string {
+    if (!d) return '';
+    return new Date(d).toLocaleDateString('ro-RO', { day: 'numeric', month: 'long', year: 'numeric' });
+  }
+
+  get reviewsToShow(): any[] {
+    return this.showAllReviews ? this.reviews : this.reviews.slice(0, 3);
+  }
+
+  // ── BOOKING WIDGET ───────────────────────────────────────
+  bookingSlots: any[] = [];
+  bookingSlotsLoading = false;
+  bookingSelectedDate = '';
+  bookingSelectedSlot: any = null;
+  bookingName = '';
+  bookingEmail = '';
+  bookingPhone = '';
+  bookingNotes = '';
+  bookingSubmitting = false;
+  bookingError = '';
+  bookingSuccess = false;
+
+  private loadBookingSlots(clinicId: number) {
+    this.bookingSlotsLoading = true;
+    this.http.get<any[]>(`${this.API}/clinics/${clinicId}/slots?days=30`).subscribe({
+      next: (slots) => {
+        this.bookingSlots = slots.filter(s => !s.is_booked);
+        this.bookingSlotsLoading = false;
+      },
+      error: () => { this.bookingSlotsLoading = false; },
+    });
+  }
+
+  get bookingAvailableDays(): { date: string; weekday: string; day: string; month: string }[] {
+    const seen = new Set<string>();
+    const days: { date: string; weekday: string; day: string; month: string }[] = [];
+    for (const s of this.bookingSlots) {
+      const d = s.slot_date?.slice(0, 10);
+      if (d && !seen.has(d)) {
+        seen.add(d);
+        const dt = new Date(d + 'T12:00:00');
+        days.push({
+          date: d,
+          weekday: dt.toLocaleDateString('ro-RO', { weekday: 'short' }),
+          day: dt.getDate().toString(),
+          month: dt.toLocaleDateString('ro-RO', { month: 'short' }),
+        });
+      }
+    }
+    return days.slice(0, 14);
+  }
+
+  get bookingSlotsForDate(): any[] {
+    return this.bookingSlots.filter(s => s.slot_date?.slice(0, 10) === this.bookingSelectedDate);
+  }
+
+  selectBookingDate(date: string) {
+    this.bookingSelectedDate = date;
+    this.bookingSelectedSlot = null;
+  }
+
+  formatSlotTimeStr(t: string): string {
+    return t ? t.slice(0, 5) : '';
+  }
+
+  formatBookingSlotDisplay(slot: any): string {
+    if (!slot) return '';
+    const d = new Date(slot.slot_date + 'T12:00:00');
+    const dateStr = d.toLocaleDateString('ro-RO', { weekday: 'long', day: 'numeric', month: 'long' });
+    return `${dateStr} la ${this.formatSlotTimeStr(slot.start_time)}`;
+  }
+
+  submitBooking() {
+    if (!this.bookingName.trim() || !this.bookingEmail.trim()) {
+      this.bookingError = 'Numele și emailul sunt obligatorii.'; return;
+    }
+    if (!this.bookingSelectedSlot || !this.clinic?.id) return;
+    this.bookingError = '';
+    this.bookingSubmitting = true;
+    this.http.post(
+      `${this.API}/clinics/${this.clinic.id}/slots/${this.bookingSelectedSlot.id}/book`,
+      { patientName: this.bookingName.trim(), patientEmail: this.bookingEmail.trim(), patientPhone: this.bookingPhone.trim() || null, notes: this.bookingNotes.trim() || null }
+    ).subscribe({
+      next: () => {
+        this.bookingSubmitting = false;
+        this.bookingSuccess = true;
+        // Remove slot from local list
+        this.bookingSlots = this.bookingSlots.filter(s => s.id !== this.bookingSelectedSlot.id);
+      },
+      error: (err) => {
+        this.bookingError = err?.error?.error || 'A apărut o eroare. Încearcă din nou.';
+        this.bookingSubmitting = false;
+      },
+    });
+  }
+
+  resetBooking() {
+    this.bookingSuccess = false;
+    this.bookingSelectedDate = '';
+    this.bookingSelectedSlot = null;
+    this.bookingName = '';
+    this.bookingEmail = '';
+    this.bookingPhone = '';
+    this.bookingNotes = '';
+    this.bookingError = '';
   }
 
   ngOnDestroy() {

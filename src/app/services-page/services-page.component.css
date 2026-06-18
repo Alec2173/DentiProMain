@@ -10,7 +10,7 @@
     radial-gradient(ellipse 900px 600px at 10% -5%, rgba(37,99,235,0.14), transparent 60%),
     radial-gradient(ellipse 600px 400px at 90% 15%, rgba(14,165,233,0.08), transparent 55%),
     linear-gradient(180deg, #060f1e 0%, #071a30 40%, #081c34 100%);
-  padding: 120px 24px 80px;
+  padding: 56px 24px 80px;
   animation: fadeUp 0.4s ease both;
 }
 

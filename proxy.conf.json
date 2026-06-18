@@ -1,0 +1,8 @@
+{
+  "/api": {
+    "target": "https://www.dentipro.ro",
+    "secure": true,
+    "changeOrigin": true,
+    "logLevel": "warn"
+  }
+}

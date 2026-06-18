@@ -2,6 +2,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { Subject, takeUntil } from 'rxjs';
 import { ClinicDataService } from '../../clinic-data.service';
+import { cloudinaryCard, cloudinaryLogo, getInitials } from '../../utils/text.utils';
 
 @Component({
   selector: 'app-popular-clinics',
@@ -40,6 +41,16 @@ export class PopularClinicsComponent implements OnInit, OnDestroy {
   }
 
   getCoverImage(clinic: any): string {
-    return clinic.images?.[0] ?? '';
+    return cloudinaryCard(clinic.images?.[0] ?? '', 480, 400);
   }
+
+  getLogoSrc(url: string): string { return cloudinaryLogo(url, 80); }
+  readonly getInitials = getInitials;
+
+  loadedImages = new Set<number>();
+  errorImages  = new Set<number>();
+  onImgLoad(id: number)  { this.loadedImages.add(id); }
+  onImgError(id: number) { this.errorImages.add(id); this.loadedImages.delete(id); }
+  isImgLoaded(id: number)  { return this.loadedImages.has(id); }
+  isImgError(id: number)   { return this.errorImages.has(id); }
 }

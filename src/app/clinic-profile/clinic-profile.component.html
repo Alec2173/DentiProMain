@@ -111,7 +111,7 @@
         <!-- cover -->
         <div class="hero-cover">
           @if (coverImageUrl) {
-            <img [src]="coverImageUrl" class="cover-img" [alt]="clinic.name + ' — imagine de copertă'" />
+            <img [src]="coverImageUrl" class="cover-img" [alt]="clinic.name + ' — imagine de copertă'" loading="eager" decoding="async" />
           } @else {
             <div class="cover-gradient-bg"></div>
           }
@@ -133,7 +133,7 @@
           <div class="logo-area">
             <div class="logo-wrapper">
               @if (clinic.logo_url) {
-                <img [src]="clinic.logo_url" class="clinic-logo" [alt]="'Logo ' + clinic.name" />
+                <img [src]="logoUrl(clinic.logo_url)" class="clinic-logo" [alt]="'Logo ' + clinic.name" />
               } @else {
                 <div class="logo-placeholder">
                   <i class="fal fa-hospital"></i>
@@ -316,7 +316,7 @@
                     @if (mediaItems[i]?.isVideo) {
                       <div class="thumb-video-placeholder"><i class="fal fa-play-circle"></i></div>
                     } @else {
-                      <img [src]="img" class="thumb-img" [alt]="clinic.name + ' — thumbnail ' + (i + 1)" />
+                      <img [src]="thumbUrl(img)" class="thumb-img" [alt]="clinic.name + ' — thumbnail ' + (i + 1)" loading="lazy" />
                     }
                   </div>
                 }
@@ -1009,7 +1009,7 @@
               <a [routerLink]="['/descripton', sim.id]" class="similar-item">
                 <div class="similar-avatar">
                   @if (sim.logo_url) {
-                    <img [src]="sim.logo_url" [alt]="sim.name" class="similar-logo" />
+                    <img [src]="similarLogoUrl(sim.logo_url)" [alt]="sim.name" class="similar-logo" loading="lazy" />
                   } @else {
                     <span class="similar-initials">{{ sim.name[0] }}</span>
                   }

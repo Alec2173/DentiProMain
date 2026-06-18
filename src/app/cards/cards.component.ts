@@ -7,7 +7,7 @@ import { AuthService } from '../auth.service';
 import { AnalyticsService } from '../analytics.service';
 import { RouterLink } from '@angular/router';
 import { DecimalPipe } from '@angular/common';
-import { getInitials } from '../utils/text.utils';
+import { getInitials, cloudinaryCard, cloudinaryLogo } from '../utils/text.utils';
 
 @Component({
   selector: 'app-cards',
@@ -227,4 +227,17 @@ export class CardsComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   readonly getInitials = getInitials;
+
+  // Cloudinary optimizat pentru cardul de 118×130px (@2x retina = 236×260)
+  cardImgSrc(url: string): string { return cloudinaryCard(url, 236, 260); }
+  logoSrc(url: string): string    { return cloudinaryLogo(url, 80); }
+
+  // Set cu ID-urile clinicilor ale căror imagini s-au încărcat
+  loadedImages = new Set<number>();
+  errorImages  = new Set<number>();
+
+  onImgLoad(id: number)  { this.loadedImages.add(id); }
+  onImgError(id: number) { this.errorImages.add(id); this.loadedImages.delete(id); }
+  isImgLoaded(id: number)  { return this.loadedImages.has(id); }
+  isImgError(id: number)   { return this.errorImages.has(id); }
 }

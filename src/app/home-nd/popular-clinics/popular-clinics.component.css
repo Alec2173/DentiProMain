@@ -110,25 +110,51 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform var(--t-slow);
+  opacity: 0;
+  transition: transform var(--t-slow), opacity 0.18s ease;
+  position: relative;
+  z-index: 1;
+}
+
+.card-image img.pc-img--loaded {
+  opacity: 1;
 }
 
 .clinic-card:hover .card-image img {
   transform: scale(1.05);
 }
 
+/* Skeleton shimmer per card */
+.card-image-skeleton {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: linear-gradient(
+    90deg,
+    var(--bg-deep, #020b18) 25%,
+    rgba(37, 99, 235, 0.07) 50%,
+    var(--bg-deep, #020b18) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer-pc 1.4s infinite;
+}
+
+@keyframes shimmer-pc {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
 .card-image-placeholder {
   width: 100%;
   height: 100%;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  background: var(--bg-elevated);
-  color: var(--border-medium);
-}
-
-.card-image-placeholder .material-symbols-outlined {
-  font-size: 48px;
+  gap: 10px;
+  background:
+    radial-gradient(ellipse 70% 60% at 40% 40%, rgba(37,99,235,0.1), transparent),
+    linear-gradient(160deg, var(--bg-surface, #0a1628), #060f1e);
 }
 
 .card-image-overlay {

@@ -34,11 +34,24 @@
         @for (clinic of clinics; track clinic.id) {
           <a class="clinic-card" [routerLink]="['/descripton', clinic.id]">
             <div class="card-image">
-              @if (getCoverImage(clinic)) {
-                <img [src]="getCoverImage(clinic)" [alt]="clinic.name" loading="lazy" decoding="async" />
+              @if (getCoverImage(clinic) && !isImgError(clinic.id)) {
+                @if (!isImgLoaded(clinic.id)) {
+                  <div class="card-image-skeleton"></div>
+                }
+                <img
+                  [src]="getCoverImage(clinic)"
+                  [alt]="clinic.name"
+                  loading="lazy"
+                  decoding="async"
+                  [class.pc-img--loaded]="isImgLoaded(clinic.id)"
+                  (load)="onImgLoad(clinic.id)"
+                  (error)="onImgError(clinic.id)" />
               } @else {
                 <div class="card-image-placeholder">
-                  <span class="material-symbols-outlined">local_hospital</span>
+                  <svg viewBox="0 0 32 36" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:32px;height:36px;color:rgba(96,165,250,0.3)">
+                    <path d="M16 2C12.5 2 10.5 4 9 5.5C7.5 7 5 7 3.5 9C2 11 2 13.5 2.5 16C3 18 4 20 4.5 22.5C5 25 5 28 6.5 30C8 32 9.5 30.5 11 28C12 26 13 24.5 16 24.5C19 24.5 20 26 21 28C22.5 30.5 24 32 25.5 30C27 28 27 25 27.5 22.5C28 20 29 18 29.5 16C30 13.5 30 11 28.5 9C27 7 24.5 7 23 5.5C21.5 4 19.5 2 16 2Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                  <span style="font-size:16px;font-weight:800;color:rgba(96,165,250,0.4);letter-spacing:0.05em;">{{ getInitials(clinic.name) }}</span>
                 </div>
               }
               <div class="card-image-overlay"></div>
@@ -46,7 +59,7 @@
             <div class="card-body">
               <div class="card-header">
                 @if (clinic.logo_path) {
-                  <img class="card-logo" [src]="clinic.logo_path" [alt]="clinic.name" />
+                  <img class="card-logo" [src]="getLogoSrc(clinic.logo_path)" [alt]="clinic.name" />
                 }
                 <h3 class="card-name">{{ clinic.name }}</h3>
               </div>

@@ -8,6 +8,7 @@ import { TitleCasePipe } from '@angular/common';
 import { RouterLink, Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { Meta } from '@angular/platform-browser';
+import { cloudinaryCard, cloudinaryLogo } from '../utils/text.utils';
 import * as maplibregl from 'maplibre-gl';
 import { AnalyticsService } from '../analytics.service';
 import { ConfigService } from '../config.service';
@@ -173,10 +174,26 @@ export class ClinicProfileComponent implements OnInit, OnDestroy {
     this.editValue = '';
   }
 
-  /** Prima imagine non-video pentru cover/hero */
+  /** Prima imagine non-video pentru cover/hero — optimizată Cloudinary la 900×500 @2x */
   get coverImageUrl(): string | null {
     const first = this.mediaItems.find(m => !m.isVideo);
-    return first ? first.url : (this.clinicImages[0] ?? null);
+    const raw = first ? first.url : (this.clinicImages[0] ?? null);
+    return raw ? cloudinaryCard(raw, 900, 500) : null;
+  }
+
+  /** Logo optimizat pentru display 48×48 @2x */
+  logoUrl(url: string | null): string {
+    return url ? cloudinaryLogo(url, 96) : '';
+  }
+
+  /** Thumbnail galerie: 200×140 @2x */
+  thumbUrl(url: string): string {
+    return cloudinaryCard(url, 400, 280);
+  }
+
+  /** Similar clinic logo: 40×40 @2x */
+  similarLogoUrl(url: string | null): string {
+    return url ? cloudinaryLogo(url, 80) : '';
   }
 
   get isIncomplete(): boolean {

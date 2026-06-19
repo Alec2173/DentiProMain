@@ -149,14 +149,22 @@ export class ParteneriatComponent implements OnInit {
     this.clinica.email   = '';
   }
 
+  private scrollToFormTop() {
+    const el = document.getElementById('formular');
+    if (el) {
+      const y = el.getBoundingClientRect().top + window.scrollY - 24;
+      window.scrollTo({ top: y, behavior: 'smooth' });
+    }
+  }
+
   nextStep() {
     if (this.step < this.totalSteps) this.step++;
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    setTimeout(() => this.scrollToFormTop(), 50);
   }
 
   prevStep() {
     if (this.step > 1) this.step--;
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    setTimeout(() => this.scrollToFormTop(), 50);
   }
 
   canProceed(): boolean {
@@ -165,7 +173,7 @@ export class ParteneriatComponent implements OnInit {
 
   decline() {
     this.declined = true;
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    setTimeout(() => this.scrollToFormTop(), 50);
   }
 
   submit() {
@@ -185,7 +193,7 @@ export class ParteneriatComponent implements OnInit {
     };
 
     this.http.post(`${API}/partner-application`, payload).subscribe({
-      next: () => { this.submitting = false; this.submitted = true; window.scrollTo({ top: 0, behavior: 'smooth' }); },
+      next: () => { this.submitting = false; this.submitted = true; setTimeout(() => this.scrollToFormTop(), 50); },
       error: (e) => {
         this.error = e.error?.error || 'Eroare la trimitere. Încearcă din nou.';
         this.submitting = false;

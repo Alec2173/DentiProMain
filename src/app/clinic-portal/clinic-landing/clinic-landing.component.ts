@@ -30,7 +30,7 @@ export class ClinicLandingComponent implements OnInit {
 
   readonly stats = [
     { value: '70+', label: 'Clinici înscrise' },
-    { value: '98%', label: 'Satisfacție clinici' },
+    { value: 'Gratuit', label: 'Plan de bază' },
   ];
 
   readonly features = [

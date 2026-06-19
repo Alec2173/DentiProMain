@@ -106,7 +106,7 @@
 
     </div>
 
-    <!-- Trust bar -->
+    <!-- Trust bar — doar date reale din API -->
     <div class="trust-bar">
       <div class="trust-item">
         <span class="trust-num">{{ stats ? stats.clinics + '+' : '70+' }}</span>
@@ -114,19 +114,21 @@
       </div>
       <div class="trust-sep"></div>
       <div class="trust-item">
-        <span class="trust-num">{{ stats ? stats.cities + '+' : '20+' }}</span>
+        <span class="trust-num">{{ stats ? stats.cities + '+' : '18+' }}</span>
         <span class="trust-label">Orașe acoperite</span>
       </div>
       <div class="trust-sep"></div>
       <div class="trust-item">
-        <span class="trust-num">{{ stats ? stats.appointments + '+' : '100+' }}</span>
-        <span class="trust-label">Programări realizate</span>
+        <span class="trust-num">Gratuit</span>
+        <span class="trust-label">Plan de bază</span>
       </div>
-      <div class="trust-sep"></div>
-      <div class="trust-item">
-        <span class="trust-num">{{ stats ? stats.reviews + '+' : '50+' }}</span>
-        <span class="trust-label">Recenzii pacienți</span>
-      </div>
+      @if (stats && stats.appointments > 0) {
+        <div class="trust-sep"></div>
+        <div class="trust-item">
+          <span class="trust-num">{{ stats.appointments }}+</span>
+          <span class="trust-label">Programări realizate</span>
+        </div>
+      }
     </div>
 
   </section>

@@ -77,10 +77,9 @@ export class ParteneriatComponent implements OnInit {
 
   // Animație counter
   readonly stats = [
-    { val: '70+',   label: 'clinici verificate' },
-    { val: '500+',  label: 'pacienți activi' },
-    { val: '95%',   label: 'satisfacție' },
-    { val: '3+',    label: 'orașe majore' },
+    { val: '70+',  label: 'clinici înscrise' },
+    { val: 'Top 3', label: 'vizibilitate în căutări' },
+    { val: '0 RON', label: 'cost pentru Starter' },
   ];
 
   readonly benefits = [

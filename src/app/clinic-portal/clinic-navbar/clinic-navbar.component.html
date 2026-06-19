@@ -3,7 +3,7 @@
     <!-- LOGO -->
     <a routerLink="/clinici" class="cn-brand">
       <img src="/logo-new.webp" alt="DentiPro" class="cn-logo" width="116" height="40" />
-      <span class="cn-pro-badge">Pro</span>
+      <span class="cn-section-badge">Clinici</span>
     </a>
 
     <!-- NAV LINKS -->
@@ -35,6 +35,12 @@
     }
 
     @if (authService.isLoggedIn && authService.isClinic) {
+      <!-- Portal pacienți -->
+      <a routerLink="/" class="cn-btn cn-btn-patients">
+        <i class="fal fa-users"></i>
+        <span>Portal pacienți</span>
+      </a>
+
       <a routerLink="/clinici/dashboard" class="cn-btn cn-btn-dashboard">
         <i class="fal fa-th-large"></i>
         <span>Dashboard</span>

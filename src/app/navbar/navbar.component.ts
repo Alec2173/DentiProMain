@@ -243,8 +243,9 @@ export class NavbarComponent implements OnInit, OnDestroy {
     }
     if (result.success) {
       if (!this.authService.isPatient) {
-        this.authService.logout();
-        this.modalError = 'Acest cont aparține unei clinici. Folosiți portalul clinicilor pentru autentificare.';
+        // Cont de clinică logat din portalul pacienților — redirect direct la dashboard
+        this.closeModal();
+        this.router.navigate(['/clinici/dashboard']);
         return;
       }
       this.closeModal();

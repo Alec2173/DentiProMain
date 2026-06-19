@@ -1,42 +1,110 @@
 <section class="cta-section">
   <div class="cta-container">
 
-    <!-- LEFT: TEXT -->
-    <div class="cta-left">
-      <span class="cta-badge">Pentru clinici</span>
-      <h2 class="cta-title">
-        Ești o clinică dentară?<br>
-        <span class="title-gradient">Înscrie-te gratuit</span>
-      </h2>
-      <p class="cta-subtitle">
-        Conectează-te cu mii de pacienți care caută servicii stomatologice în orașul tău.
-        Profilul tău pe DentiPro îți aduce vizibilitate, credibilitate și programări noi.
-      </p>
+    @if (auth.isClinic && clinic) {
 
-      <ul class="benefits-list">
-        <li class="benefit-item">
-          <span class="benefit-icon material-symbols-outlined">visibility</span>
-          <span>Vizibilitate în fața pacienților care caută activ</span>
-        </li>
-        <li class="benefit-item">
-          <span class="benefit-icon material-symbols-outlined">edit_note</span>
-          <span>Profil complet cu galerie, servicii și contact</span>
-        </li>
-        <li class="benefit-item">
-          <span class="benefit-icon material-symbols-outlined">location_on</span>
-          <span>Prezență pe hartă interactivă a clinicilor</span>
-        </li>
-        <li class="benefit-item">
-          <span class="benefit-icon material-symbols-outlined">verified</span>
-          <span>Insignă „Verificat DentiPro" pe profil</span>
-        </li>
-      </ul>
+      <!-- CLINICĂ LOGATĂ: afișează cardul ei + promovare pachete -->
+      <div class="cta-left">
+        <span class="cta-badge cta-badge--clinic">
+          <span class="material-symbols-outlined" style="font-size:14px">store</span>
+          Clinica ta pe DentiPro
+        </span>
+        <h2 class="cta-title">
+          Bine ai revenit,<br>
+          <span class="title-gradient">{{ clinic.name }}</span>
+        </h2>
 
-      <a routerLink="/Inscriere" class="cta-btn">
-        <span class="material-symbols-outlined">add_business</span>
-        Adaugă clinica ta
-      </a>
-    </div>
+        <!-- Progres profil -->
+        <div class="clinic-progress-bar-wrap">
+          <div class="clinic-progress-info">
+            <span>Profil completat</span>
+            <span class="clinic-progress-pct">{{ profileCompletion }}%</span>
+          </div>
+          <div class="clinic-progress-track">
+            <div class="clinic-progress-fill" [style.width.%]="profileCompletion"
+              [style.background]="profileCompletion >= 80 ? '#4ade80' : profileCompletion >= 50 ? '#fbbf24' : '#f87171'">
+            </div>
+          </div>
+        </div>
+
+        <!-- Recomandări -->
+        <ul class="benefits-list">
+          @if (!hasImages) {
+            <li class="benefit-item benefit-item--warn">
+              <span class="benefit-icon material-symbols-outlined" style="color:#fbbf24">add_photo_alternate</span>
+              <span><strong>Adaugă fotografii</strong> — clinicile cu poze primesc de 3× mai multe vizualizări</span>
+            </li>
+          }
+          @if (clinic.plan === 'starter') {
+            <li class="benefit-item benefit-item--promo">
+              <span class="benefit-icon material-symbols-outlined" style="color:#a78bfa">rocket_launch</span>
+              <span><strong>Upgrade la Growth</strong> — apari înaintea celorlalte clinici din oraș</span>
+            </li>
+          }
+          <li class="benefit-item">
+            <span class="benefit-icon material-symbols-outlined">chat</span>
+            <span>Răspunde la cererile pacienților din Feed</span>
+          </li>
+          <li class="benefit-item">
+            <span class="benefit-icon material-symbols-outlined">analytics</span>
+            <span>Urmărește statisticile profilului din dashboard</span>
+          </li>
+        </ul>
+
+        <div class="cta-clinic-btns">
+          <a routerLink="/clinici/dashboard" class="cta-btn">
+            <span class="material-symbols-outlined">dashboard</span>
+            Mergi la dashboard
+          </a>
+          @if (clinic.plan === 'starter') {
+            <a routerLink="/clinici/pricing" class="cta-btn cta-btn--outline">
+              <span class="material-symbols-outlined">upgrade</span>
+              Upgrade plan
+            </a>
+          }
+        </div>
+      </div>
+
+    } @else {
+
+      <!-- VIZITATOR: înscrie clinica -->
+      <div class="cta-left">
+        <span class="cta-badge">Pentru clinici</span>
+        <h2 class="cta-title">
+          Ești o clinică dentară?<br>
+          <span class="title-gradient">Înscrie-te gratuit</span>
+        </h2>
+        <p class="cta-subtitle">
+          Conectează-te cu pacienții care caută servicii stomatologice în orașul tău.
+          Profilul tău pe DentiPro îți aduce vizibilitate, credibilitate și programări noi.
+        </p>
+
+        <ul class="benefits-list">
+          <li class="benefit-item">
+            <span class="benefit-icon material-symbols-outlined">visibility</span>
+            <span>Vizibilitate în fața pacienților care caută activ</span>
+          </li>
+          <li class="benefit-item">
+            <span class="benefit-icon material-symbols-outlined">edit_note</span>
+            <span>Profil complet cu galerie, servicii și contact</span>
+          </li>
+          <li class="benefit-item">
+            <span class="benefit-icon material-symbols-outlined">location_on</span>
+            <span>Prezență pe hartă interactivă a clinicilor</span>
+          </li>
+          <li class="benefit-item">
+            <span class="benefit-icon material-symbols-outlined">verified</span>
+            <span>Insignă „Verificat DentiPro" pe profil</span>
+          </li>
+        </ul>
+
+        <a routerLink="/clinici/inscriere" class="cta-btn">
+          <span class="material-symbols-outlined">add_business</span>
+          Adaugă clinica ta
+        </a>
+      </div>
+
+    }
 
     <!-- RIGHT: GLASS CARD -->
     <div class="cta-right">

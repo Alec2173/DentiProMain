@@ -39,6 +39,18 @@
   text-transform: uppercase;
 }
 
+.cn-section-badge {
+  padding: 2px 8px;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 6px;
+  font-size: 10px;
+  font-weight: 700;
+  color: rgba(255,255,255,0.55);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
 /* ── LEFT ── */
 
 .cn-left {
@@ -128,6 +140,17 @@
 
 .cn-btn-dashboard:hover {
   background: rgba(37,99,235,0.2);
+}
+
+.cn-btn-patients {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.1);
+  color: rgba(255,255,255,0.5);
+}
+
+.cn-btn-patients:hover {
+  background: rgba(255,255,255,0.08);
+  color: rgba(255,255,255,0.8);
 }
 
 /* ── USER AREA ── */

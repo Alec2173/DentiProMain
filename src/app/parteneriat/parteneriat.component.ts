@@ -100,7 +100,7 @@ export class ParteneriatComponent implements OnInit {
     this.seo.set({
       title: 'Program Partener DentiPro — Clinici Partenere',
       description: 'Devino partener DentiPro și primești acces gratuit la Pro, badge oficial și promovare prioritară. Completează formularul în 3 minute.',
-      canonical: 'https://dentipro.ro/parteneriat',
+      canonical: 'https://dentipro.ro/clinici/parteneriat',
     });
 
     // Load clinics dropdown

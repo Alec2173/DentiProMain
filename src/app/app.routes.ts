@@ -23,7 +23,7 @@ export const routes: Routes = [
     loadComponent: () => import('./map/map.component').then((m) => m.MapComponent),
   },
   {
-    path: 'parteneriat',
+    path: 'clinici/parteneriat',
     loadComponent: () => import('./parteneriat/parteneriat.component').then(m => m.ParteneriatComponent),
   },
   {

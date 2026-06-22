@@ -99,6 +99,7 @@ export const routes: Routes = [
   // ── LEGACY REDIRECTS ──────────────────────────────────────
   { path: 'Inscriere', redirectTo: 'clinici/inscriere', pathMatch: 'full' },
   { path: 'pricing', redirectTo: 'preturi', pathMatch: 'full' },
+  { path: 'parteneriat', redirectTo: 'clinici/parteneriat', pathMatch: 'full' },
   {
     path: 'viewer',
     loadComponent: () => import('./form/viewer/viewer.component').then((m) => m.ViewerComponent),

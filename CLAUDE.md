@@ -35,7 +35,7 @@ Requires **Node ≥ 22** (`engines` in `package.json`).
 - **Angular 19** with standalone components (no NgModules) and lazy-loaded routes via `loadComponent()`
 - **PrimeNG 19** + **Angular Material 19** for UI components
 - **Supabase** for auth/database (though most logic hits a custom REST API)
-- **Backend API**: `https://www.dentipro.ro/api` — hardcoded as `const API` in each component/service that needs it
+- **Backend API**: `const API = '/api'` — relative URL in every component/service. In dev, `proxy.conf.json` forwards `/api` to `https://www.dentipro.ro`; in prod the Express backend serves both API and the Angular `public/browser/` build from the same origin.
 - **MapLibre GL** + **Google Maps** for interactive clinic maps
 - **PostHog** for product analytics (`AnalyticsService` — key must be set in `analytics.service.ts`)
 - **Stripe** for subscription payments (checkout, webhook, billing portal)
@@ -51,10 +51,14 @@ The app serves two distinct user types, detected via URL:
 `AppComponent` tracks `isClinicPortal` by subscribing to router events and checking `urlAfterRedirects.startsWith('/clinici')`. This switches the top navbar (`NavbarComponent` vs `ClinicNavbarComponent`) and hides the left sidebar and footer.
 
 > **Naming note**: two separate directories serve the `/clinici` URL space:
-> - `src/app/clinici/` — `CliniciComponent`, the marketing landing page at exactly `/clinici`
-> - `src/app/clinic-portal/` — contains `clinic-auth/`, `clinic-landing/`, `clinic-navbar/`; used by all other `/clinici/*` routes (auth, dashboard, etc.)
+> - `src/app/clinici/` — legacy; the `/clinici` route now loads `ClinicLandingComponent` from `clinic-portal/clinic-landing/`
+> - `src/app/clinic-portal/` — contains `clinic-auth/`, `clinic-landing/`, `clinic-navbar/`; used by all `/clinici/*` routes (auth, dashboard, etc.)
 
-`SupportWidgetComponent` is a global floating chat widget rendered in `AppComponent` on every page. For logged-in clinics it shows message history; for guests it requires an email.
+`SupportWidgetComponent` is a global floating chat widget rendered in `AppComponent` on every page. It has two modes:
+- **Bot mode** (default): AI-powered via `POST /api/support/bot`; shows quick-suggestion chips; after 3 interactions an escalation button appears.
+- **Human mode**: for logged-in clinics it shows message history; for guests it collects an email then submits to `POST /api/support/message`.
+
+Modes: `'bot' | 'human' | 'human-form' | 'human-sent'`.
 
 ### Authentication
 
@@ -111,18 +115,20 @@ Key routes:
 - `/dentisti`, `/dentisti/:serviciu`, `/dentisti/:serviciu/:oras` — SEO listing pages
 - `/dentisti/bucuresti`, `/dentisti/cluj-napoca`, `/dentisti/timisoara`, `/dentisti/iasi`, `/dentisti/brasov` — city SEO pages (`CitySeoComponent`); declared before `/:serviciu` to take priority
 - `/services` — service types overview page
-- `/GDPR`, `/termeni` — legal pages
+- `/GDPR`, `/termeni`, `/cookie-uri`, `/rambursare`, `/drepturile-tale-gdpr`, `/disclaimer-medical`, `/legal` — legal pages
 - `/calendar` — calendar page
-- `/clinici` — clinic landing/marketing page
+- `/notificari` — full notifications page (`NotificariComponent`)
+- `/clinici` — clinic landing/marketing page (`ClinicLandingComponent`)
 - `/clinici/autentificare` — clinic login/register (`ClinicAuthComponent`)
 - `/clinici/inscriere` — multi-step clinic registration form (7 steps, step 6 = plan selection)
+- `/clinici/parteneriat` — partnership/affiliate program page (`ParteneriatComponent`)
 - `/clinici/dashboard` — clinic management dashboard (requires `isClinic` + `clinicId`)
 - `/clinici/profil` — clinic's own public profile preview
 - `/clinici/contact` — contact form (clinic portal variant)
 - `/clinici/pricing` — pricing page
 - `/administrator` — admin panel (requires `isAdmin`)
 - `/viewer`, `/sidebar` — dev/debug routes (not linked in UI)
-- Legacy redirects: `/Inscriere` → `/clinici/inscriere`, `/pricing` → `/preturi`
+- Legacy redirects: `/Inscriere` → `/clinici/inscriere`, `/pricing` → `/preturi`, `/parteneriat` → `/clinici/parteneriat`
 - `**` — `NotFoundComponent`
 
 ### Clinic Registration & Stripe Flow

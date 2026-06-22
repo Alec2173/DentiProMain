@@ -1,8 +1,9 @@
-import { Component } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../auth.service';
+import { SeoService } from '../seo.service';
 
 const API = '/api';
 
@@ -13,7 +14,7 @@ const API = '/api';
   templateUrl: './contact.component.html',
   styleUrl: './contact.component.css',
 })
-export class ContactComponent {
+export class ContactComponent implements OnInit {
   formName = '';
   formEmail = '';
   formMessage = '';
@@ -21,7 +22,16 @@ export class ContactComponent {
   formSuccess = false;
   formError = '';
 
+  private seo = inject(SeoService);
+
   constructor(public auth: AuthService, private http: HttpClient) {}
+
+  ngOnInit() {
+    this.seo.update({
+      title: 'Contact & Suport | DentiPro',
+      description: 'Contactează echipa DentiPro pentru orice întrebare despre platformă, clinici sau servicii dentare.',
+    });
+  }
 
   submitForm() {
     if (!this.formEmail.trim() || !this.formMessage.trim()) {

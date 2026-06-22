@@ -97,6 +97,10 @@ export class AdminComponent implements OnInit {
   businessOverview: any | null = null;
   businessOverviewLoading = false;
 
+  // Reactivation stats
+  reactivationStats: any | null = null;
+  reactivationLoading = false;
+
   // Feedback
   feedbackList: any[] | null = null;
 
@@ -134,6 +138,7 @@ export class AdminComponent implements OnInit {
     this.load();
     this.loadPlatformStats();
     this.loadBusinessOverview();
+    this.loadReactivationStats();
   }
 
   private headers(): HttpHeaders {
@@ -483,6 +488,36 @@ export class AdminComponent implements OnInit {
   get maxDailyClinic(): number {
     if (!this.businessOverview?.dailyNewClinics?.length) return 1;
     return Math.max(1, ...this.businessOverview.dailyNewClinics.map((d: any) => d.new_clinics));
+  }
+
+  // ── REACTIVATION STATS ────────────────────────────────────
+  loadReactivationStats() {
+    this.reactivationLoading = true;
+    this.http.get<any>(`${API}/admin/reactivation-stats`, { headers: this.headers() }).subscribe({
+      next: (data) => { this.reactivationStats = data; this.reactivationLoading = false; },
+      error: () => { this.reactivationLoading = false; },
+    });
+  }
+
+  get maxDailyLogin(): number {
+    if (!this.reactivationStats?.dailyLogins?.length) return 1;
+    return Math.max(1, ...this.reactivationStats.dailyLogins.map((d: any) => d.logged_in));
+  }
+
+  get totalClinicUsers(): number {
+    const b = this.reactivationStats?.buckets;
+    if (!b) return 0;
+    return (+b.never_logged) + (+b.inactive_30d) + (+b.active_7_30d) + (+b.active_7d);
+  }
+
+  bucketPct(val: number): number {
+    const t = this.totalClinicUsers;
+    return t > 0 ? Math.round((val / t) * 100) : 0;
+  }
+
+  formatDayLabel(day: string): string {
+    const d = new Date(day);
+    return d.toLocaleDateString('ro-RO', { day: '2-digit', month: 'short' });
   }
 
   // ── EMAIL STATS ───────────────────────────────────────────

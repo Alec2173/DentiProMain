@@ -284,6 +284,103 @@
     </div>
   }
 
+  <!-- REACTIVATION STATS -->
+  @if (reactivationStats) {
+    <div class="adm-react-wrap">
+      <h3 class="adm-react-title">Activitate clinici</h3>
+
+      <div class="adm-react-grid">
+
+        <!-- Grafic logins zilnice -->
+        <div class="adm-react-card adm-react-card--chart">
+          <p class="adm-react-card-label">Clinici logat zilnic (14 zile) <span class="adm-react-hint">înregistrate cu >7z înainte</span></p>
+          <div class="adm-react-bars">
+            @for (d of reactivationStats.dailyLogins; track d.day) {
+              <div class="adm-react-bar-col" [title]="formatDayLabel(d.day) + ': ' + d.logged_in + ' clinici'">
+                <div class="adm-react-bar" [style.height.%]="maxDailyLogin > 0 ? (d.logged_in / maxDailyLogin) * 100 : 0"
+                     [class.adm-react-bar--active]="d.logged_in > 0"></div>
+                <span class="adm-react-bar-label">{{ formatDayLabel(d.day) }}</span>
+              </div>
+            }
+          </div>
+        </div>
+
+        <!-- Buckets activitate -->
+        <div class="adm-react-card">
+          <p class="adm-react-card-label">Distribuție activitate (total {{ totalClinicUsers }} conturi)</p>
+          <div class="adm-react-buckets">
+            <div class="adm-react-bucket">
+              <div class="adm-react-bucket-header">
+                <span class="adm-react-bucket-dot adm-react-bucket-dot--never"></span>
+                <span class="adm-react-bucket-name">Niciodată logat</span>
+                <span class="adm-react-bucket-val">{{ reactivationStats.buckets.never_logged }}</span>
+                <span class="adm-react-bucket-pct">{{ bucketPct(reactivationStats.buckets.never_logged) }}%</span>
+              </div>
+              <div class="adm-react-bucket-bar-bg">
+                <div class="adm-react-bucket-bar adm-react-bucket-bar--never"
+                     [style.width.%]="bucketPct(reactivationStats.buckets.never_logged)"></div>
+              </div>
+            </div>
+            <div class="adm-react-bucket">
+              <div class="adm-react-bucket-header">
+                <span class="adm-react-bucket-dot adm-react-bucket-dot--inactive"></span>
+                <span class="adm-react-bucket-name">Inactiv >30 zile</span>
+                <span class="adm-react-bucket-val">{{ reactivationStats.buckets.inactive_30d }}</span>
+                <span class="adm-react-bucket-pct">{{ bucketPct(reactivationStats.buckets.inactive_30d) }}%</span>
+              </div>
+              <div class="adm-react-bucket-bar-bg">
+                <div class="adm-react-bucket-bar adm-react-bucket-bar--inactive"
+                     [style.width.%]="bucketPct(reactivationStats.buckets.inactive_30d)"></div>
+              </div>
+            </div>
+            <div class="adm-react-bucket">
+              <div class="adm-react-bucket-header">
+                <span class="adm-react-bucket-dot adm-react-bucket-dot--recent"></span>
+                <span class="adm-react-bucket-name">Activ 7–30 zile</span>
+                <span class="adm-react-bucket-val">{{ reactivationStats.buckets.active_7_30d }}</span>
+                <span class="adm-react-bucket-pct">{{ bucketPct(reactivationStats.buckets.active_7_30d) }}%</span>
+              </div>
+              <div class="adm-react-bucket-bar-bg">
+                <div class="adm-react-bucket-bar adm-react-bucket-bar--recent"
+                     [style.width.%]="bucketPct(reactivationStats.buckets.active_7_30d)"></div>
+              </div>
+            </div>
+            <div class="adm-react-bucket">
+              <div class="adm-react-bucket-header">
+                <span class="adm-react-bucket-dot adm-react-bucket-dot--hot"></span>
+                <span class="adm-react-bucket-name">Activ în 7 zile</span>
+                <span class="adm-react-bucket-val">{{ reactivationStats.buckets.active_7d }}</span>
+                <span class="adm-react-bucket-pct">{{ bucketPct(reactivationStats.buckets.active_7d) }}%</span>
+              </div>
+              <div class="adm-react-bucket-bar-bg">
+                <div class="adm-react-bucket-bar adm-react-bucket-bar--hot"
+                     [style.width.%]="bucketPct(reactivationStats.buckets.active_7d)"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Lista clinici reactivate recent -->
+      @if (reactivationStats.recentlyActive?.length > 0) {
+        <div class="adm-react-list">
+          <p class="adm-react-card-label">Clinici revenite (înregistrate >30z, logat în ultimele 7z)</p>
+          <div class="adm-react-list-rows">
+            @for (c of reactivationStats.recentlyActive; track c.id) {
+              <div class="adm-react-list-row">
+                <span class="adm-react-list-name">{{ c.name }}</span>
+                <span class="adm-react-list-city">{{ c.city }}</span>
+                <span class="adm-react-list-plan adm-plan--{{ c.plan }}">{{ c.plan }}</span>
+                <span class="adm-react-list-login">logat {{ c.last_login_at }}</span>
+              </div>
+            }
+          </div>
+        </div>
+      }
+    </div>
+  }
+
   <!-- STATS -->
   <div class="adm-stats">
     <div class="adm-stat adm-stat-total" (click)="filterStatus='all'; filterPlan='all'; filterOnboarding='all'; applyFilter()">

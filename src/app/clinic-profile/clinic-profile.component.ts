@@ -12,6 +12,7 @@ import { cloudinaryCard, cloudinaryLogo } from '../utils/text.utils';
 import * as maplibregl from 'maplibre-gl';
 import { AnalyticsService } from '../analytics.service';
 import { ConfigService } from '../config.service';
+import { SeoService } from '../seo.service';
 
 @Component({
   selector: 'app-clinic-profile',
@@ -90,8 +91,11 @@ export class ClinicProfileComponent implements OnInit, OnDestroy {
   private origLng: number | null = null;
   private origAddress = '';
 
+  shareCopied = false;
+
   private metaService = inject(Meta);
   private config      = inject(ConfigService);
+  private seo         = inject(SeoService);
 
   constructor(
     private route: ActivatedRoute,
@@ -145,10 +149,53 @@ export class ClinicProfileComponent implements OnInit, OnDestroy {
           this.loadReviews(clinic.id);
           this.http.post(`/api/clinics/${clinic.id}/view`, {}).subscribe();
           this.analytics.clinicViewed(clinic.id, clinic.name, clinic.city || '');
+          this.setClinicSeo(clinic);
         }
       },
       error: () => { this.isLoading = false; },
     });
+  }
+
+  private setClinicSeo(clinic: Clinic) {
+    const city     = clinic.city || 'România';
+    const services = clinic.services?.slice(0, 3).map(s => s.label).join(', ') || 'stomatologie';
+    const title    = `${clinic.name} — Clinică Stomatologică ${city} | DentiPro`;
+    const desc     = clinic.additional_notes?.slice(0, 150)?.trim()
+      || `${clinic.name} oferă servicii stomatologice în ${city}: ${services}. Programare online pe DentiPro.`;
+    const canonical = `https://dentipro.ro/clinic-profile/${clinic.id}`;
+    const image     = clinic.logo_url || clinic.images?.[0] || 'https://dentipro.ro/logo-new.png';
+
+    this.seo.set({ title, description: desc, canonical, image,
+      schema: {
+        '@context': 'https://schema.org',
+        '@type': 'Dentist',
+        name: clinic.name,
+        url: canonical,
+        image,
+        ...(clinic.phone_public ? { telephone: clinic.phone_public } : {}),
+        address: {
+          '@type': 'PostalAddress',
+          addressLocality: city,
+          addressCountry: 'RO',
+          ...(clinic.address ? { streetAddress: clinic.address } : {}),
+        },
+        ...(clinic.latitude && clinic.longitude ? {
+          geo: { '@type': 'GeoCoordinates', latitude: clinic.latitude, longitude: clinic.longitude },
+        } : {}),
+      },
+    });
+  }
+
+  shareClinic() {
+    const url = window.location.href;
+    if (navigator.share) {
+      navigator.share({ title: this.clinic?.name ?? 'Clinică DentiPro', url });
+    } else {
+      navigator.clipboard.writeText(url).then(() => {
+        this.shareCopied = true;
+        setTimeout(() => { this.shareCopied = false; }, 2500);
+      });
+    }
   }
 
   startEdit(field: string, value: string) {

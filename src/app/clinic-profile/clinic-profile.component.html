@@ -235,6 +235,16 @@
             </div>
 
           </div>
+
+          <!-- Share button — vizibil doar pe profilul public -->
+          @if (!isOwner) {
+            <div class="hero-share">
+              <button class="share-btn" (click)="shareClinic()" [title]="shareCopied ? 'Link copiat!' : 'Distribuie clinica'">
+                <i class="fal" [class.fa-check]="shareCopied" [class.fa-share-alt]="!shareCopied"></i>
+                {{ shareCopied ? 'Copiat!' : 'Distribuie' }}
+              </button>
+            </div>
+          }
         </div>
       </div>
 

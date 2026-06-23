@@ -84,14 +84,20 @@
   gap: 10px;
 }
 
-.hero-login-hint {
-  font-size: 13px;
-  color: rgba(255,255,255,0.3);
-  margin: 0;
+.feed-unauth-cta {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 10px;
+  flex-wrap: wrap;
 }
+.btn-outline-sm {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 9px 16px; border-radius: 8px;
+  border: 1px solid rgba(255,255,255,.2); background: transparent;
+  color: #94a3b8; font-size: .85rem; font-weight: 600;
+  text-decoration: none; transition: all .2s;
+}
+.btn-outline-sm:hover { background: rgba(255,255,255,.07); color: #e2e8f0; }
 
 /* ── CONTROLS ─────────────────────────────────────────────── */
 .feed-controls {

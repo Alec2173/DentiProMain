@@ -21,10 +21,14 @@
         </button>
       }
       @if (!auth.isLoggedIn) {
-        <p class="hero-login-hint">
-          <i class="fal fa-info-circle"></i>
-          Autentifică-te ca pacient pentru a posta o cerere sau ca clinică pentru a trimite oferte.
-        </p>
+        <div class="feed-unauth-cta">
+          <a routerLink="/inregistrare" class="btn-primary">
+            <i class="fal fa-user-plus"></i> Creează cont pacient
+          </a>
+          <a routerLink="/clinici/autentificare" class="btn-outline-sm">
+            <i class="fal fa-sign-in"></i> Intru ca clinică
+          </a>
+        </div>
       }
     </div>
   </div>

@@ -9,7 +9,6 @@ import { MobileTextComponent } from './mobile-text/mobile-text.component';
 import { PopularClinicsComponent } from './popular-clinics/popular-clinics.component';
 import { HowItWorksComponent } from './how-it-works/how-it-works.component';
 import { PopularServicesComponent } from './popular-services/popular-services.component';
-import { FooterComponent } from './footer/footer.component';
 import { CtaComponent } from './cta/cta.component';
 
 @Component({
@@ -21,7 +20,6 @@ import { CtaComponent } from './cta/cta.component';
     PopularClinicsComponent,
     HowItWorksComponent,
     PopularServicesComponent,
-    FooterComponent,
     CtaComponent,
   ],
   templateUrl: './home-nd.component.html',

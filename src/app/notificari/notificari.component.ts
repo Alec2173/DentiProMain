@@ -1,6 +1,6 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Router, RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import { DatePipe } from '@angular/common';
 import { AuthService } from '../auth.service';
 import { SeoService } from '../seo.service';
@@ -24,7 +24,7 @@ const NOTIF_META: Record<string, { icon: string; color: string }> = {
 @Component({
   selector: 'app-notificari',
   standalone: true,
-  imports: [RouterLink, DatePipe],
+  imports: [DatePipe],
   templateUrl: './notificari.component.html',
   styleUrl: './notificari.component.css',
 })

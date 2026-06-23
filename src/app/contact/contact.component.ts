@@ -27,7 +27,7 @@ export class ContactComponent implements OnInit {
   constructor(public auth: AuthService, private http: HttpClient) {}
 
   ngOnInit() {
-    this.seo.update({
+    this.seo.set({
       title: 'Contact & Suport | DentiPro',
       description: 'Contactează echipa DentiPro pentru orice întrebare despre platformă, clinici sau servicii dentare.',
     });

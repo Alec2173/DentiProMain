@@ -79,6 +79,9 @@ export class DescriptonPageComponent implements OnInit, OnDestroy {
           },
         });
 
+        this.analytics.clinicViewed(clinic.id, clinic.name, clinic.city || '');
+        this.http.post(`/api/clinics/${clinic.id}/view`, {}).subscribe();
+
         const lat = Number(clinic.latitude);
         const lng = Number(clinic.longitude);
         if (lat && lng) {

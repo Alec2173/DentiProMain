@@ -1,4 +1,4 @@
-export const PAID_PLANS_ENABLED = true;
+export const PAID_PLANS_ENABLED = false;
 
 export interface PlanFeature {
   text: string;
